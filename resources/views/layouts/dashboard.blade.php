@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Dark mode toggle script
+        const setupTheme = () => {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        setupTheme();
+
+        window.toggleTheme = () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        };
+    </script>
+</head>
+<body class="font-sans antialiased">
+    <div class="min-h-screen flex w-full">
+        <!-- Sidebar -->
+        <aside class="border-r border-sidebar-border bg-sidebar text-sidebar-foreground w-48 flex-shrink-0">
+            <div class="px-4 py-6">
+                <h1 class="text-2xl font-bold text-sidebar-primary">Audios IBRPM</h1>
+                <p class="text-muted-foreground">Sistema de Gestión</p>
+            </div>
+
+            <nav class="mt-6">
+                <!-- Administración Group -->
+                <div class="mb-4 px-2">
+                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">Administración</h3>
+                    <ul>
+                        <li>
+                            @if(auth()->user()->role == 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs('admin.dashboard') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                            @else
+                                <a href="{{ route('editor.dashboard') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs('editor.dashboard') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                            @endif
+                                <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route(auth()->user()->role . '.autores.index') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs(auth()->user()->role . '.autores.index') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                                <i data-lucide="user" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Autores</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route(auth()->user()->role . '.series.index') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs(auth()->user()->role . '.series.index') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                                <i data-lucide="music" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Series</span>
+                            </a>
+                        </li>
+                        <li>
+                            <li>
+                                <a href="{{ route(auth()->user()->role . '.audios.index') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs(auth()->user()->role . '.audios.index') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                                    <i data-lucide="headphones" class="h-5 w-5"></i>
+                                    <span class="text-sm font-medium">Audios</span>
+                                </a>
+                            </li>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sistema Group -->
+                @if(auth()->user()->role == 'admin')
+                <div class="mb-4 px-2">
+                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">Sistema</h3>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.logs') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs('admin.logs') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                                <i data-lucide="file-text" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Logs</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                @endif
+
+                <!-- Público Group -->
+                <div class="px-2">
+                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">Público</h3>
+                    <ul>
+                        <li>
+                            <a href="{{ route('public.audios') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-sidebar-accent/50">
+                                <i data-lucide="book" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Biblioteca de audios</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col">
+            <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-4">
+                <!-- Sidebar Toggle (Placeholder for now) -->
+                <button onclick="alert('Sidebar toggle functionality to be implemented')" class="mr-4 p-2 rounded-md hover:bg-accent">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="flex items-center space-x-4 flex-1">
+                    <h1 class="font-semibold text-foreground">@yield('title', 'Dashboard')</h1>
+                </div>
+                <!-- Dark/Light Mode Toggle -->
+                <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-accent">
+                    <i data-lucide="sun" class="h-5 w-5 dark:hidden"></i>
+                    <i data-lucide="moon" class="h-5 w-5 hidden dark:block"></i>
+                </button>
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('logout') }}" class="ml-4">
+                    @csrf
+                    <button type="submit" class="p-2 rounded-md hover:bg-accent text-red-500" title="Cerrar sesión">
+                        <i data-lucide="log-out" class="h-5 w-5"></i>
+                    </button>
+                </form>
+            </header>
+
+            <main class="flex-1 p-6 pb-24 bg-background">
+                @yield('content')
+            </main>
+        </div>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
+    <x-player.sticky />
+    @stack('scripts')
+</body>
+</html>
