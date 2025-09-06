@@ -8,7 +8,7 @@
       {{-- Controles --}}
       <div class="flex items-center gap-2">
         <button id="pl-prev"  class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" aria-label="Anterior">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM14.5 12l-10 6V6z"/></svg>
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM4.5 12l10 6V6z"/></svg>
         </button>
 
         <button id="pl-play" class="h-10 w-10 rounded-full bg-green-600 hover:bg-green-700
@@ -19,7 +19,7 @@
         </button>
 
         <button id="pl-next"  class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" aria-label="Siguiente">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM4.5 12l10 6V6z"/></svg>
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM14.5 12l-10 6V6z"/></svg>
         </button>
       </div>
 

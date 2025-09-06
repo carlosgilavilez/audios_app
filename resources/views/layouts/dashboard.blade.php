@@ -110,19 +110,19 @@
         <div class="flex-1 flex flex-col">
             <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-4">
                 <!-- Sidebar Toggle (Placeholder for now) -->
-                <button onclick="alert('Sidebar toggle functionality to be implemented')" class="mr-4 p-2 rounded-md hover:bg-accent">
+                <button onclick="alert('Sidebar toggle functionality to be implemented')" class="mr-2 p-2 rounded-md hover:bg-accent order-[-2]">
                     <i data-lucide="menu"></i>
                 </button>
                 <div class="flex items-center space-x-4 flex-1">
                     <h1 class="font-semibold text-foreground">@yield('title', 'Dashboard')</h1>
                 </div>
                 <!-- Dark/Light Mode Toggle -->
-                <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-accent">
+                <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-accent order-[-1] mr-4">
                     <i data-lucide="sun" class="h-5 w-5 dark:hidden"></i>
                     <i data-lucide="moon" class="h-5 w-5 hidden dark:block"></i>
                 </button>
                 <!-- Logout Button -->
-                <form method="POST" action="{{ route('logout') }}" class="ml-4">
+                <form method="POST" action="{{ route('logout') }}" class="ml-2">
                     @csrf
                     <button type="submit" class="p-2 rounded-md hover:bg-accent text-red-500" title="Cerrar sesión">
                         <i data-lucide="log-out" class="h-5 w-5"></i>

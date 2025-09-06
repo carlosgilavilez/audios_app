@@ -13,7 +13,7 @@
         </div>
 
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
-            <div class="p-6">
+            <div class="p-6 overflow-x-auto">
                 <table class="min-w-full divide-y divide-border">
                     <thead class="bg-muted/50">
                         <tr>
