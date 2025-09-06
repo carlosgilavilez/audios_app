@@ -29,20 +29,20 @@
                                     <x-player.play-button
                                         :src="route('public.audios.play', $audio)"
                                         :title="$audio->titulo ?? 'Unknown Title'"
-                                        :author="$audio->autor->nombre ?? 'Unknown Artist'"
+                                        :author="$audio->autor?->nombre ?? 'Unknown Artist'"
                                         :download="route('public.download_audio', $audio)"
                                         :index="$loop->index"
                                     />
                                 </td>
                                 <td class="px-4 py-3 text-sm font-medium" style="max-width: 250px;">{{ $audio->titulo ?? '' }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                    <x-ui.cat-badge :name="$audio->categoria->nombre" />
+                                    <x-ui.cat-badge :name="$audio->categoria?->nombre ?? ''" />
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->autor->nombre ?? '' }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->serie->nombre ?? '' }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->autor?->nombre ?? '' }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->serie?->nombre ?? '' }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->fecha_publicacion ? \Carbon\Carbon::parse($audio->fecha_publicacion)->format('d/m/Y') : '' }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ trim(($audio->libro->nombre ?? '') . ' ' . ($audio->cita_biblica ?? '')) }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->turno->nombre ?? '' }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ trim(($audio->libro?->nombre ?? '') . ' ' . ($audio->cita_biblica ?? '')) }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->turno?->nombre ?? '' }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm">{{ $audio->duracion ?? '' }}</td>
                             </tr>
                         @empty
@@ -63,4 +63,3 @@
         </div>
     </div>
 @endsection
-

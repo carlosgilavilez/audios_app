@@ -33,8 +33,8 @@
                             <tr class="hover:bg-muted/50">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $audio->id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $audio->titulo }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $audio->autor->nombre ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $audio->serie->nombre ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $audio->autor?->nombre ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $audio->serie?->nombre ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $audio->estado }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $audio->fecha_publicacion }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
