@@ -6,28 +6,6 @@
     <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        // Dark mode toggle script
-        const setupTheme = () => {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        };
-        setupTheme();
-
-        window.toggleTheme = () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        };
-    </script>
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen flex w-full">
@@ -108,26 +86,25 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col">
-            <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-4">
+            <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 gap-3">
                 <!-- Sidebar Toggle (Placeholder for now) -->
-                <button onclick="alert('Sidebar toggle functionality to be implemented')" class="mr-2 p-2 rounded-md hover:bg-accent order-[-2]">
+                <button onclick="alert('Sidebar toggle functionality to be implemented')" class="p-2 rounded-md hover:bg-accent">
                     <i data-lucide="menu"></i>
                 </button>
-                <div class="flex items-center space-x-4 flex-1">
+                <div class="flex items-center space-x-4 flex-1 min-w-0">
                     <h1 class="font-semibold text-foreground">@yield('title', 'Dashboard')</h1>
                 </div>
-                <!-- Dark/Light Mode Toggle -->
-                <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-accent order-[-1] mr-4">
-                    <i data-lucide="sun" class="h-5 w-5 dark:hidden"></i>
-                    <i data-lucide="moon" class="h-5 w-5 hidden dark:block"></i>
-                </button>
-                <!-- Logout Button -->
-                <form method="POST" action="{{ route('logout') }}" class="ml-2">
-                    @csrf
-                    <button type="submit" class="p-2 rounded-md hover:bg-accent text-red-500" title="Cerrar sesión">
-                        <i data-lucide="log-out" class="h-5 w-5"></i>
-                    </button>
-                </form>
+                <!-- Actions: Theme + Logout -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <x-theme-toggle />
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
+                            <i data-lucide="log-out" class="h-5 w-5 mr-2"></i>
+                            <span class="hidden sm:inline">{{ __('Log Out') }}</span>
+                        </button>
+                    </form>
+                </div>
             </header>
 
             <main class="flex-1 p-6 pb-24 bg-background">
@@ -142,3 +119,4 @@
     @stack('scripts')
 </body>
 </html>
+

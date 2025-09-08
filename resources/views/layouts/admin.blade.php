@@ -20,7 +20,7 @@
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
+                    <div class="flex justify-between items-center gap-4 flex-wrap py-3">
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
@@ -37,11 +37,14 @@
                             </div>
                         </div>
 
-                        <!-- Settings Dropdown -->
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
-                           <form method="POST" action="{{ route('logout') }}">
+                        <!-- Actions: Theme + Logout -->
+                        <div class="flex items-center gap-3 ml-4">
+                            <x-theme-toggle />
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
+                                <a class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition"
+                                   href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); this.closest('form').submit();">
                                     {{ __('Log Out') }}
                                 </a>
                             </form>
