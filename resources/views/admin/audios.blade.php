@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h1 class="text-3xl font-semibold text-foreground">Gestión de Audios</h1>
-            <a href="{{ route('admin.audios.create') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-success text-success-foreground hover:bg-success-hover h-10 px-4 py-2">
-                <span class="h-4 w-4 mr-2">➕</span>
-                Subir Audio
+        <div class="flex items-center justify-between gap-2 min-w-0">
+            <h1 class="text-2xl md:text-3xl font-semibold text-foreground truncate">Gestión de Audios</h1>
+            <a href="{{ route('admin.audios.create') }}" class="shrink-0 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-success text-success-foreground hover:bg-success-hover h-10 px-2 sm:px-3 md:px-4 py-2 mr-4 sm:mr-4 md:mr-0">
+                <i data-lucide="upload" class="h-4 w-4 mr-2"></i>
+                <span class="hidden xl:inline">Subir Audio</span>
             </a>
         </div>
 
@@ -18,7 +18,7 @@
                     <span class="h-5 w-5">⚙️</span>
                     Filtros y Búsqueda
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
+                <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-2">
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4">🔍</span>
                         <input
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="p-6 pt-0">
-                <div class="w-full overflow-auto">
+                <div class="w-full overflow-x-auto pr-4 md:pr-0">
                     <table class="w-full caption-bottom text-sm">
                         <thead class="[&_tr]:border-b">
                             <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">

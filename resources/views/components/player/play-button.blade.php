@@ -2,10 +2,10 @@
   'src' => '#', 'title' => '', 'author' => '', 'download' => null, 'index' => 0
 ])
 <button
-  class="btn-play h-9 w-9 rounded-full bg-white dark:bg-gray-800 border border-green-500
-         text-green-600 grid place-items-center shadow-sm
-         hover:bg-green-50 dark:hover:bg-gray-700
-         focus:outline-none focus:ring-2 focus:ring-green-500"
+  class="btn-play h-9 w-9 rounded-full bg-card border border-success/40
+         text-success grid place-items-center shadow-md transition
+         hover:shadow-lg hover:bg-success/5
+         focus:outline-none focus:ring-2 focus:ring-success"
   data-audio-src="{{ $src }}"
   data-title="{{ $title }}"
   data-author="{{ $author }}"

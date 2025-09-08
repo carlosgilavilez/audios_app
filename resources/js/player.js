@@ -17,14 +17,14 @@ const Player = (() => {
   const showSticky = () => { sticky.classList.remove('hidden'); requestAnimationFrame(() => sticky.classList.remove('opacity-0','translate-y-2')); };
   const setPlayUI = p => { iconPlay.classList.toggle('hidden', p); iconPause.classList.toggle('hidden', !p); btnPlay.setAttribute('aria-label', p ? 'Pausar' : 'Reproducir'); };
   const clearRowStates = () => document.querySelectorAll('.btn-play').forEach(b=>{
-    b.classList.remove('bg-green-600','text-white'); // volver a modo neutro
-    b.classList.add('bg-white','text-green-600');
+    b.classList.remove('bg-success','text-success-foreground'); // volver a modo neutro
+    b.classList.add('bg-card','text-success');
     b.querySelector('.icon-play')?.classList.remove('hidden');
     b.querySelector('.icon-eq')?.classList.add('hidden');
   });
   const activateRow = (btn) => {
-    btn.classList.remove('bg-white','text-green-600');
-    btn.classList.add('bg-green-600','text-white'); // activo
+    btn.classList.remove('bg-card','text-success');
+    btn.classList.add('bg-success','text-success-foreground'); // activo
     btn.querySelector('.icon-play')?.classList.add('hidden');
     btn.querySelector('.icon-eq')?.classList.remove('hidden');
     btn.focus({preventScroll:true});

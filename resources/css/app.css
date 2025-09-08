@@ -7,15 +7,15 @@
 @layer base {
   :root {
     /* Base Colors - soften light theme */
-    --background: 0 0% 93%;
+    --background: 0 0% 100%;
     --foreground: 224 15% 15%;
 
     /* Cards and surfaces */
-    --card: 0 0% 95%;
+    --card: 220 13% 97%;
     --card-foreground: 224 15% 15%;
 
     /* Popovers and dropdowns */
-    --popover: 0 0% 95%;
+    --popover: 0 0% 100%;
     --popover-foreground: 224 15% 15%;
 
     /* Primary - Clean dark for text and borders */
@@ -27,7 +27,7 @@
     --secondary-foreground: 224 15% 15%;
 
     /* Muted tones */
-    --muted: 220 13% 90%;
+    --muted: 220 15% 88%;
     --muted-foreground: 224 10% 45%;
 
     /* Accent - Soft blue-gray */
@@ -136,15 +136,15 @@
   }
 
   body {
-    @apply bg-background text-foreground text-lg overflow-x-hidden;
+    @apply bg-background text-foreground text-lg;
   }
 
-  /* Subtle, harmonious table styling across system */
+  /* Subtle, harmonious table styling with stronger contrast in light theme */
   table thead {
-    @apply bg-muted/60;
+    @apply bg-muted;
   }
   table tbody tr:nth-child(even) {
-    @apply bg-muted/40;
+    @apply bg-muted/60;
   }
 }
 

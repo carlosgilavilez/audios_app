@@ -86,28 +86,28 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col">
-            <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 gap-3">
+            <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-3 sm:px-4 md:px-6 gap-1 sm:gap-2 md:gap-3">
                 <!-- Sidebar Toggle (Placeholder for now) -->
                 <button onclick="alert('Sidebar toggle functionality to be implemented')" class="p-2 rounded-md hover:bg-accent">
                     <i data-lucide="menu"></i>
                 </button>
-                <div class="flex items-center space-x-4 flex-1 min-w-0">
-                    <h1 class="font-semibold text-foreground">@yield('title', 'Dashboard')</h1>
+                <div class="flex items-center space-x-4 flex-1 min-w-0 overflow-hidden">
+                    <h1 class="font-semibold text-foreground truncate">@yield('title', 'Dashboard')</h1>
                 </div>
                 <!-- Actions: Theme + Logout -->
-                <div class="flex items-center gap-2 shrink-0">
-                    <x-theme-toggle />
+                <div class="flex items-center gap-2 shrink-0 {{ request()->routeIs('admin.audios.*') ? 'mr-4 sm:mr-4 md:mr-0' : '' }}">
+                    <div class="hidden md:block"><x-theme-toggle /></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
+                        <button type="submit" class="inline-flex items-center rounded-md mr-1 px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
                             <i data-lucide="log-out" class="h-5 w-5 mr-2"></i>
-                            <span class="hidden sm:inline">{{ __('Log Out') }}</span>
+                            <span class="hidden 2xl:inline">{{ __('Log Out') }}</span>
                         </button>
                     </form>
                 </div>
             </header>
 
-            <main class="flex-1 p-6 pb-24 bg-background">
+            <main class="flex-1 bg-background px-3 sm:px-4 md:px-6 py-6 pb-24">
                 @yield('content')
             </main>
         </div>
@@ -119,4 +119,3 @@
     @stack('scripts')
 </body>
 </html>
-
