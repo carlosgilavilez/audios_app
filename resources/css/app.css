@@ -7,15 +7,15 @@
 @layer base {
   :root {
     /* Base Colors - soften light theme */
-    --background: 0 0% 95%;
+    --background: 0 0% 93%;
     --foreground: 224 15% 15%;
 
     /* Cards and surfaces */
-    --card: 0 0% 96%;
+    --card: 0 0% 95%;
     --card-foreground: 224 15% 15%;
 
     /* Popovers and dropdowns */
-    --popover: 0 0% 96%;
+    --popover: 0 0% 95%;
     --popover-foreground: 224 15% 15%;
 
     /* Primary - Clean dark for text and borders */
@@ -23,15 +23,15 @@
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - slightly dimmer */
-    --secondary: 220 14% 94%;
+    --secondary: 220 14% 92%;
     --secondary-foreground: 224 15% 15%;
 
     /* Muted tones */
-    --muted: 220 13% 93%;
+    --muted: 220 13% 90%;
     --muted-foreground: 224 10% 45%;
 
     /* Accent - Soft blue-gray */
-    --accent: 220 13% 93%;
+    --accent: 220 13% 91%;
     --accent-foreground: 224 15% 15%;
 
     /* Success/Action Green - For primary actions */
@@ -54,14 +54,14 @@
     --info-foreground: 0 0% 100%;
 
     /* Borders and inputs */
-    --border: 220 13% 88%;
-    --input: 220 13% 88%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
     --ring: 142 76% 36%;
 
     --radius: 0.75rem;
 
     /* Sidebar colors */
-    --sidebar-background: 0 0% 96%;
+    --sidebar-background: 0 0% 95%;
     --sidebar-foreground: 224 15% 25%;
     --sidebar-primary: 224 20% 20%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -81,29 +81,29 @@
   }
 
   .dark {
-    --background: 0 0% 16%; /* soften dark bg */
+    --background: 0 0% 22%; /* soften dark bg a bit more */
     --foreground: 220 14% 96%;
 
-    --card: 224 15% 14%;
+    --card: 224 15% 20%;
     --card-foreground: 220 14% 96%;
 
-    --popover: 224 15% 14%;
+    --popover: 224 15% 20%;
     --popover-foreground: 220 14% 96%;
 
     --primary: 220 14% 96%;
     --primary-foreground: 224 15% 8%;
 
-    --secondary: 224 12% 20%;
+    --secondary: 224 12% 26%;
     --secondary-foreground: 220 14% 96%;
 
     --success: 149 71% 34%; /* Tailwind green-600 */
     --success-foreground: 0 0% 100%;
     --success-hover: 149 71% 30%;
 
-    --muted: 224 12% 18%;
-    --muted-foreground: 224 8% 55%;
+    --muted: 224 12% 24%;
+    --muted-foreground: 224 8% 60%;
 
-    --accent: 224 12% 18%;
+    --accent: 224 12% 24%;
     --accent-foreground: 220 14% 96%;
 
     --destructive: 0 72% 51%;
@@ -115,17 +115,17 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --border: 224 12% 22%;
-    --input: 224 12% 22%;
+    --border: 224 12% 28%;
+    --input: 224 12% 28%;
     --ring: 142 76% 36%;
 
-    --sidebar-background: 220 10% 24%;
-    --sidebar-foreground: 220 14% 80%;
+    --sidebar-background: 220 10% 28%;
+    --sidebar-foreground: 220 14% 88%;
     --sidebar-primary: 220 14% 96%;
     --sidebar-primary-foreground: 224 15% 8%;
-    --sidebar-accent: 224 12% 16%;
+    --sidebar-accent: 224 12% 22%;
     --sidebar-accent-foreground: 220 14% 96%;
-    --sidebar-border: 224 12% 15%;
+    --sidebar-border: 224 12% 26%;
     --sidebar-ring: 142 76% 36%;
   }
 }
@@ -137,6 +137,14 @@
 
   body {
     @apply bg-background text-foreground text-lg overflow-x-hidden;
+  }
+
+  /* Subtle, harmonious table styling across system */
+  table thead {
+    @apply bg-muted/60;
+  }
+  table tbody tr:nth-child(even) {
+    @apply bg-muted/40;
   }
 }
 
