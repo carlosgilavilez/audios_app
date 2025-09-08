@@ -28,13 +28,19 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Commit built assets (public/build)
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "ci(build): commit public/build assets [skip ci]"
-          file_pattern: public/build/**/*
-          add_options: '-f'
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          push_options: '--force-with-lease'
-
+      - name: Show generated assets
+        run: |
+          ls -la public || true
+          ls -la public/build || true
+      - name: Force-commit built assets (public/build)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f public/build
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "ci(build): commit public/build assets [skip ci]"
+            # Avoid loops: only build/ changed and paths-ignore prevents re-run
+            git push origin HEAD
+          fi
