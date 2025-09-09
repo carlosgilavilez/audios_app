@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Str;
 
+// Fallback seguro: si DB_CONNECTION viene mal (p.ej. 'mysqlysql'), usa 'mysql'.
+$envDefault = env('DB_CONNECTION', 'mysql');
+$valid = ['sqlite', 'mysql', 'mariadb', 'pgsql', 'sqlsrv'];
+$defaultConnection = in_array($envDefault, $valid, true) ? $envDefault : 'mysql';
+
 return [
 
     /*
@@ -16,7 +21,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => $defaultConnection,
 
     /*
     |--------------------------------------------------------------------------
