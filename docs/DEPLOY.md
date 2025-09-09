@@ -83,10 +83,28 @@ rsync -avz --delete public/build/ \
   - Reproduce un audio y verifica que se sirve desde `/storage/audios/...`.
 
 6) Automatización (sugerido)
-- GitHub Actions que, al hacer push en `main`:
-  - Instala PHP deps + `npm ci && npm run build`.
-  - Sube `public/build` vía `rsync` y ejecuta `ssh` remoto para `git pull`, `composer install`, `php artisan migrate --force` y caches.
-  - (Opcional) Sincroniza `storage/app/public/audios` si lo gestionas desde GitHub (normalmente se hace manual o con un job programado por tamaño).
+- Ya hay un workflow en `.github/workflows/deploy.yml` que en cada push a `main`:
+  - Construye assets (npm run build) e instala deps PHP.
+  - Sube `public/build` por SCP al servidor (usa secretos).
+  - Conecta por SSH y ejecuta: `git pull`, `composer install`, `php artisan migrate --force` y refresca cachés.
+  - Configura en GitHub → Settings → Secrets and variables → Actions los secretos obligatorios:
+    - `SSH_HOST` (145.223.89.151)
+    - `SSH_PORT` (65002)
+    - `SSH_USER` (u309214766)
+    - `SSH_PASSWORD` (tu password)
+    - `TARGET_DIR` (ruta del proyecto, por ejemplo `/home/u309214766/audios_app`)
+
+Sincronizar audios (desde tu PC)
+- Añadí un comando Artisan para subir los audios por SFTP usando las mismas credenciales:
+  - Variables en `.env` (no subirlas a Git):
+    - `DEPLOY_SSH_HOST=145.223.89.151`
+    - `DEPLOY_SSH_PORT=65002`
+    - `DEPLOY_SSH_USER=u309214766`
+    - `DEPLOY_SSH_PASSWORD=********`
+    - `DEPLOY_TARGET_DIR=/home/u309214766/audios_app` (ajusta la ruta)
+  - Ejecuta:
+    - `php artisan audios:sync-remote`  (sube `storage/app/public/audios` a `TARGET_DIR/storage/app/public/audios`)
+    - `php artisan audios:sync-remote --dry-run` para ver qué subiría.
 
 Notas
 - Asegúrate de que `.env` en producción apunta a la BD correcta y que `APP_ENV=production`, `APP_DEBUG=false`.
