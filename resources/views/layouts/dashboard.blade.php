@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-sans antialiased">
-    <div class="min-h-screen flex w-full">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="border-r border-sidebar-border bg-sidebar text-sidebar-foreground w-48 flex-shrink-0">
             <div class="px-4 py-6">
@@ -85,7 +85,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 min-w-0 flex flex-col">
             <header class="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-3 sm:px-4 md:px-6 gap-1 sm:gap-2 md:gap-3">
                 <!-- Sidebar Toggle (Placeholder for now) -->
                 <button onclick="alert('Sidebar toggle functionality to be implemented')" class="p-2 rounded-md hover:bg-accent">
@@ -107,7 +107,7 @@
                 </div>
             </header>
 
-            <main class="flex-1 bg-background px-3 sm:px-4 md:px-6 py-6 pb-24">
+            <main class="flex-1 min-w-0 bg-background px-3 sm:px-4 md:px-6 py-6 pb-24">
                 @yield('content')
             </main>
         </div>

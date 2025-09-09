@@ -78,7 +78,46 @@
     /* Transitions */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
+}
+
+/* ===== Scroll horizontal acorde al tema (solo X) ===== */
+.custom-hscroll {
+  scrollbar-width: auto;               /* Firefox: más gruesa que 'thin' */
+  scrollbar-gutter: stable both-edges; /* evita “saltos” al mostrarse la barra */
+}
+.custom-hscroll thead th { white-space: nowrap; }
+
+/* ---- Modo CLARO (por defecto) ---- */
+.custom-hscroll {
+  scrollbar-color: #cbd5e1 #f1f5f9;    /* thumb / track en Firefox */
+}
+.custom-hscroll::-webkit-scrollbar {
+  height: 16px;                        /* SOLO horizontal, gruesa */
+}
+.custom-hscroll::-webkit-scrollbar-track {
+  background: #f1f5f9;                  /* slate-100 */
+}
+.custom-hscroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;                  /* slate-300 */
+  border-radius: 8px;
+}
+.custom-hscroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;                  /* slate-400 */
+}
+
+/* ---- Modo OSCURO (Tailwind con .dark) ---- */
+.dark .custom-hscroll {
+  scrollbar-color: #334155 #0f172a;     /* thumb / track en Firefox */
+}
+.dark .custom-hscroll::-webkit-scrollbar-track {
+  background: #0f172a;                  /* slate-900 */
+}
+.dark .custom-hscroll::-webkit-scrollbar-thumb {
+  background: #334155;                  /* slate-700 */
+}
+.dark .custom-hscroll::-webkit-scrollbar-thumb:hover {
+  background: #475569;                  /* slate-600 */
+}
 
   .dark {
     --background: 0 0% 22%; /* soften dark bg a bit more */
@@ -152,3 +191,12 @@
 .animate-\[eq_1s_ease-in-out_infinite\]         { animation: eq 1s ease-in-out infinite; }
 .animate-\[eq_1s_ease-in-out_infinite_200ms\]   { animation: eq 1s ease-in-out infinite 0.2s; }
 .animate-\[eq_1s_ease-in-out_infinite_400ms\]   { animation: eq 1s ease-in-out infinite 0.4s; }
+
+/* Overrides: horizontal scrollbar thick, no track color enforced */
+.custom-hscroll{ scrollbar-gutter: stable both-edges; scrollbar-width: auto; scrollbar-color: auto; }
+.custom-hscroll::-webkit-scrollbar{ height:16px; }
+.custom-hscroll::-webkit-scrollbar-track{ background: initial !important; }
+.custom-hscroll::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:10px; }
+.custom-hscroll::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
+.dark .custom-hscroll{ scrollbar-color: auto; }
+.dark .custom-hscroll::-webkit-scrollbar-track{ background: initial !important; }
