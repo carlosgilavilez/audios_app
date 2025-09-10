@@ -57,8 +57,9 @@ jobs:
             git pull --ff-only origin main
             composer install --no-dev --prefer-dist --optimize-autoloader
             php artisan migrate --force || true
-            # Ensure base categories exist (idempotent)
+            # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
+            php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force || true
             php artisan optimize:clear || true
             php artisan config:cache || true
             php artisan route:cache || true
