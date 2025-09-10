@@ -89,7 +89,7 @@ rsync -avz --delete public/build/ \
 6) Automatización (sugerido)
 - Ya hay un workflow en `.github/workflows/deploy.yml` que en cada push a `main`:
   - Construye assets (npm run build) e instala deps PHP.
-  - Sube `public/build` por SCP al servidor (usa secretos).
+  - Sube `public/build` por SCP al servidor (opcional).
   - Conecta por SSH y ejecuta: `git pull`, `composer install`, `php artisan migrate --force` y refresca cachés.
   - Configura en GitHub → Settings → Secrets and variables → Actions los secretos obligatorios:
     - `SSH_HOST` (145.223.89.151)
@@ -97,6 +97,17 @@ rsync -avz --delete public/build/ \
     - `SSH_USER` (u309214766)
     - `SSH_PASSWORD` (tu password)
     - `TARGET_DIR` (ruta del proyecto, por ejemplo `/home/u309214766/audios_app`)
+
+  Recomendado: usa clave SSH en `SSH_KEY` en lugar de `SSH_PASSWORD`. Pasos:
+  - Genera una clave en tu equipo:
+    ```
+    ssh-keygen -t ed25519 -f ./deploy_key -C "github-actions" -N ""
+    ```
+  - Anade la clave publica al servidor:
+    ```
+    ssh -p 65002 u309214766@145.223.89.151 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '$(cat deploy_key.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+    ```
+  - En GitHub, crea el secret `SSH_KEY` con el contenido de `deploy_key` (privada). El workflow usara clave si esta presente; si no, intentara `SSH_PASSWORD`.
 
 Sincronizar audios (desde tu PC)
 - Añadí un comando Artisan para subir los audios por SFTP usando las mismas credenciales:

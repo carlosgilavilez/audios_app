@@ -36,8 +36,38 @@ jobs:
       - name: Install PHP deps
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      - name: SSH update code and caches (pull + migrate)
-        if: always()
+      - name: SSH update code and caches (key)
+        if: ${{ secrets.SSH_KEY != '' }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            mkdir -p "${TARGET_DIR}"
+            if [ ! -d "${TARGET_DIR}/.git" ]; then
+              git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
+            fi
+            cd "${TARGET_DIR}"
+            git fetch origin
+            git checkout main
+            git pull --ff-only origin main
+            composer install --no-dev --prefer-dist --optimize-autoloader
+            php artisan migrate --force || true
+            # Ensure base seed data (idempotent)
+            php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
+            php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force || true
+            php artisan optimize:clear || true
+            php artisan config:cache || true
+            php artisan route:cache || true
+            php artisan view:clear || true
+            php artisan storage:link || true
+
+      - name: SSH update code and caches (password fallback)
+        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -66,8 +96,20 @@ jobs:
             php artisan view:clear || true
             php artisan storage:link || true
 
-      - name: Upload built assets to server (optional)
-        if: always()
+      - name: Upload built assets to server (optional, key)
+        if: ${{ secrets.SSH_KEY != '' }}
+        continue-on-error: true
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "public/build/**"
+          target: "${{ env.TARGET_DIR }}"
+
+      - name: Upload built assets to server (optional, password fallback)
+        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
         continue-on-error: true
         uses: appleboy/scp-action@v0.1.7
         with:
