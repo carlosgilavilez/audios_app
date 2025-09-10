@@ -147,7 +147,9 @@
                     const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
                     const isPredicaciones = selectedOption && selectedOption.text.toLowerCase() === 'predicaciones';
                     console.log('selectedOptionValue:', categoriaSelect.value);
-                    console.log('predicacionesCatId:', '{{ $predicacionesCat->id ?? null }}');
+                    // Nota: en create no pasamos $predicacionesCat desde el controlador.
+                    // Evitamos referencia a variable inexistente.
+                    // console.log('predicacionesCatId:', '{{ isset($predicacionesCat) ? $predicacionesCat->id : '' }}');
                     console.log('isPredicaciones:', isPredicaciones);
                     libroCitaGroup.classList.toggle('hidden', !isPredicaciones);
                     document.getElementById('libro_id').required = isPredicaciones;
