@@ -30,6 +30,20 @@ class AudioAdminController extends Controller
         }
     }
 
+    private function ensureDefaultTurnos(): void
+    {
+        try {
+            // Eliminar entrada obsoleta si existe
+            \App\Models\Turno::where('nombre', 'Noche')->delete();
+            // Asegurar valores base
+            foreach (['Mañana', 'Tarde'] as $nombre) {
+                \App\Models\Turno::firstOrCreate(['nombre' => $nombre]);
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('No se pudieron asegurar turnos por defecto: '.$e->getMessage());
+        }
+    }
+
     // ... other methods ...
     public function index(Request $request)
     {
@@ -42,6 +56,7 @@ class AudioAdminController extends Controller
     public function create()
     {
         $this->ensureDefaultCategories();
+        $this->ensureDefaultTurnos();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
@@ -230,6 +245,7 @@ class AudioAdminController extends Controller
     public function edit(Audio $audio)
     {
         $this->ensureDefaultCategories();
+        $this->ensureDefaultTurnos();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
