@@ -18,6 +18,18 @@ use getID3;
 
 class AudioAdminController extends Controller
 {
+    private function ensureDefaultCategories(): void
+    {
+        try {
+            foreach (['Predicaciones', 'Temas Esenciales', 'Conferencias'] as $nombre) {
+                \App\Models\Categoria::firstOrCreate(['nombre' => $nombre]);
+            }
+        } catch (\Throwable $e) {
+            // Si la BD no está disponible, no bloquear la vista.
+            \Log::warning('No se pudieron asegurar categorías por defecto: '.$e->getMessage());
+        }
+    }
+
     // ... other methods ...
     public function index(Request $request)
     {
@@ -29,6 +41,7 @@ class AudioAdminController extends Controller
 
     public function create()
     {
+        $this->ensureDefaultCategories();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
@@ -216,6 +229,7 @@ class AudioAdminController extends Controller
     // ... other methods ...
     public function edit(Audio $audio)
     {
+        $this->ensureDefaultCategories();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
