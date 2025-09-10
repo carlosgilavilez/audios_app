@@ -36,6 +36,25 @@ jobs:
       - name: Install PHP deps
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
+      - name: Bootstrap SSH public key (optional)
+        if: ${{ secrets.SSH_PUBLIC_KEY != '' && secrets.SSH_PASSWORD != '' }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            AUTH=~/.ssh/authorized_keys
+            touch "$AUTH"
+            chmod 600 "$AUTH"
+            PUB="${{ secrets.SSH_PUBLIC_KEY }}"
+            grep -qxF "$PUB" "$AUTH" || echo "$PUB" >> "$AUTH"
+
       - name: SSH update code and caches (key)
         if: ${{ secrets.SSH_KEY != '' }}
         uses: appleboy/ssh-action@v1.0.3
