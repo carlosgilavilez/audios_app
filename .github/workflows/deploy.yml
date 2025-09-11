@@ -111,6 +111,7 @@ jobs:
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
             php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force || true
+            php artisan db:seed --class="Database\\Seeders\\LibroSeeder" --force || true
             php artisan optimize:clear || true
             php artisan config:cache || true
             php artisan route:cache || true
@@ -136,6 +137,7 @@ jobs:
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
             php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force || true
+            php artisan db:seed --class="Database\\Seeders\\LibroSeeder" --force || true
             php artisan optimize:clear || true
             php artisan config:cache || true
             php artisan route:cache || true

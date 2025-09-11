@@ -34,6 +34,7 @@ composer install --no-dev --prefer-dist --optimize-autoloader
 # Semillas de datos mínimas (idempotente)
 php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force
 php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force
+php artisan db:seed --class="Database\\Seeders\\LibroSeeder" --force
 
 # (Opción A) Construir assets en el servidor
 npm ci && npm run build
