@@ -65,16 +65,34 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: |
-            set -e
+            set -euxo pipefail
             mkdir -p "${TARGET_DIR}"
             if [ ! -d "${TARGET_DIR}/.git" ]; then
-              git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              if [ -n "${{ secrets.GH_TOKEN }}" ]; then
+                git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              else
+                git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              fi
             fi
             cd "${TARGET_DIR}"
+            git config --global --add safe.directory "${TARGET_DIR}" || true
+            if [ -n "${{ secrets.GH_TOKEN }}" ]; then
+              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git || true
+            fi
             git fetch origin
             git checkout main
             git pull --ff-only origin main
-            composer install --no-dev --prefer-dist --optimize-autoloader
+            if command -v composer >/dev/null 2>&1; then
+              COMPOSER="composer"
+            else
+              if [ ! -f "${TARGET_DIR}/composer.phar" ]; then
+                php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+                php composer-setup.php --install-dir="${TARGET_DIR}" --filename=composer.phar && \
+                rm -f composer-setup.php
+              fi
+              COMPOSER="php ${TARGET_DIR}/composer.phar"
+            fi
+            $COMPOSER install --no-dev --prefer-dist --optimize-autoloader
             php artisan migrate --force || true
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
@@ -95,16 +113,34 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: |
-            set -e
+            set -euxo pipefail
             mkdir -p "${TARGET_DIR}"
             if [ ! -d "${TARGET_DIR}/.git" ]; then
-              git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              if [ -n "${{ secrets.GH_TOKEN }}" ]; then
+                git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              else
+                git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
+              fi
             fi
             cd "${TARGET_DIR}"
+            git config --global --add safe.directory "${TARGET_DIR}" || true
+            if [ -n "${{ secrets.GH_TOKEN }}" ]; then
+              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git || true
+            fi
             git fetch origin
             git checkout main
             git pull --ff-only origin main
-            composer install --no-dev --prefer-dist --optimize-autoloader
+            if command -v composer >/dev/null 2>&1; then
+              COMPOSER="composer"
+            else
+              if [ ! -f "${TARGET_DIR}/composer.phar" ]; then
+                php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+                php composer-setup.php --install-dir="${TARGET_DIR}" --filename=composer.phar && \
+                rm -f composer-setup.php
+              fi
+              COMPOSER="php ${TARGET_DIR}/composer.phar"
+            fi
+            $COMPOSER install --no-dev --prefer-dist --optimize-autoloader
             php artisan migrate --force || true
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
