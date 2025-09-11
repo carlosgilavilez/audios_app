@@ -61,9 +61,34 @@ class AudioAdminController extends Controller
     public function index(Request $request)
     {
         $query = Audio::with(['autor', 'serie', 'categoria', 'libro', 'turno']);
-        // ... rest of index
-        $audios = $query->latest()->paginate(15);
-        return view('admin.audios.index', compact('audios'));
+
+        // Búsqueda de texto simple (título, autor, serie, cita)
+        if ($search = $request->string('search')->toString()) {
+            $query->where(function ($q) use ($search) {
+                $q->where('titulo', 'like', "%{$search}%")
+                  ->orWhere('cita_biblica', 'like', "%{$search}%")
+                  ->orWhereHas('autor', function ($qa) use ($search) {
+                      $qa->where('nombre', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('serie', function ($qs) use ($search) {
+                      $qs->where('nombre', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filtro opcional por estado
+        if ($estado = $request->string('estado')->toString()) {
+            if (in_array($estado, ['Pendiente', 'Publicado', 'Normal'])) {
+                $query->where('estado', $estado);
+            }
+        }
+
+        $audios = $query->latest()->paginate(15)->withQueryString();
+        return view('admin.audios.index', [
+            'audios' => $audios,
+            'search' => $search ?? '',
+            'estado' => $estado ?? '',
+        ]);
     }
 
     public function create()

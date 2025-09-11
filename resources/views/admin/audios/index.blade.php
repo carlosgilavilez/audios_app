@@ -18,7 +18,21 @@
   </div>
 
   <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
-    <div class="p-6">
+    <div class="p-6 space-y-4">
+      <form method="GET" action="{{ route(auth()->user()->role . '.audios.index') }}" class="flex flex-wrap items-center gap-3">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por título, autor, serie o cita" class="w-72 max-w-full rounded-md border px-3 py-2 text-sm bg-background" />
+        <select name="estado" class="rounded-md border px-3 py-2 text-sm bg-background">
+          <option value="">Todos los estados</option>
+          <option value="Publicado" @selected(request('estado')==='Publicado')>Publicado</option>
+          <option value="Pendiente" @selected(request('estado')==='Pendiente')>Pendiente</option>
+          <option value="Normal" @selected(request('estado')==='Normal')>Normal</option>
+        </select>
+        <button type="submit" class="inline-flex items-center gap-2 px-4 h-9 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90">Filtrar</button>
+        @if (request()->has('search') || request()->has('estado'))
+          <a href="{{ route(auth()->user()->role . '.audios.index') }}" class="text-sm underline">Limpiar</a>
+        @endif
+        <span class="text-sm text-muted-foreground ml-auto">{{ $audios->total() }} resultados</span>
+      </form>
       <div class="relative max-w-full min-w-0">
         <div id="audios-scroll-top"
              class="overflow-x-auto overflow-y-hidden custom-hscroll h-6 -mx-4 md:-mx-6"
