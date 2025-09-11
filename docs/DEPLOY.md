@@ -7,6 +7,11 @@ Requisitos previos
 - PHP 8.2, Composer y (opcional) Node.js en el servidor. Si no hay Node, copia `public/build` desde local.
 
 1) Publicar cambios a GitHub
+Atajo (recomendado):
+```
+npm run deploy -- "mensaje del commit"
+```
+Hace add/commit/pull --rebase/push y, si estás en `main`, disparará el despliegue automático.
 ```
 # En tu máquina local (PowerShell/Git Bash) en la carpeta del repo
 git status

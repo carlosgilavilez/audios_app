@@ -15,7 +15,18 @@ Esto levantará Laravel en:
 En otra terminal (también en la carpeta del proyecto):
 ```bash
 npm install
-npm run dev
+Arranque local
+ - `npm run dev`: inicia Vite en desarrollo.
+
+Publicar cambios y desplegar a producción
+ - `npm run deploy -- "mensaje opcional"`
+   - Hace `git add -A`, `git pull --rebase`, crea commit si hay cambios y hace `git push`.
+   - Si estás en `main`, se dispara el workflow de GitHub (`.github/workflows/deploy.yml`) que construye, empaqueta y despliega al servidor.
+   - Si no estás en `main`, solo empuja tu rama y muestra un aviso.
+
+Notas
+ - Requiere que el remoto `origin` esté configurado y que tengas permisos para empujar.
+ - El workflow usa los secretos `SSH_HOST`, `SSH_PORT`, `SSH_USER`, `SSH_KEY` o `SSH_PASSWORD`, y `TARGET_DIR` en GitHub.
 ```
 
 Esto instalará las dependencias de Node y levantará Vite, que compila los estilos y scripts en caliente.

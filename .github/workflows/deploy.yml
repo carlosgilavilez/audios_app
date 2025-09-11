@@ -9,7 +9,14 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
+      # Map secrets to env to allow usage in `if:` expressions cleanly
       TARGET_DIR: ${{ secrets.TARGET_DIR }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,13 +59,13 @@ jobs:
             composer.lock
 
       - name: Bootstrap SSH public key (optional)
-        if: ${{ secrets.SSH_PUBLIC_KEY != '' && secrets.SSH_PASSWORD != '' }}
+        if: ${{ env.SSH_PUBLIC_KEY != '' && env.SSH_PASSWORD != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
           script_stop: true
           script: |
             set -e
@@ -67,39 +74,39 @@ jobs:
             AUTH=~/.ssh/authorized_keys
             touch "$AUTH"
             chmod 600 "$AUTH"
-            PUB="${{ secrets.SSH_PUBLIC_KEY }}"
+            PUB="${{ env.SSH_PUBLIC_KEY }}"
             grep -qxF "$PUB" "$AUTH" || echo "$PUB" >> "$AUTH"
 
       - name: Upload package (key)
-        if: ${{ secrets.SSH_KEY != '' }}
+        if: ${{ env.SSH_KEY != '' }}
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          port: ${{ env.SSH_PORT }}
           source: "deploy.tar.gz"
           target: "${{ env.TARGET_DIR }}"
 
       - name: Upload package (password)
-        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
+        if: ${{ env.SSH_KEY == '' && env.SSH_PASSWORD != '' }}
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
           source: "deploy.tar.gz"
           target: "${{ env.TARGET_DIR }}"
 
       - name: SSH deploy extract and caches (key)
-        if: ${{ secrets.SSH_KEY != '' }}
+        if: ${{ env.SSH_KEY != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          port: ${{ env.SSH_PORT }}
           script_stop: true
           script: |
             set -euxo pipefail
@@ -119,13 +126,13 @@ jobs:
             php artisan storage:link || true
 
       - name: SSH deploy extract and caches (password)
-        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
+        if: ${{ env.SSH_KEY == '' && env.SSH_PASSWORD != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
           script_stop: true
           script: |
             set -euxo pipefail
