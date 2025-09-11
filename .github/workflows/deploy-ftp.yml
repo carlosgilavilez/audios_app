@@ -25,11 +25,16 @@ jobs:
           exclude: |
             **/.git*
             **/.github/**
+            public/build/**
+            public/storage/**
             vendor/**
             node_modules/**
-            storage/**
+            storage/app/**
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
             tests/**
             scripts/**
             .vscode/**
           log-level: standard
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
