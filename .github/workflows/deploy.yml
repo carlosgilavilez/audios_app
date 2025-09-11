@@ -36,6 +36,21 @@ jobs:
       - name: Install PHP deps
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
+      - name: Package code for deploy
+        run: |
+          tar -czf deploy.tar.gz \
+            app \
+            bootstrap \
+            config \
+            database \
+            public \
+            resources \
+            routes \
+            vendor \
+            artisan \
+            composer.json \
+            composer.lock
+
       - name: Bootstrap SSH public key (optional)
         if: ${{ secrets.SSH_PUBLIC_KEY != '' && secrets.SSH_PASSWORD != '' }}
         uses: appleboy/ssh-action@v1.0.3
@@ -55,7 +70,29 @@ jobs:
             PUB="${{ secrets.SSH_PUBLIC_KEY }}"
             grep -qxF "$PUB" "$AUTH" || echo "$PUB" >> "$AUTH"
 
-      - name: SSH update code and caches (key)
+      - name: Upload package (key)
+        if: ${{ secrets.SSH_KEY != '' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy.tar.gz"
+          target: "${{ env.TARGET_DIR }}"
+
+      - name: Upload package (password)
+        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy.tar.gz"
+          target: "${{ env.TARGET_DIR }}"
+
+      - name: SSH deploy extract and caches (key)
         if: ${{ secrets.SSH_KEY != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -67,32 +104,9 @@ jobs:
           script: |
             set -euxo pipefail
             mkdir -p "${TARGET_DIR}"
-            if [ ! -d "${TARGET_DIR}/.git" ]; then
-              if [ -n "${{ secrets.GH_TOKEN }}" ]; then
-                git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git "${TARGET_DIR}"
-              else
-                git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
-              fi
-            fi
             cd "${TARGET_DIR}"
-            git config --global --add safe.directory "${TARGET_DIR}" || true
-            if [ -n "${{ secrets.GH_TOKEN }}" ]; then
-              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git || true
-            fi
-            git fetch origin
-            git checkout main
-            git pull --ff-only origin main
-            if command -v composer >/dev/null 2>&1; then
-              COMPOSER="composer"
-            else
-              if [ ! -f "${TARGET_DIR}/composer.phar" ]; then
-                php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-                php composer-setup.php --install-dir="${TARGET_DIR}" --filename=composer.phar && \
-                rm -f composer-setup.php
-              fi
-              COMPOSER="php ${TARGET_DIR}/composer.phar"
-            fi
-            $COMPOSER install --no-dev --prefer-dist --optimize-autoloader
+            tar -xzf deploy.tar.gz
+            rm -f deploy.tar.gz
             php artisan migrate --force || true
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
@@ -103,7 +117,7 @@ jobs:
             php artisan view:clear || true
             php artisan storage:link || true
 
-      - name: SSH update code and caches (password fallback)
+      - name: SSH deploy extract and caches (password)
         if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -115,32 +129,9 @@ jobs:
           script: |
             set -euxo pipefail
             mkdir -p "${TARGET_DIR}"
-            if [ ! -d "${TARGET_DIR}/.git" ]; then
-              if [ -n "${{ secrets.GH_TOKEN }}" ]; then
-                git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git "${TARGET_DIR}"
-              else
-                git clone https://github.com/${{ github.repository }}.git "${TARGET_DIR}"
-              fi
-            fi
             cd "${TARGET_DIR}"
-            git config --global --add safe.directory "${TARGET_DIR}" || true
-            if [ -n "${{ secrets.GH_TOKEN }}" ]; then
-              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git || true
-            fi
-            git fetch origin
-            git checkout main
-            git pull --ff-only origin main
-            if command -v composer >/dev/null 2>&1; then
-              COMPOSER="composer"
-            else
-              if [ ! -f "${TARGET_DIR}/composer.phar" ]; then
-                php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-                php composer-setup.php --install-dir="${TARGET_DIR}" --filename=composer.phar && \
-                rm -f composer-setup.php
-              fi
-              COMPOSER="php ${TARGET_DIR}/composer.phar"
-            fi
-            $COMPOSER install --no-dev --prefer-dist --optimize-autoloader
+            tar -xzf deploy.tar.gz
+            rm -f deploy.tar.gz
             php artisan migrate --force || true
             # Ensure base seed data (idempotent)
             php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force || true
@@ -151,26 +142,4 @@ jobs:
             php artisan view:clear || true
             php artisan storage:link || true
 
-      - name: Upload built assets to server (optional, key)
-        if: ${{ secrets.SSH_KEY != '' }}
-        continue-on-error: true
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "public/build/**"
-          target: "${{ env.TARGET_DIR }}"
-
-      - name: Upload built assets to server (optional, password fallback)
-        if: ${{ secrets.SSH_KEY == '' && secrets.SSH_PASSWORD != '' }}
-        continue-on-error: true
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "public/build/**"
-          target: "${{ env.TARGET_DIR }}"
+      # Assets van dentro del paquete; pasos de SCP adicionales ya no son necesarios.
