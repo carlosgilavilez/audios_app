@@ -110,8 +110,8 @@ jobs:
           script_stop: true
           script: |
             set -euxo pipefail
-            mkdir -p "${TARGET_DIR}"
-            cd "${TARGET_DIR}"
+            mkdir -p "${{ env.TARGET_DIR }}"
+            cd "${{ env.TARGET_DIR }}"
             tar -xzf deploy.tar.gz
             rm -f deploy.tar.gz
             php artisan migrate --force || true
@@ -136,8 +136,8 @@ jobs:
           script_stop: true
           script: |
             set -euxo pipefail
-            mkdir -p "${TARGET_DIR}"
-            cd "${TARGET_DIR}"
+            mkdir -p "${{ env.TARGET_DIR }}"
+            cd "${{ env.TARGET_DIR }}"
             tar -xzf deploy.tar.gz
             rm -f deploy.tar.gz
             php artisan migrate --force || true
