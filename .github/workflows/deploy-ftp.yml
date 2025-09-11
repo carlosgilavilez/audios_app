@@ -50,7 +50,7 @@ jobs:
           port: 21
           protocol: ftp
           local-dir: ./
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          server-dir: /public_html/audios/
           exclude: |
             **/.git*
             **/.github/**
