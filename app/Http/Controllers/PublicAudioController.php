@@ -9,12 +9,31 @@ use Illuminate\Support\Facades\Storage;
 class PublicAudioController extends Controller
 {
     // 📌 Muestra la Biblioteca de audios
-    public function index()
+    public function index(Request $request)
     {
-        $audios = Audio::with(['autor', 'serie', 'categoria', 'libro', 'turno'])
-            ->where('estado', 'Publicado')
-            ->latest('fecha_publicacion')
-            ->paginate(20);
+        $query = Audio::with(['autor', 'serie', 'categoria', 'libro', 'turno'])
+            ->where('estado', 'Publicado');
+
+        // Búsqueda general
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('titulo', 'like', "%{$search}%")
+                    ->orWhereHas('autor', function ($qa) use ($search) {
+                        $qa->where('nombre', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('serie', function ($qs) use ($search) {
+                        $qs->where('nombre', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('turno', function ($qt) use ($search) {
+                        $qt->where('nombre', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Paginación
+        $perPage = $request->input('per_page', 25);
+        $audios = $query->latest('fecha_publicacion')->paginate($perPage);
 
         return view('public.audios', compact('audios'));
     }

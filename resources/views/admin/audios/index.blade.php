@@ -27,9 +27,15 @@
           <option value="Pendiente" @selected(request('estado')==='Pendiente')>Pendiente</option>
           <option value="Normal" @selected(request('estado')==='Normal')>Normal</option>
         </select>
+        <select name="per_page" class="rounded-md border px-3 py-2 text-sm bg-background" onchange="this.form.submit()">
+            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 por página</option>
+            <option value="25" {{ request('per_page', 25) == 25 ? 'selected' : '' }}>25 por página</option>
+            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 por página</option>
+            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 por página</option>
+        </select>
         <button type="submit" class="inline-flex items-center gap-2 px-4 h-9 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90">Filtrar</button>
         @if (request()->has('search') || request()->has('estado'))
-          <a href="{{ route(auth()->user()->role . '.audios.index') }}" class="text-sm underline">Limpiar</a>
+          <a href="{{ route(auth()->user()->role . '.audios.index') }}" class="inline-flex items-center justify-center px-4 h-9 border border-border text-sm font-medium rounded-md shadow-sm text-muted-foreground bg-muted hover:bg-muted/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring">Limpiar</a>
         @endif
         <span class="text-sm text-muted-foreground ml-auto">{{ $audios->total() }} resultados</span>
       </form>
