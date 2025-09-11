@@ -72,6 +72,9 @@ class AudioAdminController extends Controller
                   })
                   ->orWhereHas('serie', function ($qs) use ($search) {
                       $qs->where('nombre', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('turno', function ($qt) use ($search) {
+                      $qt->where('nombre', 'like', "%{$search}%");
                   });
             });
         }
