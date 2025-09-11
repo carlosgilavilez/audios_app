@@ -9,6 +9,7 @@ use App\Models\Serie;
 use App\Models\Categoria;
 use App\Models\Libro;
 use App\Models\Turno;
+use App\Models\Libro as LibroModel;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -44,6 +45,18 @@ class AudioAdminController extends Controller
         }
     }
 
+    private function ensureDefaultLibros(): void
+    {
+        try {
+            // Si hay menos de 60, resembrar usando el seeder (idempotente)
+            if (LibroModel::count() < 60) {
+                (new \Database\Seeders\LibroSeeder())->run();
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('No se pudieron asegurar libros por defecto: '.$e->getMessage());
+        }
+    }
+
     // ... other methods ...
     public function index(Request $request)
     {
@@ -57,6 +70,7 @@ class AudioAdminController extends Controller
     {
         $this->ensureDefaultCategories();
         $this->ensureDefaultTurnos();
+        $this->ensureDefaultLibros();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
@@ -246,6 +260,7 @@ class AudioAdminController extends Controller
     {
         $this->ensureDefaultCategories();
         $this->ensureDefaultTurnos();
+        $this->ensureDefaultLibros();
         $autores = Autor::all();
         $series = Serie::all();
         $categorias = Categoria::all();
