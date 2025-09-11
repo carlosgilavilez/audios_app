@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="space-y-6">
+  @if (session('ok') || session('success') || session('error'))
+    <div class="rounded-md p-3 text-sm {{ session('error') ? 'bg-destructive/10 text-destructive border border-destructive/40' : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 border border-green-300/50' }}">
+      {{ session('ok') ?? session('success') ?? session('error') }}
+    </div>
+  @endif
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-semibold text-foreground">Audios</h1>
     <a href="{{ route(auth()->user()->role . '.audios.create') }}"

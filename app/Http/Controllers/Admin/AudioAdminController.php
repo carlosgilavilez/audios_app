@@ -192,13 +192,18 @@ class AudioAdminController extends Controller
         $predicacionesCat = Categoria::where('nombre', 'Predicaciones')->first();
         $predicacionesCatId = $predicacionesCat ? $predicacionesCat->id : null;
 
+        $libroRule = 'nullable|exists:libros,id';
+        if ($predicacionesCatId) {
+            $libroRule = 'required_if:categoria_id,' . $predicacionesCatId . '|' . $libroRule;
+        }
+
         $data = $request->validate([
             'temp_file_path' => 'required|string',
             'titulo' => 'nullable|string|max:255',
             'autor_id' => 'nullable|exists:autores,id',
             'serie_id' => 'nullable|exists:series,id',
             'categoria_id' => 'nullable|exists:categorias,id',
-            'libro_id' => 'required_if:categoria_id,' . $predicacionesCatId . '|nullable|exists:libros,id',
+            'libro_id' => $libroRule,
             'turno_id' => 'nullable|exists:turnos,id',
             'cita_biblica' => 'nullable|string|max:100',
             'description' => 'nullable|string',
@@ -216,9 +221,21 @@ class AudioAdminController extends Controller
         $filename = basename($tempPath);
         $finalRelativePath = 'audios/' . $filename;
 
-        $fileContent = Storage::disk('local')->get($tempPath);
-        Storage::disk('public')->put($finalRelativePath, $fileContent);
-        Storage::disk('local')->delete($tempPath);
+        // Asegurar carpeta destino y mover archivo
+        Storage::disk('public')->makeDirectory('audios');
+        try {
+            $fileContent = Storage::disk('local')->get($tempPath);
+            $ok = Storage::disk('public')->put($finalRelativePath, $fileContent);
+            if (!$ok) {
+                return back()->withErrors(['archivo' => 'No se pudo guardar el archivo en el almacenamiento público. Verifique permisos de storage/public.'])->withInput();
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Fallo al mover audio desde temp a public: '.$e->getMessage(), ['temp' => $tempPath, 'dest' => $finalRelativePath]);
+            return back()->withErrors(['archivo' => 'Error al mover el archivo. Intente nuevamente.'])->withInput();
+        } finally {
+            // Borrar el temporal si existe
+            try { Storage::disk('local')->delete($tempPath); } catch (\Throwable $e) { /* ignore */ }
+        }
         
         if ($request->input('new_author_name')) {
             $autor = Autor::create(['nombre' => $request->input('new_author_name')]);
