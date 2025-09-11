@@ -1,0 +1,63 @@
+name: Deploy via FTP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PHP deps (optimize)
+        uses: php-actions/composer@v6
+        with:
+          php_version: '8.2'
+          dev: no
+          args: --prefer-dist --optimize-autoloader
+
+      - name: Build assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: |
+          npm ci
+          npm run build
+
+      - name: Prepare package
+        run: |
+          tar -czf deploy.tar.gz \
+            app \
+            bootstrap \
+            config \
+            database \
+            public \
+            resources \
+            routes \
+            vendor \
+            artisan \
+            composer.json \
+            composer.lock
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || 21 }}
+          protocol: ftp
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          exclude: |
+            **/.git*
+            **/.github/**
+            node_modules/**
+            storage/**
+            tests/**
+            scripts/**
+            deploy.tar.gz
+            .vscode/**
+
