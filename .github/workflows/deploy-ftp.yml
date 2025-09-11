@@ -25,6 +25,7 @@ jobs:
           exclude: |
             **/.git*
             **/.github/**
+            vendor/**
             node_modules/**
             storage/**
             tests/**
