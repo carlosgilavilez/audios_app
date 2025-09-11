@@ -99,6 +99,7 @@ Route::middleware(['auth', 'verified', 'can:editor'])
             ->parameters(['series' => 'serie']);
 
         Route::post('audios/upload-temp', [App\Http\Controllers\Admin\AudioAdminController::class, 'uploadTemp'])->name('audios.uploadTemp');
+        Route::get('audios/check-date', [App\Http\Controllers\Admin\AudioAdminController::class, 'checkDate'])->name('audios.checkDate');
         Route::resource('audios', App\Http\Controllers\Admin\AudioAdminController::class)
             ->only(['index','create','store','edit','update','destroy'])
             ->parameters(['audios' => 'audio']);

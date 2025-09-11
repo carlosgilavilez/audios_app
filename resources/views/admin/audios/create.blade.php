@@ -12,6 +12,16 @@
             <div class="p-6">
                 <form id="audio-form" action="{{ route(auth()->user()->role . '.audios.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
+                    @if ($errors->any())
+                        <div class="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-destructive text-sm">
+                            <div class="font-semibold mb-1">Hay errores en el formulario:</div>
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <input type="hidden" name="temp_file_path" id="temp-file-path">
                     <input type="hidden" name="duracion" id="duracion">
 
@@ -165,7 +175,7 @@
                 dateInput.addEventListener('change', function() {
                     const date = this.value;
                     if (!date) { dateTooltip.classList.add('hidden'); return; }
-                    fetch(`{{ route('admin.audios.checkDate') }}?date=${date}`)
+                    fetch(`{{ route(auth()->user()->role . '.audios.checkDate') }}?date=${date}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.count > 0) {
@@ -202,7 +212,7 @@
             }
 
             function uploadFile(file) {
-                const url = '{{ route("admin.audios.uploadTemp") }}';
+                const url = '{{ route(auth()->user()->role . ".audios.uploadTemp") }}';
                 const xhr = new XMLHttpRequest();
                 const formData = new FormData();
                 formData.append('archivo', file);

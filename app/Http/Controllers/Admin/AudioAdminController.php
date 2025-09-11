@@ -252,7 +252,8 @@ class AudioAdminController extends Controller
             'entity_id' => $audio->id,
         ]);
 
-        return redirect()->route('admin.audios.index')->with('ok', 'Audio subido y procesado correctamente.');
+        $rolePrefix = auth()->check() ? auth()->user()->role : 'admin';
+        return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio subido y procesado correctamente.');
     }
 
     // ... other methods ...

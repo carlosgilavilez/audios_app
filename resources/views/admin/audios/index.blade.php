@@ -81,10 +81,10 @@
                   </td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm" style="width: 80px;">{{ $audio->duracion ?? '' }}</td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-left text-sm font-medium">
-                    <a href="{{ route('admin.audios.edit', $audio) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-white hover:bg-blue-600 h-7 w-7" title="Editar">
+                    <a href="{{ route(auth()->user()->role . '.audios.edit', $audio) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-white hover:bg-blue-600 h-7 w-7" title="Editar">
                       <i data-lucide="pencil" class="h-4 w-4"></i>
                     </a>
-                    <form action="{{ route('admin.audios.destroy', $audio) }}" method="POST" class="inline">
+                    <form action="{{ route(auth()->user()->role . '.audios.destroy', $audio) }}" method="POST" class="inline">
                       @csrf
                       @method('DELETE')
                       <button type="submit" onclick="return confirm('¿Estás seguro de que quieres eliminar este audio? Esta acción no se puede deshacer.');" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 w-7 ml-2">
