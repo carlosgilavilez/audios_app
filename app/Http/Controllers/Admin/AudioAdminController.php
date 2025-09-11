@@ -91,8 +91,8 @@ class AudioAdminController extends Controller
         $getID3 = new getID3;
         $fileInfo = $getID3->analyze($uploadedFile->getRealPath());
 
-        // Store the file after analyzing
-        $tempPath = $uploadedFile->store('temp');
+        // Store the file explicitly on the 'local' disk to avoid env-dependent defaults
+        $tempPath = $uploadedFile->store('temp', 'local');
         
         // LOG THE ENTIRE RAW FILEINFO ARRAY
         Log::info('getID3 Raw File Info:', $fileInfo);
