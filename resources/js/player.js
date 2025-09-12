@@ -70,7 +70,15 @@ const Player = (() => {
   const bind = () => {
     items = Array.from(document.querySelectorAll('.btn-play[data-audio-src]'));
     items.forEach((btn, i) => {
-      btn.addEventListener('click', (ev) => { ev.preventDefault(); load(i); });
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const btnAudioSrc = btn.dataset.audioSrc;
+        if (audio.src === btnAudioSrc && !audio.paused) {
+          audio.pause();
+        } else {
+          load(i);
+        }
+      });
     });
   };
 

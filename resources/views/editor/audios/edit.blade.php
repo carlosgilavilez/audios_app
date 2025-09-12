@@ -10,7 +10,7 @@
 
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
             <div class="p-6">
-                <form action="{{ route(auth()->user()->role . '.audios.update', $audio) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('editor.audios.update', $audio) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PATCH')
                     <div>

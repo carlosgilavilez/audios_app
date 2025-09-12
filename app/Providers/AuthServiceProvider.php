@@ -10,7 +10,7 @@ use App\Policies\UserPolicy;
 use App\Policies\AutorPolicy;
 use App\Policies\SeriePolicy;
 use App\Policies\AudioPolicy;
-use Illuminate\Support\Facades\Gate; // Asegúrate de que Gate está importado
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider

@@ -370,7 +370,8 @@ class AudioAdminController extends Controller
             'entity_id' => $audio->id,
         ]);
 
-        return redirect()->route('admin.audios.index')->with('ok', 'Audio actualizado correctamente.');
+        $rolePrefix = auth()->check() ? auth()->user()->role : 'admin';
+        return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio actualizado correctamente.');
     }
 
     public function destroy(Audio $audio)
