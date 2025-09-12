@@ -46,4 +46,21 @@ class UserManagementController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Usuario editor creado. Se ha enviado un correo para verificar su email y establecer una contraseña.');
     }
+
+    public function destroy(User $user)
+    {
+        // Prevent self-deletion
+        if (auth()->id() === $user->id) {
+            return back()->with('error', 'No puedes eliminar tu propia cuenta.');
+        }
+
+        // Prevent admin from deleting another admin
+        if ($user->role === 'admin') {
+            return back()->with('error', 'No puedes eliminar una cuenta de administrador.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado exitosamente.');
+    }
 }

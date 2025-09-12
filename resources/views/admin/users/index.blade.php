@@ -36,7 +36,16 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                    {{-- Action buttons placeholder --}}
+                                    @if ($user->role === 'editor' && $user->id !== auth()->id())
+                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario? Esta acción no se puede deshacer.');"
+                                                    class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 w-7">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
