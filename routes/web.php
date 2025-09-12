@@ -82,7 +82,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])
 
         Route::get('logs', [DashboardAdminController::class, 'logs'])->name('logs');
 
-        Route::resource('users', UserManagementController::class)->only(['index', 'create', 'store']);
+        Route::resource('users', UserManagementController::class)->only(['index', 'create', 'store', 'destroy']);
     });
 
 // ---------- Editor ----------
