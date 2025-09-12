@@ -14,6 +14,24 @@
                         <input type="text" name="search" id="search" class="mt-1 w-72 max-w-full rounded-md border px-3 py-2 text-sm bg-background" value="{{ request('search') }}" placeholder="Título, autor, serie, turno...">
                     </div>
                     <div>
+                        <label for="categoria_id" class="block text-sm font-medium text-muted-foreground">Categoría</label>
+                        <select name="categoria_id" id="categoria_id" class="mt-1 block w-full pl-3 pr-10 py-2 bg-background border-border border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            <option value="">Todas</option>
+                            @foreach($categorias as $categoria)
+                                <option value="{{ $categoria->id }}" @selected(request('categoria_id') == $categoria->id)>{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year" class="block text-sm font-medium text-muted-foreground">Año</label>
+                        <select name="year" id="year" class="mt-1 block w-full pl-3 pr-10 py-2 bg-background border-border border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            <option value="">Todos</option>
+                            @foreach($years as $year)
+                                <option value="{{ $year }}" @selected(request('year') == $year)>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label for="per_page" class="block text-sm font-medium text-muted-foreground">Por página</label>
                         <select name="per_page" id="per_page" class="mt-1 block w-full pl-3 pr-10 py-2 bg-background border-border border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" onchange="this.form.submit()">
                             <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>

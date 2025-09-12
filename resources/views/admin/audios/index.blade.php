@@ -1,4 +1,4 @@
-﻿@extends('layouts.dashboard')
+@extends('layouts.dashboard')
 
 @section('title', 'Audios')
 
@@ -21,11 +21,22 @@
     <div class="p-6 space-y-4">
       <form method="GET" action="{{ route(auth()->user()->role . '.audios.index') }}" class="flex flex-wrap items-center gap-3">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por título, autor, serie o cita" class="w-72 max-w-full rounded-md border px-3 py-2 text-sm bg-background" />
+        <select name="categoria_id" class="rounded-md border px-3 py-2 text-sm bg-background">
+            <option value="">Todas las categorías</option>
+            @foreach($categorias as $categoria)
+                <option value="{{ $categoria->id }}" @selected(request('categoria_id') == $categoria->id)>{{ $categoria->nombre }}</option>
+            @endforeach
+        </select>
         <select name="estado" class="rounded-md border px-3 py-2 text-sm bg-background">
-          <option value="">Todos los estados</option>
+          <option value="">Estado</option>
           <option value="Publicado" @selected(request('estado')==='Publicado')>Publicado</option>
           <option value="Pendiente" @selected(request('estado')==='Pendiente')>Pendiente</option>
-          <option value="Normal" @selected(request('estado')==='Normal')>Normal</option>
+        </select>
+        <select name="year" class="rounded-md border px-3 py-2 text-sm bg-background">
+            <option value="">Año</option>
+            @foreach($years as $year)
+                <option value="{{ $year }}" @selected(request('year') == $year)>{{ $year }}</option>
+            @endforeach
         </select>
         <select name="per_page" class="rounded-md border px-3 py-2 text-sm bg-background" onchange="this.form.submit()">
             <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 por página</option>
@@ -34,7 +45,7 @@
             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 por página</option>
         </select>
         <button type="submit" class="inline-flex items-center gap-2 px-4 h-9 text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-800 dark:hover:bg-blue-700">Filtrar</button>
-        @if (request()->has('search') || request()->has('estado'))
+        @if (request()->has('search') || request()->has('estado') || request()->has('categoria_id') || request()->has('year'))
           <a href="{{ route(auth()->user()->role . '.audios.index') }}" class="inline-flex items-center justify-center px-4 h-9 border border-border text-sm font-medium rounded-md shadow-sm text-muted-foreground bg-muted hover:bg-muted/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring">Limpiar</a>
         @endif
         <span class="text-sm text-muted-foreground ml-auto">{{ $audios->total() }} resultados</span>
@@ -96,7 +107,7 @@
                   <td class="px-2 md:px-3 py-3 text-sm whitespace-normal break-words" style="max-width: 260px;">{{ trim(($audio->libro?->nombre ?? '') . ' ' . ($audio->cita_biblica ?? '')) }}</td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm">{{ $audio->turno?->nombre ?? '' }}</td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm">
-                    @if ($audio->estado == 'Publicado' || $audio->estado == 'Normal')
+                    @if ($audio->estado == 'Publicado')
                       <span class="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-300">Público</span>
                     @elseif ($audio->estado == 'Pendiente')
                       <span class="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pendiente</span>

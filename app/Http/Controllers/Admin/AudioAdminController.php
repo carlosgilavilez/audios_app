@@ -12,6 +12,7 @@ use App\Models\Turno;
 use App\Models\Libro as LibroModel;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log; // <-- IMPORT LOG FACADE
@@ -81,15 +82,36 @@ class AudioAdminController extends Controller
 
         // Filtro opcional por estado
         if ($estado = $request->string('estado')->toString()) {
-            if (in_array($estado, ['Pendiente', 'Publicado', 'Normal'])) {
+            if (in_array($estado, ['Pendiente', 'Publicado'])) {
                 $query->where('estado', $estado);
             }
         }
 
+        // Filtro por categoría
+        if ($categoria_id = $request->input('categoria_id')) {
+            $query->where('categoria_id', $categoria_id);
+        }
+
+        // Filtro por año
+        if ($year = $request->input('year')) {
+            $query->whereYear('fecha_publicacion', $year);
+        }
+
         $perPage = $request->input('per_page', 25);
         $audios = $query->latest()->paginate($perPage)->withQueryString();
+        $categorias = Categoria::all();
+
+        $years = Audio::query()
+            ->select(DB::raw('YEAR(fecha_publicacion) as year'))
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->filter();
+
         return view('admin.audios.index', [
             'audios' => $audios,
+            'categorias' => $categorias,
+            'years' => $years,
             'search' => $search ?? '',
             'estado' => $estado ?? '',
         ]);

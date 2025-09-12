@@ -108,7 +108,7 @@
                         @csrf
                         <button type="submit" class="inline-flex items-center rounded-md mr-1 px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
                             <i data-lucide="log-out" class="h-5 w-5 mr-2"></i>
-                            <span class="hidden 2xl:inline">{{ __('Log Out') }}</span>
+                            <span class="hidden 2xl:inline">Salir</span>
                         </button>
                     </form>
                 </div>
