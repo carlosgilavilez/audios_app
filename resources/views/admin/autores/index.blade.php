@@ -32,13 +32,13 @@
                                 <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $autor->nombre }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $autor->comentario }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{ route(auth()->user()->role . '.autores.edit', $autor) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-400 text-white hover:bg-blue-500 h-7 w-7" title="Editar">
+                                    <a href="{{ route(auth()->user()->role . '.autores.edit', $autor) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-white hover:bg-blue-600 h-7 w-7" title="Editar">
                                         <i data-lucide="pencil" class="h-4 w-4"></i>
                                     </a>
                                     <form method="POST" action="{{ route(auth()->user()->role . '.autores.destroy', $autor) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este autor? Los audios asociados quedarán en estado Pendiente.');" style="display:inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-400 text-white hover:bg-red-500 h-7 w-7 ml-2" title="Eliminar">
+                                        <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 w-7 ml-2" title="Eliminar">
                                             <i data-lucide="trash-2" class="h-4 w-4"></i>
                                         </button>
                                     </form>
