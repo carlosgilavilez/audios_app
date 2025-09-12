@@ -20,4 +20,16 @@ class ActivityLog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Accessor para obtener la entidad relacionada
+    public function getRelatedEntityAttribute()
+    {
+        if ($this->entity_type && $this->entity_id) {
+            $modelClass = 'App\Models\' . $this->entity_type;
+            if (class_exists($modelClass)) {
+                return $modelClass::find($this->entity_id);
+            }
+        }
+        return null;
+    }
 }

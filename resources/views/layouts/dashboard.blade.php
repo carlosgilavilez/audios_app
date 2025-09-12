@@ -65,6 +65,13 @@
                                 <span class="text-sm font-medium">Logs</span>
                             </a>
                         </li>
+                        {{-- New User Management Link --}}
+                        <li>
+                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg {{ request()->routeIs('admin.users.*') ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50' }}">
+                                <i data-lucide="users" class="h-5 w-5"></i>
+                                <span class="text-sm font-medium">Usuarios</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 @endif

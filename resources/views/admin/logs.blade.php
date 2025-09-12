@@ -24,7 +24,29 @@
                             <tr class="hover:bg-muted/50">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $log->user->name ?? 'Sistema' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $log->action }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->description }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @php
+                                        $description = '';
+                                        $entity = $log->related_entity;
+                                        $entityName = $entity ? ($entity->nombre ?? $entity->titulo ?? $entity->email ?? 'ID: ' . $log->entity_id) : 'ID: ' . $log->entity_id;
+
+                                        switch ($log->action) {
+                                            case 'created':
+                                                $description = 'creó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                break;
+                                            case 'updated':
+                                                $description = 'actualizó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                break;
+                                            case 'deleted':
+                                                $description = 'eliminó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                break;
+                                            default:
+                                                $description = $log->description; // Fallback to original description if action is unknown
+                                                break;
+                                        }
+                                    @endphp
+                                    {{ $log->user->name ?? 'Sistema' }} {{ $description }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
                             </tr>
                         @empty

@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Editor\EditorDashboardController;
 use App\Http\Controllers\PublicAudioController;
+use App\Http\Controllers\Admin\UserManagementController;
 
 // ---------- Página raíz ----------
 Route::get('/', function () {
@@ -80,6 +81,8 @@ Route::middleware(['auth', 'verified', 'can:admin'])
             ->parameters(['audios' => 'audio']);
 
         Route::get('logs', [DashboardAdminController::class, 'logs'])->name('logs');
+
+        Route::resource('users', UserManagementController::class)->only(['index', 'create', 'store']);
     });
 
 // ---------- Editor ----------
