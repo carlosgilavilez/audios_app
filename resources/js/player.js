@@ -140,6 +140,8 @@ const Player = (() => {
         index,
         currentTime: Number(audio.currentTime || 0),
         paused: audio.paused,
+        volume: Number(audio.volume ?? 1),
+        rate: Number(audio.playbackRate ?? 1),
       };
       localStorage.setItem(persistKey, JSON.stringify(state));
     } catch {}
@@ -151,6 +153,8 @@ const Player = (() => {
   });
   audio.addEventListener('play',  () => { saveState(); });
   audio.addEventListener('pause', () => { saveState(); });
+  window.addEventListener('beforeunload', saveState);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveState(); });
 
   const restore = async () => {
     try {
@@ -179,6 +183,19 @@ const Player = (() => {
       audio.src = st.src;
       audio.load();
       showSticky();
+      // Restore volume and rate (with UI if present)
+      if (Number.isFinite(st.volume)) {
+        try { audio.volume = Math.max(0, Math.min(1, Number(st.volume))); } catch {}
+        if (vol) vol.value = String(audio.volume);
+      }
+      if (Number.isFinite(st.rate) && st.rate > 0) {
+        try { audio.playbackRate = Number(st.rate); } catch {}
+        if (rate) {
+          const val = `${audio.playbackRate}x`;
+          // set if option exists; otherwise leave as is
+          if ([...rate.options].some(o => o.value === val)) rate.value = val;
+        }
+      }
       const seekTo = Number(st.currentTime || 0);
       if (Number.isFinite(seekTo) && seekTo > 0) {
         audio.addEventListener('loadedmetadata', function onlm(){
