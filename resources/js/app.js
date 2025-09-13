@@ -58,48 +58,41 @@ try {
     const idMeta = document.querySelector('meta[name="user-id"]');
     const userRole = roleMeta ? roleMeta.getAttribute('content') : null;
     const myId = idMeta ? parseInt(idMeta.getAttribute('content')) : null;
-    // Only show presence badge in admin area
-    if (userRole === 'admin' && window.Echo && document.body) {
-        const header = document.querySelector('header');
-        const badgeId = 'presence-badge';
-        if (header && !document.getElementById(badgeId)) {
-            const badge = document.createElement('div');
-            badge.id = badgeId;
-            badge.style.display = 'flex';
-            badge.style.alignItems = 'center';
-            badge.style.gap = '6px';
-            badge.title = 'Usuarios en línea (admin/editor)';
-            badge.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#9CA3AF;display:inline-block"></span><span style="font-size:12px;color:#6B7280">En línea: 0</span>';
-            const actions = header.querySelector('.flex.items-center.gap-2, .flex.items-center.gap-2.shrink-0') || header.lastElementChild;
-            if (actions) actions.prepend(badge);
-
-            const dot = badge.firstChild;
-            const label = badge.lastChild;
-            let members = [];
-
-            window.Echo.join('presence.control-panel')
-                .here((users) => {
-                    members = users;
-                    const others = members.filter(u => u.id !== myId);
-                    label.textContent = `En línea: ${others.length}`;
-                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
-                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
-                })
-                .joining((user) => {
-                    members.push(user);
-                    const others = members.filter(u => u.id !== myId);
-                    label.textContent = `En línea: ${others.length}`;
-                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
-                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
-                })
-                .leaving((user) => {
-                    members = members.filter(u => u.id !== user.id);
-                    const others = members.filter(u => u.id !== myId);
-                    label.textContent = `En línea: ${others.length}`;
-                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
-                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
-                });
+    const shouldJoin = (userRole === 'admin' || userRole === 'editor');
+    const shouldRenderBadge = (userRole === 'admin');
+    if (shouldJoin && window.Echo && document.body) {
+        let badge = null, dot = null, label = null;
+        if (shouldRenderBadge) {
+            const header = document.querySelector('header');
+            const badgeId = 'presence-badge';
+            if (header && !document.getElementById(badgeId)) {
+                badge = document.createElement('div');
+                badge.id = badgeId;
+                badge.style.display = 'flex';
+                badge.style.alignItems = 'center';
+                badge.style.gap = '6px';
+                badge.title = 'Usuarios en línea (admin/editor)';
+                badge.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#9CA3AF;display:inline-block"></span><span style="font-size:12px;color:#6B7280">En línea: 0</span>';
+                const actions = header.querySelector('.flex.items-center.gap-2, .flex.items-center.gap-2.shrink-0') || header.lastElementChild;
+                if (actions) actions.prepend(badge);
+                dot = badge.firstChild;
+                label = badge.lastChild;
+            }
         }
+
+        let members = [];
+        const updateUI = () => {
+            if (!shouldRenderBadge || !badge || !dot || !label) return;
+            const others = members.filter(u => u.id !== myId);
+            label.textContent = `En línea: ${others.length}`;
+            dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
+            badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
+        };
+
+        window.Echo.join('presence.control-panel')
+            .here((users) => { members = users; updateUI(); })
+            .joining((user) => { members.push(user); updateUI(); })
+            .leaving((user) => { members = members.filter(u => u.id !== user.id); updateUI(); });
     }
 } catch (e) {
     console.warn('Presence init failed', e);
