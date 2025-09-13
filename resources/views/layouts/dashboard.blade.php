@@ -108,6 +108,11 @@
                 </div>
                 <!-- Actions: Theme + Logout -->
                 <div class="flex items-center gap-2 shrink-0 {{ request()->routeIs('admin.audios.*') ? 'mr-4 sm:mr-4 md:mr-0' : '' }}">
+                    <div class="hidden md:flex items-center gap-2 mr-2 text-sm text-muted-foreground">
+                        <i data-lucide="user" class="h-4 w-4"></i>
+                        <span class="truncate max-w-[180px]">{{ auth()->user()->name }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-muted text-foreground/80 text-xs capitalize">{{ auth()->user()->role }}</span>
+                    </div>
                     <div class="hidden md:block"><x-theme-toggle /></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -131,3 +136,4 @@
     @stack('scripts')
 </body>
 </html>
+
