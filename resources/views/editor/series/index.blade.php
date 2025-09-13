@@ -29,9 +29,13 @@
                     <tbody class="bg-card divide-y divide-border">
                        @foreach ($series as $serie)
                             <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <td class="px-6 py-3 whitespace-nowrap">{{ $serie->id }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-xs text-muted-foreground font-mono">{{ $serie->id }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">{{ $serie->nombre }}</td>
-                                <td class="px-6 py-3 whitespace-nowrap">{{ $serie->audios_count ?? 0 }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap">
+                                    <a class="text-blue-600 hover:underline" title="Ver audios de {{ $serie->nombre }}" href="{{ route(auth()->user()->role . '.audios.index', ['serie_id' => $serie->id]) }}">
+                                        {{ $serie->audios_count ?? 0 }}
+                                    </a>
+                                </td>
                                 <td class="px-6 py-3 whitespace-nowrap">{{ $serie->comentario }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('editor.series.edit', $serie) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-400 text-white hover:bg-blue-500 h-9 w-9" title="Editar">

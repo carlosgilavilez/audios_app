@@ -17,7 +17,7 @@
                 <table class="min-w-full divide-y divide-border">
                     <thead class="bg-muted/50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Audios</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Comentario</th>
@@ -29,9 +29,13 @@
                     <tbody class="bg-card divide-y divide-border">
                        @foreach ($series as $serie)
                             <tr id="serie-row-{{ $serie->id }}" class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $serie->id }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-xs text-muted-foreground font-mono">{{ $serie->id }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $serie->nombre }}</td>
-                                <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $serie->audios_count ?? 0 }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm">
+                                    <a class="text-blue-600 hover:underline" title="Ver audios de {{ $serie->nombre }}" href="{{ route(auth()->user()->role . '.audios.index', ['serie_id' => $serie->id]) }}">
+                                        {{ $serie->audios_count ?? 0 }}
+                                    </a>
+                                </td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm">{{ $serie->comentario }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route(auth()->user()->role . '.series.edit', ['serie' => $serie->id]) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-white hover:bg-blue-600 h-7 w-7" title="Editar">

@@ -87,6 +87,16 @@ class AudioAdminController extends Controller
             }
         }
 
+        // Filtro por autor (cuando viene desde listado de autores)
+        if ($autorId = $request->input('autor_id')) {
+            $query->where('autor_id', $autorId);
+        }
+
+        // Filtro por serie (cuando viene desde listado de series)
+        if ($serieId = $request->input('serie_id')) {
+            $query->where('serie_id', $serieId);
+        }
+
         // Filtro por categoría
         if ($categoria_id = $request->input('categoria_id')) {
             $query->where('categoria_id', $categoria_id);
