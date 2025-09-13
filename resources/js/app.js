@@ -92,6 +92,8 @@ try {
             label.textContent = `En línea: ${others.length}${suffix}`;
             dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
             badge.title = names.join(', ');
+            // Mostrar los nombres (con rol) visibles junto al punto
+            label.textContent = names.join(', ');
         };
 
         window.Echo.join('presence.control-panel')

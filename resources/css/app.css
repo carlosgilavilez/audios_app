@@ -4,8 +4,7 @@
 
 /* Audio Management System Design System - Clean & Modern */
 
-/* Hide inline count text in presence badge; show only green dot */
-#presence-badge span:last-child { display: none !important; }
+/* Presence badge: text visible (names), handled by JS */
 
 @layer base {
   :root {
