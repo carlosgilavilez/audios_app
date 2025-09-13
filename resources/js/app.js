@@ -84,9 +84,14 @@ try {
         const updateUI = () => {
             if (!shouldRenderBadge || !badge || !dot || !label) return;
             const others = members.filter(u => u.id !== myId);
-            label.textContent = `En línea: ${others.length}`;
+            // Compose visible names (limit to 3 then +N más)
+            const names = others.map(u => `${u.name} (${u.role})`);
+            const visible = names.slice(0, 3).join(', ');
+            const more = names.length > 3 ? ` +${names.length - 3} más` : '';
+            const suffix = names.length ? ` — ${visible}${more}` : '';
+            label.textContent = `En línea: ${others.length}${suffix}`;
             dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
-            badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
+            badge.title = names.join(', ');
         };
 
         window.Echo.join('presence.control-panel')
