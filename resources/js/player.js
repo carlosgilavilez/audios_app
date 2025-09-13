@@ -70,14 +70,25 @@ const Player = (() => {
   const bind = () => {
     items = Array.from(document.querySelectorAll('.btn-play[data-audio-src]'));
     items.forEach((btn, i) => {
-      btn.addEventListener('click', (ev) => {
+      btn.addEventListener('click', async (ev) => {
         ev.preventDefault();
         const btnAudioSrc = btn.dataset.audioSrc;
-        if (audio.src === btnAudioSrc && !audio.paused) {
-          audio.pause();
-        } else {
-          load(i);
+        // Same track controls: toggle pause/play without reloading source
+        if (audio.src === btnAudioSrc) {
+          if (audio.paused) {
+            // Resume from currentTime without resetting
+            index = i;
+            clearRowStates();
+            activateRow(btn);
+            showSticky();
+            try { await audio.play(); setPlayUI(true); } catch(e){}
+          } else {
+            audio.pause();
+          }
+          return;
         }
+        // Different track: load new source
+        load(i);
       });
     });
   };
