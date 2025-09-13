@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @auth
     <meta name="user-role" content="{{ auth()->user()->role }}">
+    <meta name="user-id" content="{{ auth()->id() }}">
     @endauth
     <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])

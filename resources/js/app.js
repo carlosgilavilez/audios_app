@@ -55,7 +55,9 @@ Alpine.start();
 // --- Admin/editor presence indicator ---
 try {
     const roleMeta = document.querySelector('meta[name="user-role"]');
+    const idMeta = document.querySelector('meta[name="user-id"]');
     const userRole = roleMeta ? roleMeta.getAttribute('content') : null;
+    const myId = idMeta ? parseInt(idMeta.getAttribute('content')) : null;
     // Only show presence badge in admin area
     if (userRole === 'admin' && window.Echo && document.body) {
         const header = document.querySelector('header');
@@ -78,21 +80,24 @@ try {
             window.Echo.join('presence.control-panel')
                 .here((users) => {
                     members = users;
-                    label.textContent = `En línea: ${members.length}`;
-                    dot.style.background = members.length > 0 ? '#22C55E' : '#9CA3AF';
-                    badge.title = users.map(u => `${u.name} (${u.role})`).join(', ');
+                    const others = members.filter(u => u.id !== myId);
+                    label.textContent = `En línea: ${others.length}`;
+                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
+                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
                 })
                 .joining((user) => {
                     members.push(user);
-                    label.textContent = `En línea: ${members.length}`;
-                    dot.style.background = '#22C55E';
-                    badge.title = members.map(u => `${u.name} (${u.role})`).join(', ');
+                    const others = members.filter(u => u.id !== myId);
+                    label.textContent = `En línea: ${others.length}`;
+                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
+                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
                 })
                 .leaving((user) => {
                     members = members.filter(u => u.id !== user.id);
-                    label.textContent = `En línea: ${members.length}`;
-                    dot.style.background = members.length > 0 ? '#22C55E' : '#9CA3AF';
-                    badge.title = members.map(u => `${u.name} (${u.role})`).join(', ');
+                    const others = members.filter(u => u.id !== myId);
+                    label.textContent = `En línea: ${others.length}`;
+                    dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
+                    badge.title = others.map(u => `${u.name} (${u.role})`).join(', ');
                 });
         }
     }
