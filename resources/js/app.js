@@ -82,18 +82,19 @@ try {
 
         let members = [];
         const updateUI = () => {
-            if (!shouldRenderBadge || !badge || !dot || !label) return;
+            if (!shouldRenderBadge || !badge) return;
             const others = members.filter(u => u.id !== myId);
-            // Compose visible names (limit to 3 then +N más)
-            const names = others.map(u => `${u.name} (${u.role})`);
-            const visible = names.slice(0, 3).join(', ');
-            const more = names.length > 3 ? ` +${names.length - 3} más` : '';
-            const suffix = names.length ? ` — ${visible}${more}` : '';
-            label.textContent = `En línea: ${others.length}${suffix}`;
-            dot.style.background = others.length > 0 ? '#22C55E' : '#9CA3AF';
-            badge.title = names.join(', ');
-            // Mostrar los nombres (con rol) visibles junto al punto
-            label.textContent = names.join(', ');
+            // Render one green dot per user + name (rol)
+            let html = '';
+            others.forEach(u => {
+                html += '<span style="display:inline-flex;align-items:center;gap:6px;margin-right:6px;">'
+                      + '<span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block"></span>'
+                      + '<span style="font-size:12px;color:#6B7280">' + (u.name ?? '') + ' (' + (u.role ?? '') + ')</span>'
+                      + '</span>';
+            });
+            if (typeof label !== 'undefined' && label) label.innerHTML = html;
+            if (typeof dot !== 'undefined' && dot) dot.style.display = others.length > 0 ? 'none' : 'inline-block';
+            badge.title = others.map(u => (u.name ?? '') + ' (' + (u.role ?? '') + ')').join(', ');
         };
 
         window.Echo.join('presence.control-panel')
@@ -171,3 +172,5 @@ window.ContentLock = (function () {
 
     return { acquire, release };
 })();
+
+
