@@ -1,132 +1,32 @@
-Despliegue a GitHub y Producción
+Deploy en producción (pull + build)
 
-Requisitos previos
-- Acceso SSH al servidor `audios.iglesiapalma.org` con un usuario con permisos sobre el proyecto.
-- Clave SSH configurada en GitHub (para `git pull`) y en tu equipo local (para `ssh/scp`).
-- Ruta del proyecto en producción (ejemplo): `/var/www/audios_app`.
-- PHP 8.2, Composer y (opcional) Node.js en el servidor. Si no hay Node, copia `public/build` desde local.
+Requisitos servidor
+- Git y PHP 8.2+
+- Composer instalado en PATH
+- Opcional: Node.js 18+ si quieres compilar assets en el servidor
 
-1) Publicar cambios a GitHub
-Atajo (recomendado):
-```
-npm run deploy -- "mensaje del commit"
-```
-Hace add/commit/pull --rebase/push y, si estás en `main`, disparará el despliegue automático.
-```
-# En tu máquina local (PowerShell/Git Bash) en la carpeta del repo
-git status
-git add -A
-git commit -m "Ajustes de layout, tabla y scroll audios"
+Pasos rápidos (SSH)
+1) Ir al directorio del proyecto (donde está .git)
+   cd /ruta/a/tu/proyecto
 
-# Configura el remoto si falta
-git remote -v
-git remote add origin git@github.com:USUARIO/REPO.git   # si aún no existe
+2) Ejecutar el script de deploy (usa main por defecto)
+   chmod +x scripts/deploy.sh
+   ./scripts/deploy.sh
 
-git push -u origin main   # o la rama que uses
-```
+Qué hace el script
+- git pull --rebase origin main (o el branch que pases como 1er arg)
+- composer install --no-dev --optimize-autoloader
+- php artisan migrate --force
+- php artisan optimize:clear && cache de config/routes/views
+- npm ci && npm run build si hay Node; si no, deja los assets como están
+- Ajusta permisos en storage y bootstrap/cache
 
-2) Actualizar código en producción vía Git
-```
-ssh usuario@audios.iglesiapalma.org
-cd /var/www/audios_app
-git fetch origin
-git checkout main
-git pull --ff-only origin main
+Variables .env a revisar en producción
+- BROADCAST_CONNECTION=pusher y claves PUSHER_* de producción
+- MAIL_* con SMTP real de producción
+- APP_ENV=production, APP_DEBUG=false (recomendado)
 
-# Dependencias PHP
-composer install --no-dev --prefer-dist --optimize-autoloader
+Problemas comunes
+- Conflictos en public/build: vuelve a compilar en servidor (npm run build) o sube public/build desde local.
+- Cambios locales sin commit: el script hace git stash -u antes del pull.
 
-# Semillas de datos mínimas (idempotente)
-php artisan db:seed --class="Database\\Seeders\\CategoriaSeeder" --force
-php artisan db:seed --class="Database\\Seeders\\TurnoSeeder" --force
-php artisan db:seed --class="Database\\Seeders\\LibroSeeder" --force
-
-# (Opción A) Construir assets en el servidor
-npm ci && npm run build
-
-# (Opción B) Si no hay Node, copia el build desde local (ver paso 3)
-
-# Migraciones y caches (cuidado en horario de bajo tráfico)
-php artisan migrate --force
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:clear
-
-# Enlace de almacenamiento público (si no existe)
-php artisan storage:link
-
-# Reiniciar PHP-FPM (según distro)
-sudo systemctl reload php8.2-fpm || sudo systemctl reload php-fpm
-```
-
-3) Enviar contenidos (audios) al servidor
-Ruta local de audios (por defecto Laravel): `storage/app/public/audios`
-
-- Con `rsync` (recomendado; si usas Git Bash/WSL):
-```
-rsync -avz --progress storage/app/public/audios/ \
-  usuario@audios.iglesiapalma.org:/var/www/audios_app/storage/app/public/audios/
-```
-
-- Con `scp` (PowerShell con OpenSSH):
-```
-scp -r storage/app/public/audios \
-  usuario@audios.iglesiapalma.org:/var/www/audios_app/storage/app/public/
-```
-
-Después de copiar, en el servidor ajusta permisos:
-```
-ssh usuario@audios.iglesiapalma.org "sudo chown -R www-data:www-data /var/www/audios_app/storage && sudo find /var/www/audios_app/storage -type d -exec chmod 775 {} \; && sudo find /var/www/audios_app/storage -type f -exec chmod 664 {} \;"
-```
-
-4) (Opcional) Copiar también `public/build` desde local si no construyes en el servidor
-```
-rsync -avz --delete public/build/ \
-  usuario@audios.iglesiapalma.org:/var/www/audios_app/public/build/
-```
-
-5) Verificación rápida
-- Abre `https://audios.iglesiapalma.org/admin/audios` y comprueba que:
-  - No hay barra horizontal si no hay overflow.
-  - La columna Nombre muestra grupos de 3 palabras por línea.
-  - Reproduce un audio y verifica que se sirve desde `/storage/audios/...`.
-
-6) Automatización (sugerido)
-- Ya hay un workflow en `.github/workflows/deploy.yml` que en cada push a `main`:
-  - Construye assets (npm run build) e instala deps PHP.
-  - Sube `public/build` por SCP al servidor (opcional).
-  - Conecta por SSH y ejecuta: `git pull`, `composer install`, `php artisan migrate --force` y refresca cachés.
-  - Configura en GitHub → Settings → Secrets and variables → Actions los secretos obligatorios:
-    - `SSH_HOST` (145.223.89.151)
-    - `SSH_PORT` (65002)
-    - `SSH_USER` (u309214766)
-    - `SSH_PASSWORD` (tu password)
-    - `TARGET_DIR` (ruta del proyecto, por ejemplo `/home/u309214766/audios_app`)
-
-  Recomendado: usa clave SSH en `SSH_KEY` en lugar de `SSH_PASSWORD`. Pasos:
-  - Genera una clave en tu equipo:
-    ```
-    ssh-keygen -t ed25519 -f ./deploy_key -C "github-actions" -N ""
-    ```
-  - Anade la clave publica al servidor:
-    ```
-    ssh -p 65002 u309214766@145.223.89.151 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '$(cat deploy_key.pub)' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
-    ```
-  - En GitHub, crea el secret `SSH_KEY` con el contenido de `deploy_key` (privada). El workflow usara clave si esta presente; si no, intentara `SSH_PASSWORD`.
-
-Sincronizar audios (desde tu PC)
-- Añadí un comando Artisan para subir los audios por SFTP usando las mismas credenciales:
-  - Variables en `.env` (no subirlas a Git):
-    - `DEPLOY_SSH_HOST=145.223.89.151`
-    - `DEPLOY_SSH_PORT=65002`
-    - `DEPLOY_SSH_USER=u309214766`
-    - `DEPLOY_SSH_PASSWORD=********`
-    - `DEPLOY_TARGET_DIR=/home/u309214766/audios_app` (ajusta la ruta)
-  - Ejecuta:
-    - `php artisan audios:sync-remote`  (sube `storage/app/public/audios` a `TARGET_DIR/storage/app/public/audios`)
-    - `php artisan audios:sync-remote --dry-run` para ver qué subiría.
-
-Notas
-- Asegúrate de que `.env` en producción apunta a la BD correcta y que `APP_ENV=production`, `APP_DEBUG=false`.
-- Si usas colas/supervisor, reinicia los workers tras el despliegue.
