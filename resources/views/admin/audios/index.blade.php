@@ -136,6 +136,11 @@
         </div>
       </div>
     </div>
+    @if ($audios->hasPages())
+        <div class="p-6 border-t border-border">
+            {{ $audios->appends(request()->query())->links() }}
+        </div>
+    @endif
   </div>
 </div>
 @endsection
