@@ -3,7 +3,8 @@
 @section('title', 'Editar Audio')
 
 @section('content')
-    <div class="space-y-6">
+    <div class="space-y-6" data-lock-type="App\\Models\\Audio" data-lock-id="{{ $audio->id }}">
+        <div id="lock-notice"></div>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-semibold text-foreground">Editar Audio</h1>
         </div>
@@ -21,7 +22,7 @@
 
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
             <div class="p-6">
-                <form action="{{ route(auth()->user()->role . '.audios.update', $audio) }}" method="POST" class="space-y-6">
+                <form id="edit-form" action="{{ route(auth()->user()->role . '.audios.update', $audio) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PATCH')
 
@@ -146,3 +147,17 @@
 </script>
 @endpush
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const root = document.querySelector('[data-lock-type]');
+  const form = document.getElementById('edit-form');
+  const notice = document.getElementById('lock-notice');
+  if (!root || !form) return;
+  const type = root.getAttribute('data-lock-type');
+  const id = parseInt(root.getAttribute('data-lock-id'));
+  await window.ContentLock.acquire(type, id, form, notice);
+});
+</script>
+@endpush

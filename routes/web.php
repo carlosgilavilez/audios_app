@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\EditingLockController;
 use App\Models\Audio;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardAdminController;
@@ -110,3 +111,11 @@ Route::middleware(['auth', 'verified', 'can:editor'])
 
 // ---------- Rutas de autenticación (Breeze/Fortify) ----------
 require __DIR__.'/auth.php';
+
+// --- Editing locks endpoints (admin/editor authenticated) ---
+Route::middleware(['auth'])->group(function () {
+    Route::post('/locks/acquire', [EditingLockController::class, 'acquire'])->name('locks.acquire');
+    Route::post('/locks/heartbeat', [EditingLockController::class, 'heartbeat'])->name('locks.heartbeat');
+    Route::delete('/locks/release', [EditingLockController::class, 'release'])->name('locks.release');
+    Route::get('/locks/status', [EditingLockController::class, 'status'])->name('locks.status');
+});
