@@ -113,6 +113,10 @@
                         <span class="truncate max-w-[220px]">{{ auth()->user()->name }}</span>
                     </div>
                     <div class="hidden md:block"><x-theme-toggle /></div>
+                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center rounded-md px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Mi perfil">
+                        <i data-lucide="settings-2" class="h-5 w-5 mr-2"></i>
+                        <span class="hidden xl:inline">Perfil</span>
+                    </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="inline-flex items-center rounded-md mr-1 px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
