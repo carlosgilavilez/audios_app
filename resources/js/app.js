@@ -54,7 +54,10 @@ Alpine.start();
 
 // --- Admin/editor presence indicator ---
 try {
-    if (window.Echo && document.body) {
+    const roleMeta = document.querySelector('meta[name="user-role"]');
+    const userRole = roleMeta ? roleMeta.getAttribute('content') : null;
+    // Only show presence badge in admin area
+    if (userRole === 'admin' && window.Echo && document.body) {
         const header = document.querySelector('header');
         const badgeId = 'presence-badge';
         if (header && !document.getElementById(badgeId)) {
