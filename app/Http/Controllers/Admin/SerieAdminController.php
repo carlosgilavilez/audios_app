@@ -13,14 +13,14 @@ class SerieAdminController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Serie::query();
+        $query = Serie::query()->withCount('audios');
 
         if ($request->has('search')) {
             $searchTerm = $request->input('search');
             $query->where('nombre', 'like', '%' . $searchTerm . '%');
         }
 
-        $series = $query->get(); // Fetch all series
+        $series = $query->get(); // Fetch all series with audios_count
         return view('admin.series.index', compact('series'));
     }
 

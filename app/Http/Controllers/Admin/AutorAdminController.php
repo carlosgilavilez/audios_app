@@ -13,14 +13,14 @@ class AutorAdminController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Autor::query();
+        $query = Autor::query()->withCount('audios');
 
         if ($request->has('search')) {
             $searchTerm = $request->input('search');
             $query->where('nombre', 'like', '%' . $searchTerm . '%');
         }
 
-        $autores = $query->get(); // Fetch all authors
+        $autores = $query->get(); // Fetch all authors with audios_count
         return view('admin.autores.index', compact('autores'));
     }
 
