@@ -89,12 +89,17 @@
                     });
                 }
                 ch.bind('pusher:subscription_succeeded', function(members){ render(members); });
+                ch.bind('pusher:subscription_error', function(status){
+                    try { container.innerHTML = '<span style="color:#B91C1C;font-size:12px">Error de suscripción: '+ status +'</span>'; } catch(e){}
+                });
                 ch.bind('pusher:member_added', function(member){
                     try { var all = ch.members ? Object.values(ch.members.members) : []; render(all); } catch(e){}
                 });
                 ch.bind('pusher:member_removed', function(member){
                     try { var all = ch.members ? Object.values(ch.members.members) : []; render(all); } catch(e){}
                 });
+                p.connection.bind('error', function(err){ try { console.warn('Pusher connection error', err); } catch(e){} });
+                p.connection.bind('state_change', function(st){ try { console.log('Pusher state', st); } catch(e){} });
             }catch(e){}
         })();
     </script>

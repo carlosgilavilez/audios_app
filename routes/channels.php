@@ -3,6 +3,7 @@
 use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,13 +25,14 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 // Laravel expects channel names WITHOUT the 'presence-' prefix here
 Broadcast::channel('control-panel', function ($user) {
     if (!Auth::check()) {
+        Log::warning('Presence auth denied: unauthenticated');
         return false;
     }
-    // Allow only admins and editors
     if (!in_array($user->role, ['admin','editor'])) {
+        Log::warning('Presence auth denied: role not allowed', ['user_id' => $user->id, 'role' => $user->role]);
         return false;
     }
-    // The data returned is available to channel members
+    Log::info('Presence auth OK', ['user_id' => $user->id, 'role' => $user->role]);
     return [
         'id' => $user->id,
         'name' => $user->name,
