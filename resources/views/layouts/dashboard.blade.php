@@ -66,7 +66,9 @@
 
                 var myIdMeta = document.querySelector('meta[name="user-id"]');
                 var myId = myIdMeta ? parseInt(myIdMeta.getAttribute('content')) : null;
-                var ch = p.subscribe('presence-control-panel');
+                // Laravel Echo would call join('presence.control-panel'),
+                // which becomes 'presence-presence.control-panel' for Pusher.
+                var ch = p.subscribe('presence-presence.control-panel');
                 function render(members){
                     var arr = [];
                     try { arr = members ? (members.members ? Object.values(members.members) : members) : []; } catch(e){}
