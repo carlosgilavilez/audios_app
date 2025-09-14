@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Models\Audio;
+use App\Models\Autor;
+use App\Models\Serie;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Relation::morphMap([
+            'Audio' => Audio::class,
+            'Autor' => Autor::class,
+            'Serie' => Serie::class,
+        ]);
     }
 }

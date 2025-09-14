@@ -73,10 +73,44 @@
             <div class="p-6 pt-0">
                 <div class="space-y-3">
                     @forelse ($activityLogs as $log)
+                        @php
+                            $colorClass = '';
+                            $actionWord = '';
+                            switch ($log->action) {
+                                case 'created':
+                                    $colorClass = 'text-green-600';
+                                    $actionWord = 'creó';
+                                    break;
+                                case 'updated':
+                                    $colorClass = 'text-yellow-600';
+                                    $actionWord = 'actualizó';
+                                    break;
+                                case 'deleted':
+                                    $colorClass = 'text-red-600';
+                                    $actionWord = 'eliminó';
+                                    break;
+                            }
+
+                            $description = $log->description;
+                            $prefix = $actionWord . ' ';
+                            if ($actionWord !== '' && str_starts_with($description, $prefix)) {
+                                $restDescription = substr($description, strlen($prefix));
+                            } else {
+                                $restDescription = $description;
+                            }
+                        @endphp
                         <div class="flex items-center justify-between py-2 border-b border-border/30">
                             <div>
-                                <p class="text-base font-medium">{{ $log->description }}</p>
-                                <p class="text-base text-muted-foreground">Por {{ $log->user->name ?? 'Sistema' }} • {{ $log->created_at->diffForHumans() }}</p>
+                                <p class="text-base font-medium">
+                                    {{ $log->user->name ?? 'Sistema' }}
+                                    @if ($actionWord)
+                                        <span class="{{ $colorClass }}"> {{ $actionWord }}</span>
+                                        {{ ' ' . $restDescription }}
+                                    @else
+                                        {{ ' ' . $log->description }}
+                                    @endif
+                                </p>
+                                <p class="text-sm text-muted-foreground">{{ $log->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
                     @empty

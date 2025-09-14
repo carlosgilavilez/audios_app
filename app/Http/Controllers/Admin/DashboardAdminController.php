@@ -16,14 +16,14 @@ class DashboardAdminController extends Controller
         $autoresCount = Autor::count();
         $seriesCount = Serie::count();
         $audiosCount = Audio::count();
-        $activityLogs = ActivityLog::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        $activityLogs = ActivityLog::with(['user', 'subject'])->orderBy('created_at', 'desc')->take(10)->get();
 
         return view('admin.dashboard', compact('autoresCount', 'seriesCount', 'audiosCount', 'activityLogs'));
     }
 
     public function logs()
     {
-        $activityLogs = ActivityLog::with('user')->orderBy('created_at', 'desc')->paginate(20);
+        $activityLogs = ActivityLog::with(['user', 'subject'])->orderBy('created_at', 'desc')->paginate(20);
         return view('admin.logs', compact('activityLogs'));
     }
 }
