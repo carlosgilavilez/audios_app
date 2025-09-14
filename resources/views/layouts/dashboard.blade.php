@@ -17,30 +17,26 @@
             if (t === 'light') document.documentElement.classList.remove('dark');
         } catch (e) {}
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
-    <!-- Pusher/Echo runtime config (prevents rebuild dependency) -->
+    <!-- Pusher/Echo runtime pre-init (before Vite) -->
     <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
     <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
     <script src="https://js.pusher.com/8.4/pusher.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@2/dist/echo.umd.js"></script>
     <script>
-        (function () {
-            try {
-                var key = document.querySelector('meta[name="pusher-key"]').getAttribute('content');
-                var cluster = document.querySelector('meta[name="pusher-cluster"]').getAttribute('content');
-                if (!key || !cluster) return;
-                if (typeof window.Pusher === 'undefined' && typeof Pusher !== 'undefined') { window.Pusher = Pusher; }
-                if (typeof window.Echo !== 'undefined') {
-                    window.Echo = new Echo({
-                        broadcaster: 'pusher',
-                        key: key,
-                        cluster: cluster,
-                        forceTLS: true
-                    });
+        (function(){
+            try{
+                var key=document.querySelector('meta[name="pusher-key"]').getAttribute('content');
+                var cluster=document.querySelector('meta[name="pusher-cluster"]').getAttribute('content');
+                if(!key||!cluster) return;
+                var Orig=window.Pusher;
+                if(typeof Orig==='function'){
+                    // shim to inject key if missing (for early Echo init in Vite bundle)
+                    window.Pusher=function(pkey,opts){ return new Orig(pkey||key, opts); };
+                    for(var k in Orig){ try{ window.Pusher[k]=Orig[k]; }catch(e){} }
                 }
-            } catch (e) {}
+            }catch(e){}
         })();
     </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-sans antialiased">
