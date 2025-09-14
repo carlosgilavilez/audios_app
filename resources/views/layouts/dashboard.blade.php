@@ -7,6 +7,7 @@
     @auth
     <meta name="user-role" content="{{ auth()->user()->role }}">
     <meta name="user-id" content="{{ auth()->id() }}">
+    <meta name="user-name" content="{{ auth()->user()->name }}">
     @endauth
     <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
     <!-- Theme preflight: apply saved mode before CSS to avoid FOUC -->
@@ -73,7 +74,12 @@
                     var arr = [];
                     try { arr = members ? (members.members ? Object.values(members.members) : members) : []; } catch(e){}
                     container.innerHTML = '';
-                    arr.filter(function(u){ return !myId || u.id !== myId; }).forEach(function(u){
+                    var myNameMeta = document.querySelector('meta[name="user-name"]');
+                    var myRoleMeta = document.querySelector('meta[name="user-role"]');
+                    var myName = myNameMeta ? myNameMeta.getAttribute('content') : '';
+                    var myRole = myRoleMeta ? myRoleMeta.getAttribute('content') : '';
+                    var others = arr.filter(function(u){ return !myId || u.id !== myId; });
+                    (others.length ? others : [{id: myId, name: myName, role: myRole, self: true}]).forEach(function(u){
                         var chip = document.createElement('span');
                         chip.style.display='inline-flex';
                         chip.style.alignItems='center';
@@ -83,7 +89,9 @@
                         dot.style.width='8px'; dot.style.height='8px'; dot.style.borderRadius='50%'; dot.style.background='#22C55E';
                         var txt = document.createElement('span');
                         txt.style.fontSize='12px'; txt.style.color='#6B7280';
-                        txt.textContent = (u.name||'') + (u.role?(' ('+u.role+')'):'');
+                        var label = (u.name||'');
+                        if (u.self) label = (label||'Tú') + ' (tú)'; else if (u.role) label += ' ('+u.role+')';
+                        txt.textContent = label;
                         chip.appendChild(dot); chip.appendChild(txt);
                         container.appendChild(chip);
                     });
