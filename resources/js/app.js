@@ -59,7 +59,7 @@ try {
     const userRole = roleMeta ? roleMeta.getAttribute('content') : null;
     const myId = idMeta ? parseInt(idMeta.getAttribute('content')) : null;
     const shouldJoin = (userRole === 'admin' || userRole === 'editor');
-    const shouldRenderBadge = false; // use chips fallback in layout instead
+    const shouldRenderBadge = true; // render presence chips in header
     if (shouldJoin && window.Echo && document.body) {
         let badge = null, dot = null, label = null;
         if (shouldRenderBadge) {
@@ -84,17 +84,16 @@ try {
         const updateUI = () => {
             if (!shouldRenderBadge || !badge) return;
             const others = members.filter(u => u.id !== myId);
-            // Render one green dot per user + name (rol)
+            const list = others.length ? others : members;
             let html = '';
-            others.forEach(u => {
+            list.forEach(u => {
                 html += '<span style="display:inline-flex;align-items:center;gap:6px;margin-right:6px;">'
                       + '<span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block"></span>'
-                      + '<span style="font-size:12px;color:#6B7280">' + (u.name ?? '') + ' (' + (u.role ?? '') + ')</span>'
+                      + '<span style="font-size:12px;color:#6B7280">' + (u.name ?? '') + (u.role ? ' (' + u.role + ')' : '') + '</span>'
                       + '</span>';
             });
-            if (typeof label !== 'undefined' && label) label.innerHTML = html;
-            if (typeof dot !== 'undefined' && dot) dot.style.display = others.length > 0 ? 'none' : 'inline-block';
-            badge.title = others.map(u => (u.name ?? '') + ' (' + (u.role ?? '') + ')').join(', ');
+            badge.innerHTML = html;
+            badge.title = list.map(u => (u.name ?? '') + (u.role ? ' (' + u.role + ')' : '')).join(', ');
         };
 
         window.Echo.join('control-panel')
@@ -172,4 +171,3 @@ window.ContentLock = (function () {
 
     return { acquire, release };
 })();
-
