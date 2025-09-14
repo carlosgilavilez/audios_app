@@ -13,12 +13,12 @@
         </div>
 
         @if (session('success'))
-            <div class="rounded-md border border-green-300 bg-green-50 text-green-800 px-4 py-3 text-sm">
+            <div class="rounded-md border px-4 py-3 text-sm border-green-300 bg-green-50 text-green-800 dark:border-green-700 dark:bg-green-900/40 dark:text-green-200">
                 {{ session('success') }}
             </div>
         @endif
         @if (session('error'))
-            <div class="rounded-md border border-red-300 bg-red-50 text-red-800 px-4 py-3 text-sm">
+            <div class="rounded-md border px-4 py-3 text-sm border-red-300 bg-red-50 text-red-800 dark:border-red-700 dark:bg-red-900/40 dark:text-red-200">
                 {{ session('error') }}
             </div>
         @endif

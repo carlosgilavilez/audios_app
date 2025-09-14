@@ -36,6 +36,66 @@
             }catch(e){}
         })();
     </script>
+    <script>
+        // Presence via raw Pusher (independent of Vite/Echo)
+        (function(){
+            try{
+                if (document.getElementById('presence-chips')) return; // avoid duplicates
+                var key = document.querySelector('meta[name="pusher-key"]').getAttribute('content');
+                var cluster = document.querySelector('meta[name="pusher-cluster"]').getAttribute('content');
+                var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                if (!key || !cluster || !csrf) return;
+
+                var header = document.querySelector('header');
+                if (!header) return;
+                var container = document.createElement('div');
+                container.id = 'presence-chips';
+                container.style.display = 'flex';
+                container.style.flexWrap = 'wrap';
+                container.style.gap = '8px';
+                var actions = header.querySelector('.flex.items-center.gap-2, .flex.items-center.gap-2.shrink-0') || header.lastElementChild;
+                if (!actions) return;
+                actions.prepend(container);
+
+                var p = new Pusher(key, {
+                    cluster: cluster,
+                    forceTLS: true,
+                    authEndpoint: '/broadcasting/auth',
+                    auth: { headers: { 'X-CSRF-TOKEN': csrf } }
+                });
+
+                var myIdMeta = document.querySelector('meta[name="user-id"]');
+                var myId = myIdMeta ? parseInt(myIdMeta.getAttribute('content')) : null;
+                var ch = p.subscribe('presence-control-panel');
+                function render(members){
+                    var arr = [];
+                    try { arr = members ? (members.members ? Object.values(members.members) : members) : []; } catch(e){}
+                    container.innerHTML = '';
+                    arr.filter(function(u){ return !myId || u.id !== myId; }).forEach(function(u){
+                        var chip = document.createElement('span');
+                        chip.style.display='inline-flex';
+                        chip.style.alignItems='center';
+                        chip.style.gap='6px';
+                        chip.style.paddingRight='6px';
+                        var dot = document.createElement('span');
+                        dot.style.width='8px'; dot.style.height='8px'; dot.style.borderRadius='50%'; dot.style.background='#22C55E';
+                        var txt = document.createElement('span');
+                        txt.style.fontSize='12px'; txt.style.color='#6B7280';
+                        txt.textContent = (u.name||'') + (u.role?(' ('+u.role+')'):'');
+                        chip.appendChild(dot); chip.appendChild(txt);
+                        container.appendChild(chip);
+                    });
+                }
+                ch.bind('pusher:subscription_succeeded', function(members){ render(members); });
+                ch.bind('pusher:member_added', function(member){
+                    try { var all = ch.members ? Object.values(ch.members.members) : []; render(all); } catch(e){}
+                });
+                ch.bind('pusher:member_removed', function(member){
+                    try { var all = ch.members ? Object.values(ch.members.members) : []; render(all); } catch(e){}
+                });
+            }catch(e){}
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
