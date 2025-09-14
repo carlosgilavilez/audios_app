@@ -21,7 +21,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 // Presence channel for admin/editor online presence in admin area
-Broadcast::channel('presence.control-panel', function ($user) {
+// Laravel expects channel names WITHOUT the 'presence-' prefix here
+Broadcast::channel('control-panel', function ($user) {
     if (!Auth::check()) {
         return false;
     }

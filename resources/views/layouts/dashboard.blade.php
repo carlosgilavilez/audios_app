@@ -66,9 +66,9 @@
 
                 var myIdMeta = document.querySelector('meta[name="user-id"]');
                 var myId = myIdMeta ? parseInt(myIdMeta.getAttribute('content')) : null;
-                // Laravel Echo would call join('presence.control-panel'),
-                // which becomes 'presence-presence.control-panel' for Pusher.
-                var ch = p.subscribe('presence-presence.control-panel');
+                // Server defines channel 'control-panel' (without prefix)
+                // Presence channels on Pusher are named 'presence-<name>'
+                var ch = p.subscribe('presence-control-panel');
                 function render(members){
                     var arr = [];
                     try { arr = members ? (members.members ? Object.values(members.members) : members) : []; } catch(e){}
