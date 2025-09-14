@@ -18,6 +18,7 @@
             if (t === 'light') document.documentElement.classList.remove('dark');
         } catch (e) {}
     </script>
+    <script>window.__DISABLE_ECHO__ = true;</script>
     <!-- Pusher/Echo runtime pre-init (before Vite) -->
     <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
     <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">

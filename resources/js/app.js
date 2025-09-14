@@ -59,7 +59,7 @@ try {
     const userRole = roleMeta ? roleMeta.getAttribute('content') : null;
     const myId = idMeta ? parseInt(idMeta.getAttribute('content')) : null;
     const shouldJoin = (userRole === 'admin' || userRole === 'editor');
-    const shouldRenderBadge = (userRole === 'admin');
+    const shouldRenderBadge = false; // use chips fallback in layout instead
     if (shouldJoin && window.Echo && document.body) {
         let badge = null, dot = null, label = null;
         if (shouldRenderBadge) {
@@ -97,7 +97,7 @@ try {
             badge.title = others.map(u => (u.name ?? '') + ' (' + (u.role ?? '') + ')').join(', ');
         };
 
-        window.Echo.join('presence.control-panel')
+        window.Echo.join('control-panel')
             .here((users) => { members = users; updateUI(); })
             .joining((user) => { members.push(user); updateUI(); })
             .leaving((user) => { members = members.filter(u => u.id !== user.id); updateUI(); });
@@ -172,5 +172,4 @@ window.ContentLock = (function () {
 
     return { acquire, release };
 })();
-
 
