@@ -11,6 +11,14 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Theme preflight: apply saved mode before CSS to avoid FOUC -->
+        <script>
+            try {
+                var t = localStorage.getItem('theme');
+                if (t === 'dark') document.documentElement.classList.add('dark');
+                if (t === 'light') document.documentElement.classList.remove('dark');
+            } catch (e) {}
+        </script>
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

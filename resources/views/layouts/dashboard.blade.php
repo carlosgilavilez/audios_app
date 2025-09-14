@@ -9,6 +9,14 @@
     <meta name="user-id" content="{{ auth()->id() }}">
     @endauth
     <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
+    <!-- Theme preflight: apply saved mode before CSS to avoid FOUC -->
+    <script>
+        try {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark') document.documentElement.classList.add('dark');
+            if (t === 'light') document.documentElement.classList.remove('dark');
+        } catch (e) {}
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
