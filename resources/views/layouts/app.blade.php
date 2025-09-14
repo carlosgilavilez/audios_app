@@ -21,6 +21,27 @@
         </script>
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Pusher/Echo runtime config (prevents rebuild dependency) -->
+        <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
+        <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+        <script src="https://cdn.jsdelivr.net/npm/laravel-echo@2/dist/echo.umd.js"></script>
+        <script>
+            (function () {
+                try {
+                    var key = document.querySelector('meta[name="pusher-key"]').getAttribute('content');
+                    var cluster = document.querySelector('meta[name="pusher-cluster"]').getAttribute('content');
+                    if (!key || !cluster) return;
+                    if (typeof Echo !== 'undefined') {
+                        window.Echo = new Echo({
+                            broadcaster: 'pusher',
+                            key: key,
+                            cluster: cluster,
+                            forceTLS: true
+                        });
+                    }
+                } catch (e) {}
+            })();
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-background text-foreground">
