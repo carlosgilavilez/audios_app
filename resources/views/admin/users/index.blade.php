@@ -12,6 +12,17 @@
             </a>
         </div>
 
+        @if (session('success'))
+            <div class="rounded-md border border-green-300 bg-green-50 text-green-800 px-4 py-3 text-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="rounded-md border border-red-300 bg-red-50 text-red-800 px-4 py-3 text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
             <div class="p-6 overflow-x-auto">
                 <table class="min-w-full divide-y divide-border">
@@ -19,6 +30,7 @@
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">Rol</th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">Acciones</span>
@@ -30,6 +42,16 @@
                             <tr>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-foreground">{{ $user->name }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm text-muted-foreground">{{ $user->email }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm">
+                                    @if (session('invited_email') === $user->email)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 text-xs font-semibold" title="Se envió un correo de invitación">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.172 7.707 8.879a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                            Correo enviado
+                                        </span>
+                                    @else
+                                        <span class="text-muted-foreground text-xs">—</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm text-muted-foreground">
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $user->role === 'admin' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' }}">
                                         {{ ucfirst($user->role) }}
