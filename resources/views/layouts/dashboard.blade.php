@@ -21,6 +21,7 @@
     <!-- Pusher/Echo runtime config (prevents rebuild dependency) -->
     <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
     <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+    <script src="https://js.pusher.com/8.4/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@2/dist/echo.umd.js"></script>
     <script>
         (function () {
@@ -28,7 +29,8 @@
                 var key = document.querySelector('meta[name="pusher-key"]').getAttribute('content');
                 var cluster = document.querySelector('meta[name="pusher-cluster"]').getAttribute('content');
                 if (!key || !cluster) return;
-                if (typeof Echo !== 'undefined') {
+                if (typeof window.Pusher === 'undefined' && typeof Pusher !== 'undefined') { window.Pusher = Pusher; }
+                if (typeof window.Echo !== 'undefined') {
                     window.Echo = new Echo({
                         broadcaster: 'pusher',
                         key: key,
