@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,73 @@
             if (t === 'light') document.documentElement.classList.remove('dark');
         } catch (e) {}
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
+    @vite\(\['resources/css/app\.css',\ 'resources/js/app\.js',\ 'resources/js/player\.js']\)
+\ \ \ \ 
+\ \ \ \ <!--\ Presence\ fallback\ for\ production\ without\ Vite\ build:\ only\ if\ Echo\ is\ not\ available\ -->
+\ \ \ \ <meta\ name="pusher-key"\ content="\{\{\ config\('broadcasting\.connections\.pusher\.key'\)\ }}">
+\ \ \ \ <meta\ name="pusher-cluster"\ content="\{\{\ config\('broadcasting\.connections\.pusher\.options\.cluster'\)\ }}">
+\ \ \ \ <script>
+\ \ \ \ \ \ \ \ \(function\(\)\{
+\ \ \ \ \ \ \ \ \ \ \ \ //\ Only\ run\ when\ Echo\ is\ missing\ \(e\.g\.,\ no\ Vite\ build\ on\ shared\ hosting\)
+\ \ \ \ \ \ \ \ \ \ \ \ if\ \(window\.Echo\)\ return;
+\ \ \ \ \ \ \ \ \ \ \ \ var\ keyMeta\ =\ document\.querySelector\('meta\[name=\\"pusher-key\\"]'\);
+\ \ \ \ \ \ \ \ \ \ \ \ var\ clusterMeta\ =\ document\.querySelector\('meta\[name=\\"pusher-cluster\\"]'\);
+\ \ \ \ \ \ \ \ \ \ \ \ if\ \(!keyMeta\ \|\|\ !clusterMeta\)\ return;
+\ \ \ \ \ \ \ \ \ \ \ \ var\ key\ =\ keyMeta\.getAttribute\('content'\);
+\ \ \ \ \ \ \ \ \ \ \ \ var\ cluster\ =\ clusterMeta\.getAttribute\('content'\);
+\ \ \ \ \ \ \ \ \ \ \ \ if\ \(!key\ \|\|\ !cluster\)\ return;
+\ \ \ \ \ \ \ \ \ \ \ \ var\ s\ =\ document\.createElement\('script'\);
+\ \ \ \ \ \ \ \ \ \ \ \ s\.src\ =\ 'https://js\.pusher\.com/8\.4/pusher\.min\.js';
+\ \ \ \ \ \ \ \ \ \ \ \ s\.onload\ =\ function\(\)\{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ csrf\ =\ document\.querySelector\('meta\[name=\\"csrf-token\\"]'\)\.getAttribute\('content'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ p\ =\ new\ Pusher\(key,\ \{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cluster:\ cluster,
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ forceTLS:\ true,
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ authEndpoint:\ '/broadcasting/auth',
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ auth:\ \{\ headers:\ \{\ 'X-CSRF-TOKEN':\ csrf,\ 'X-Requested-With':'XMLHttpRequest'\ }\ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ header\ =\ document\.querySelector\('header'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ \(!header\)\ return;
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ container\ =\ document\.getElementById\('presence-chips'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ \(!container\)\ \{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\ =\ document\.createElement\('div'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.id\ =\ 'presence-chips';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.style\.display\ =\ 'flex';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.style\.flexWrap\ =\ 'wrap';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.style\.gap\ =\ '8px';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ actions\ =\ header\.querySelector\('\.flex\.items-center\.gap-2,\ \.flex\.items-center\.gap-2\.shrink-0'\)\ \|\|\ header\.lastElementChild;
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ \(actions\)\ actions\.prepend\(container\);\ else\ header\.appendChild\(container\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.textContent\ =\ 'Conectando…';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ ch\ =\ p\.subscribe\('presence-control-panel'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ function\ renderMembers\(members\)\{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ arr\ =\ \[];
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\ \{\ arr\ =\ members\ \?\ \(members\.members\ \?\ Object\.values\(members\.members\)\ :\ members\)\ :\ \[];\ }\ catch\(e\)\{}
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.innerHTML\ =\ '';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arr\.forEach\(function\(u\)\{
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ chip\ =\ document\.createElement\('span'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chip\.style\.display='inline-flex';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chip\.style\.alignItems='center';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chip\.style\.gap='6px';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chip\.style\.paddingRight='6px';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ dot\ =\ document\.createElement\('span'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dot\.style\.width='8px';\ dot\.style\.height='8px';\ dot\.style\.borderRadius='50%';\ dot\.style\.background='\#22C55E';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ txt\ =\ document\.createElement\('span'\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ txt\.style\.fontSize='12px';\ txt\.style\.color='\#6B7280';
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ txt\.textContent\ =\ \(u\.name\|\|''\)\ \+\ \(u\.role\ \?\ '\ \('\+u\.role\+'\)'\ :\ ''\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chip\.appendChild\(dot\);\ chip\.appendChild\(txt\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ container\.appendChild\(chip\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ch\.bind\('pusher:subscription_succeeded',\ function\(members\)\{\ container\.textContent='';\ renderMembers\(members\);\ }\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ch\.bind\('pusher:member_added',\ function\(\)\{\ try\ \{\ renderMembers\(ch\.members\ \?\ Object\.values\(ch\.members\.members\)\ :\ \[]\);\ }\ catch\(e\)\{}\ }\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ch\.bind\('pusher:member_removed',\ function\(\)\{\ try\ \{\ renderMembers\(ch\.members\ \?\ Object\.values\(ch\.members\.members\)\ :\ \[]\);\ }\ catch\(e\)\{}\ }\);
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }catch\(e\)\{\ console\.warn\('Presence\ fallback\ init\ failed',\ e\);\ }
+\ \ \ \ \ \ \ \ \ \ \ \ };
+\ \ \ \ \ \ \ \ \ \ \ \ document\.head\.appendChild\(s\);
+\ \ \ \ \ \ \ \ }\)\(\);
+\ \ \ \ </script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-sans antialiased">
@@ -27,13 +93,13 @@
         <aside class="border-r border-sidebar-border bg-sidebar text-sidebar-foreground w-48 flex-shrink-0">
             <div class="px-4 py-6">
                 <h1 class="text-2xl font-bold text-sidebar-primary">Audios IBRPM</h1>
-                <p class="text-muted-foreground">Sistema de Gestión</p>
+                <p class="text-muted-foreground">Sistema de GestiÃ³n</p>
             </div>
 
             <nav class="mt-6">
-                <!-- Administración Group -->
+                <!-- AdministraciÃ³n Group -->
                 <div class="mb-4 px-2">
-                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">Administración</h3>
+                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">AdministraciÃ³n</h3>
                     <ul>
                         <li>
                             @if(auth()->user()->role == 'admin')
@@ -90,9 +156,9 @@
                 </div>
                 @endif
 
-                <!-- Público Group -->
+                <!-- PÃºblico Group -->
                 <div class="px-2">
-                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">Público</h3>
+                    <h3 class="px-4 text-xs font-semibold uppercase text-muted-foreground mb-2">PÃºblico</h3>
                     <ul>
                         <li>
                             <a href="{{ route('public.audios') }}" class="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-sidebar-accent/50">
@@ -128,7 +194,7 @@
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="inline-flex items-center rounded-md mr-1 px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesión">
+                        <button type="submit" class="inline-flex items-center rounded-md mr-1 px-2 md:px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground hover:bg-muted/70 transition" title="Cerrar sesiÃ³n">
                             <i data-lucide="log-out" class="h-5 w-5 mr-2"></i>
                             <span class="hidden 2xl:inline">Salir</span>
                         </button>
