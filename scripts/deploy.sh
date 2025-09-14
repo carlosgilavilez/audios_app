@@ -25,6 +25,20 @@ fi
 
 git pull --rebase origin "${branch}"
 
+echo "1b) Ensure broadcasting uses Pusher (env)"
+if [ -f .env ]; then
+  if grep -q '^BROADCAST_CONNECTION=' .env; then
+    sed -i.bak 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=pusher/' .env || true
+  else
+    printf '\nBROADCAST_CONNECTION=pusher\n' >> .env
+  fi
+  if grep -q '^BROADCAST_DRIVER=' .env; then
+    sed -i.bak 's/^BROADCAST_DRIVER=.*/BROADCAST_DRIVER=null/' .env || true
+  fi
+else
+  echo "Warning: .env not found; skipping broadcast env adjustments" >&2
+fi
+
 echo "2) Composer install (no-dev, optimized)"
 if command -v composer >/dev/null 2>&1; then
   composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
@@ -61,4 +75,3 @@ if [ -d storage ] && [ -d bootstrap/cache ]; then
 fi
 
 echo "OK ✅ Deploy complete"
-
