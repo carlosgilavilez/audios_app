@@ -22,36 +22,49 @@
                     <tbody class="bg-card divide-y divide-border">
                         @forelse ($activityLogs as $log)
                             <tr class="hover:bg-muted/50">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->user->name ?? 'Sistema' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->action }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $log->user->name ?? 'Sistema' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $log->action }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     @php
                                         $description = '';
                                         $entity = $log->related_entity;
                                         $entityName = $entity ? ($entity->nombre ?? $entity->titulo ?? $entity->email ?? 'ID: ' . $log->entity_id) : 'ID: ' . $log->entity_id;
 
+                                        $entityType = strtolower(class_basename($log->entity_type));
+
+                                        // Special case for Audio to include author
+                                        if ($entityType === 'audio' && $entity && $entity->autor) {
+                                            $entityName .= ' de ' . $entity->autor->nombre;
+                                        }
+
                                         switch ($log->action) {
                                             case 'created':
-                                                $description = 'creó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                $verb = "<span class='text-green-500 font-semibold'>creó</span>";
+                                                $article = in_array($entityType, ['serie', 'categoria']) ? 'la' : 'el';
+                                                $description = $verb . ' ' . $article . ' ' . $entityType . ' "' . $entityName . '"';
                                                 break;
                                             case 'updated':
-                                                $description = 'actualizó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                $verb = "<span class='text-blue-500 font-semibold'>actualizó</span>";
+                                                $article = in_array($entityType, ['serie', 'categoria']) ? 'la' : 'el';
+                                                $description = $verb . ' ' . $article . ' ' . $entityType . ' "' . $entityName . '"';
                                                 break;
                                             case 'deleted':
-                                                $description = 'eliminó ' . strtolower($log->entity_type) . ' "' . $entityName . '" (ID: ' . $log->entity_id . ')';
+                                                $verb = "<span class='text-red-500 font-semibold'>eliminó</span>";
+                                                $article = in_array($entityType, ['serie', 'categoria']) ? 'la' : 'el';
+                                                $description = $verb . ' ' . $article . ' ' . $entityType . ' "' . $entityName . '"';
                                                 break;
                                             default:
-                                                $description = $log->description; // Fallback to original description if action is unknown
+                                                $description = $log->action; // Fallback
                                                 break;
                                         }
                                     @endphp
-                                    {{ $log->user->name ?? 'Sistema' }} {{ $description }}
+                                    {!! $description !!}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-muted-foreground">No hay actividad para mostrar.</td>
+                                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-muted-foreground text-sm">No hay actividad para mostrar.</td>
                             </tr>
                         @endforelse
                     </tbody>
