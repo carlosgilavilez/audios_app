@@ -26,25 +26,45 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make(Str::random(20)), // Create a secure temporary password
-            'role' => 'editor',
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make(Str::random(20)),
+            'role'     => 'editor',
         ]);
 
-        event(new Registered($user)); // This will trigger the email verification notification
+        // Si el modelo User implementa MustVerifyEmail, esto enviará verificación
+        event(new Registered($user));
 
-        // Send the password reset link
-        Password::broker()->sendResetLink(
-            $request->only('email')
-        );
+        // Enviar enlace de restablecimiento (para que establezca su contraseña)
+        try {
+            $status = Password::broker()->sendResetLink([
+                'email' => $user->email,
+            ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuario editor creado. Se ha enviado un correo para verificar su email y establecer una contraseña.');
+            if ($status !== Password::RESET_LINK_SENT) {
+                \Log::error('Password reset link NOT sent', [
+                    'status' => $status,
+                    'email'  => $user->email,
+                ]);
+                return redirect()->route('admin.users.index')
+                    ->with('error', 'No se pudo enviar el email de restablecimiento (' . $status . '). Revisa la configuración SMTP o inténtalo nuevamente.');
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Error enviando email de restablecimiento', [
+                'email' => $user->email,
+                'error' => $e->getMessage(),
+            ]);
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Error al enviar el email: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Usuario editor creado. Se ha enviado un correo para establecer su contraseña.');
     }
 
     public function destroy(User $user)
@@ -64,3 +84,4 @@ class UserManagementController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado exitosamente.');
     }
 }
+
