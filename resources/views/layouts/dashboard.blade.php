@@ -56,13 +56,14 @@
                 container.style.gap = '8px';
                 var actions = header.querySelector('.flex.items-center.gap-2, .flex.items-center.gap-2.shrink-0') || header.lastElementChild;
                 if (!actions) return;
-                actions.prepend(container);
+                actions ? actions.prepend(container) : header.appendChild(container);
+                container.textContent = 'Conectando…';
 
                 var p = new Pusher(key, {
                     cluster: cluster,
                     forceTLS: true,
                     authEndpoint: '/broadcasting/auth',
-                    auth: { headers: { 'X-CSRF-TOKEN': csrf } }
+                    auth: { headers: { 'X-CSRF-TOKEN': csrf, 'X-Requested-With':'XMLHttpRequest' } }
                 });
 
                 var myIdMeta = document.querySelector('meta[name="user-id"]');
@@ -96,7 +97,7 @@
                         container.appendChild(chip);
                     });
                 }
-                ch.bind('pusher:subscription_succeeded', function(members){ render(members); });
+                ch.bind('pusher:subscription_succeeded', function(members){ container.textContent=''; render(members); });
                 ch.bind('pusher:subscription_error', function(status){
                     try { container.innerHTML = '<span style="color:#B91C1C;font-size:12px">Error de suscripción: '+ status +'</span>'; } catch(e){}
                 });
@@ -107,7 +108,7 @@
                     try { var all = ch.members ? Object.values(ch.members.members) : []; render(all); } catch(e){}
                 });
                 p.connection.bind('error', function(err){ try { console.warn('Pusher connection error', err); } catch(e){} });
-                p.connection.bind('state_change', function(st){ try { console.log('Pusher state', st); } catch(e){} });
+                p.connection.bind('state_change', function(st){ try { if(st.current==='connecting'){container.textContent='Conectando…';} if(st.current==='connected'){/* ok */} } catch(e){} });
             }catch(e){}
         })();
     </script>
