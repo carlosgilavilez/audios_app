@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Validation\Rule;
 
 class UserManagementController extends Controller
 {
@@ -26,62 +25,59 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:admin,editor'],
         ]);
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make(Str::random(20)),
-            'role'     => 'editor',
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
-        // Si el modelo User implementa MustVerifyEmail, esto enviará verificación
-        event(new Registered($user));
+        return redirect()->route('admin.users.index')->with('success', 'Usuario creado correctamente.');
+    }
 
-        // Enviar enlace de restablecimiento (para que establezca su contraseña)
-        try {
-            $status = Password::broker()->sendResetLink([
-                'email' => $user->email,
-            ]);
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
 
-            if ($status !== Password::RESET_LINK_SENT) {
-                \Log::error('Password reset link NOT sent', [
-                    'status' => $status,
-                    'email'  => $user->email,
-                ]);
-                return redirect()->route('admin.users.index')
-                    ->with('error', 'No se pudo enviar el email de restablecimiento (' . $status . '). Revisa la configuración SMTP o inténtalo nuevamente.');
-            }
-        } catch (\Throwable $e) {
-            \Log::error('Error enviando email de restablecimiento', [
-                'email' => $user->email,
-                'error' => $e->getMessage(),
-            ]);
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Error al enviar el email: ' . $e->getMessage());
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:admin,editor'],
+        ]);
+
+        $data = $request->only('name', 'email');
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        
+        if (Auth::id() !== $user->id) {
+            $data['role'] = $request->role;
         }
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Usuario editor creado. Se ha enviado un correo para establecer su contraseña.');
+        $user->update($data);
+
+        return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
     public function destroy(User $user)
     {
-        // Prevent self-deletion
-        if (auth()->id() === $user->id) {
+        if (Auth::id() === $user->id) {
             return back()->with('error', 'No puedes eliminar tu propia cuenta.');
-        }
-
-        // Prevent admin from deleting another admin
-        if ($user->role === 'admin') {
-            return back()->with('error', 'No puedes eliminar una cuenta de administrador.');
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado exitosamente.');
+        return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado correctamente.');
     }
 }
-

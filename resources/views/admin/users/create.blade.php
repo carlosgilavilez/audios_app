@@ -1,37 +1,48 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Crear Nuevo Usuario')
+@section('title', 'Crear Usuario')
 
 @section('content')
-    <div class="space-y-6">
-        <h1 class="text-2xl font-semibold text-foreground">Crear Nuevo Usuario (Editor)</h1>
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-semibold text-foreground mb-6">Crear Nuevo Usuario</h1>
 
-        <div class="rounded-lg border bg-card text-card-foreground shadow-sm border-border/50">
-            <form method="POST" action="{{ route('admin.users.store') }}">
-                @csrf
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-muted-foreground">Nombre</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required class="mt-1 block w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm @error('name') border-destructive @enderror">
-                        @error('name')
-                            <p class="mt-2 text-sm text-destructive">{{ $message }}</p>
-                        @enderror
-                    </div>
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+        <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-6">
+            @csrf
 
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-muted-foreground">Email</label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required class="mt-1 block w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm @error('email') border-destructive @enderror">
-                        @error('email')
-                            <p class="mt-2 text-sm text-destructive">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <div class="px-6 py-4 bg-muted/50 border-t border-border flex justify-end">
-                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                        Crear Usuario y Enviar Invitación
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div>
+                <label for="name" class="block text-sm font-medium text-foreground">Nombre</label>
+                <input type="text" name="name" id="name" class="mt-1 block w-full border-border bg-input text-foreground rounded-md shadow-sm sm:text-sm" required>
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-foreground">Email</label>
+                <input type="email" name="email" id="email" class="mt-1 block w-full border-border bg-input text-foreground rounded-md shadow-sm sm:text-sm" required>
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-foreground">Contrase&ntilde;a</label>
+                <input type="password" name="password" id="password" class="mt-1 block w-full border-border bg-input text-foreground rounded-md shadow-sm sm:text-sm" required>
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-foreground">Confirmar Contrase&ntilde;a</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full border-border bg-input text-foreground rounded-md shadow-sm sm:text-sm" required>
+            </div>
+
+            <div>
+                <label for="role" class="block text-sm font-medium text-foreground">Rol</label>
+                <select name="role" id="role" class="mt-1 block w-full border-border bg-input text-foreground rounded-md shadow-sm sm:text-sm" required>
+                    <option value="editor">Editor</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-foreground bg-secondary hover:bg-secondary/80">Cancelar</a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90">Crear Usuario</button>
+            </div>
+        </form>
     </div>
+</div>
 @endsection
