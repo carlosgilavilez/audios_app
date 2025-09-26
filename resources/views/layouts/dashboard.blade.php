@@ -12,13 +12,30 @@
     <title>Audios IBRPM - @yield('title', 'Dashboard')</title>
     <!-- Theme preflight: apply saved mode before CSS to avoid FOUC -->
     <script>
-        try {
-            var t = localStorage.getItem('theme');
-            if (t === 'dark') document.documentElement.classList.add('dark');
-            if (t === 'light') document.documentElement.classList.remove('dark');
-        } catch (e) {}
+        (function () {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var themeKey = 'audios-color-theme';
+                var darkKey = 'audios-dark-mode';
+                var theme = 'spotify';
+                document.documentElement.setAttribute('data-theme', theme);
+                try { localStorage.setItem(themeKey, theme); } catch (error) {}
+
+                var darkParam = params.get('dark');
+                var storedDark = localStorage.getItem(darkKey);
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var dark = false;
+                if (darkParam === '1') dark = true;
+                else if (darkParam === '0') dark = false;
+                else if (storedDark === '1') dark = true;
+                else if (storedDark === '0') dark = false;
+                else if (prefersDark) dark = true;
+                document.documentElement.classList.toggle('dark', dark);
+                localStorage.setItem(darkKey, dark ? '1' : '0');
+            } catch (e) {}
+        })();
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js', 'resources/js/public-audios.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-sans antialiased">
@@ -136,7 +153,7 @@
                 </div>
             </header>
 
-            <main class="flex-1 min-w-0 bg-background px-3 sm:px-4 md:px-6 py-6 pb-24">
+            <main data-content-main class="@container flex-1 min-w-0 bg-background px-3 sm:px-4 md:px-6 py-6 pb-24">
                 @yield('content')
             </main>
         </div>
