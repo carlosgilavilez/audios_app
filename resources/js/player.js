@@ -19,6 +19,7 @@ const Player = (function () {
   const cur = byId('pl-current');
   const dur = byId('pl-duration');
   const vol = byId('pl-volume');
+  const btnVol = byId('pl-volume-toggle');
   const rate = byId('pl-rate');
   const aDownload = byId('pl-download');
   const expandToggle = document.getElementById('pl-expand');
@@ -30,6 +31,7 @@ const Player = (function () {
   let items = [];
   let index = -1;
   let dragging = false;
+  let lastVolume = 1;
   const mediaMatchesMobile = () => (playerMediaQuery ? playerMediaQuery.matches : (window.innerWidth || 0) <= 767);
 
   const setExpanded = (value) => {
@@ -314,14 +316,50 @@ const Player = (function () {
     seek.addEventListener('touchend', commitSeek, { passive: true });
   }
 
+  function updateVolumeIcon() {
+    if (!btnVol) return;
+    const icon = btnVol.querySelector('i');
+    if (!icon) return;
+
+    if (audio.muted || audio.volume === 0) {
+      icon.setAttribute('data-lucide', 'volume-x');
+    } else if (audio.volume < 0.5) {
+      icon.setAttribute('data-lucide', 'volume-1');
+    } else {
+      icon.setAttribute('data-lucide', 'volume-2');
+    }
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }
+
+  if (btnVol) {
+    btnVol.addEventListener('click', function () {
+      if (audio.muted) {
+        audio.muted = false;
+        audio.volume = lastVolume;
+        if (vol) vol.value = String(lastVolume);
+      } else {
+        lastVolume = audio.volume;
+        audio.muted = true;
+        if (vol) vol.value = '0';
+      }
+      updateVolumeIcon();
+    });
+  }
+
   if (vol) {
     vol.addEventListener('input', function () {
       const value = Number(vol.value);
       if (isFinite(value)) {
         audio.volume = Math.max(0, Math.min(1, value));
+        audio.muted = value === 0;
       }
+      updateVolumeIcon();
     });
   }
+
+  audio.addEventListener('volumechange', updateVolumeIcon);
 
   if (rate) {
     rate.addEventListener('change', function () {

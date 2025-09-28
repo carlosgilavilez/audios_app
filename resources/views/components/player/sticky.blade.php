@@ -5,16 +5,7 @@
             bg-card/85 backdrop-blur-md supports-[backdrop-filter]:bg-card/80
             text-foreground">
   <div class="mx-auto max-w-screen-xl px-3 sm:px-6 py-2 md:py-3">
-    <div class="md:hidden flex items-center justify-end pb-2">
-      <button id="pl-expand"
-              type="button"
-              class="player-expand-toggle"
-              aria-expanded="false">
-        <span class="sr-only">Alternar controles del reproductor</span>
-        <i data-lucide="chevron-up" class="h-5 w-5" data-player-icon="expand"></i>
-        <i data-lucide="chevron-down" class="h-5 w-5 hidden" data-player-icon="collapse"></i>
-      </button>
-    </div>
+    
 
     <div class="player-layout flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div class="player-controls-primary flex flex-wrap items-center gap-2 md:gap-3">
@@ -52,8 +43,11 @@
       </div>
 
       <div class="player-advanced flex items-center gap-3 md:justify-end">
+        <button id="pl-volume-toggle" class="inline-flex items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Silenciar">
+          <i data-lucide="volume-2" class="h-5 w-5"></i>
+        </button>
         <input id="pl-volume" type="range" min="0" max="1" step="0.01" value="1"
-               class="hidden w-24 appearance-none h-2 rounded-full bg-muted/50 accent-primary"
+               class="w-24 appearance-none h-2 rounded-full bg-muted/50 accent-primary"
                aria-label="Volumen">
         <select id="pl-rate" class="hidden rounded-md border bg-card/70 px-2 py-1 text-sm"
                 aria-label="Velocidad de reproducción">
@@ -69,19 +63,15 @@
 
     <div class="player-extra flex flex-col gap-1 md:flex">
       <div class="player-extra-item" id="pl-category-wrapper" hidden>
-        <span class="label">Categoría:</span>
         <span id="pl-category"></span>
       </div>
       <div class="player-extra-item" id="pl-series-wrapper" hidden>
-        <span class="label">Serie:</span>
         <span id="pl-series"></span>
       </div>
       <div class="player-extra-item" id="pl-date-wrapper" hidden>
-        <span class="label">Fecha:</span>
         <span id="pl-date"></span>
       </div>
       <div class="player-extra-item" id="pl-citation-wrapper" hidden>
-        <span class="label">Cita:</span>
         <span id="pl-citation"></span>
       </div>
     </div>

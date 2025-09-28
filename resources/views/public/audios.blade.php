@@ -1,4 +1,4 @@
-﻿@extends('layouts.preview')
+@extends('layouts.preview')
 
 @section('title', 'Biblioteca de Audios')
 
@@ -21,29 +21,8 @@
 @section('content')
     <div class="space-y-6" data-public-audios data-initial-view="{{ $viewMode }}" data-initial-dark="{{ $dark ? '1' : '0' }}" data-preview-width="{{ $previewWidth }}" data-embed="{{ $isEmbed ? '1' : '0' }}">
         @if($showPreviewBar)
-            @php
-                $wpSizeOptions = [
-                    ['width' => 1280, 'icon' => 'monitor', 'label' => 'Vista escritorio'],
-                    ['width' => 820, 'icon' => 'tablet', 'label' => 'Vista tablet'],
-                    ['width' => 414, 'icon' => 'smartphone', 'label' => 'Vista m�vil'],
-                ];
-                $currentWpSize = collect($wpSizeOptions)->firstWhere('width', (int) $previewWidth) ?? $wpSizeOptions[0];
-            @endphp
-            <div data-preview-bar class="rounded-md border border-border bg-card/90 backdrop-blur px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-                <div class="font-medium text-foreground">Vista previa - <span data-preview-size>{{ $currentWpSize['label'] }}</span></div>
-                <div class="flex flex-wrap items-center gap-2">
-                    @foreach($wpSizeOptions as $option)
-                        @php $isActive = (int) $previewWidth === $option['width']; @endphp
-                        <button type="button"
-                                class="preview-size-toggle inline-flex h-10 w-10 items-center justify-center rounded-full border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary {{ $isActive ? 'bg-primary text-primary-foreground border-transparent shadow-sm' : 'bg-card text-muted-foreground border-border hover:bg-muted/70' }}"
-                                data-preview-size-option="{{ $option['width'] }}" data-preview-size-label="{{ $option['label'] }}"
-                                aria-pressed="{{ $isActive ? 'true' : 'false' }}">
-                            <i data-lucide="{{ $option['icon'] }}" class="h-5 w-5"></i>
-                            <span class="sr-only">{{ $option['label'] }}</span>
-                        </button>
-                    @endforeach
-                </div>
-                <a href="{{ $backUrl }}" class="inline-flex items-center rounded-md bg-destructive text-destructive-foreground px-3 py-1.5 text-xs font-medium transition hover:bg-destructive/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
+            <div data-preview-bar class="rounded-md border border-border bg-card/90 backdrop-blur px-4 py-3 flex flex-wrap items-center justify-end gap-3 text-sm text-muted-foreground">
+                <a href="{{ route('public.audios', $queryFor([], ['wp_width', 'dark', 'preview'])) }}" class="inline-flex items-center rounded-md bg-destructive text-destructive-foreground px-3 py-1.5 text-xs font-medium transition hover:bg-destructive/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
                     Salir
                 </a>
             </div>

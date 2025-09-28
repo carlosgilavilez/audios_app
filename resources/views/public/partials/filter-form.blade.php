@@ -65,7 +65,7 @@
     </div>
 
     <div class="flex items-center justify-between gap-3 pt-1">
-        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Aplicar filtros</button>
+        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Aplicar</button>
         <a href="{{ $clearFiltersUrl ?? route('public.audios') }}" class="{{ $clearButtonClasses }}">Limpiar</a>
     </div>
 </form>
