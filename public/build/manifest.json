@@ -11,7 +11,7 @@
     "isDynamicEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-CSDxhlZs.css",
+    "file": "assets/app-DP_Ej2bJ.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -29,9 +29,15 @@
     ]
   },
   "resources/js/player.js": {
-    "file": "assets/player-ClGmCohD.js",
+    "file": "assets/player-BUbdZsds.js",
     "name": "player",
     "src": "resources/js/player.js",
+    "isEntry": true
+  },
+  "resources/js/public-audios.js": {
+    "file": "assets/public-audios-DTG2HmRK.js",
+    "name": "public-audios",
+    "src": "resources/js/public-audios.js",
     "isEntry": true
   }
 }
