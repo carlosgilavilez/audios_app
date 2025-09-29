@@ -143,8 +143,8 @@
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--category">Categoría</th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--serie">Serie</th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--date">Fecha</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--cita">Cita bíblica</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--duration"><span class="sr-only">Duración</span></th>
+                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--cita"></th>
+                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--duration"></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-border bg-background" data-view-active="{{ $viewMode === 'table' ? 'true' : 'false' }}">
@@ -219,7 +219,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-3 py-3 align-top whitespace-nowrap table-col--cita" data-label="Cita bíblica">{{ $cita }}</td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--duration" data-label="Duración">{{ $audio->duracion ?? '' }}</td>
+                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--duration" data-label="">{{ $audio->duracion ?? '' }}</td>
                                             </tr>
                                         @empty
                                             <tr>

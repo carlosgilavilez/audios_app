@@ -1033,3 +1033,49 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
 .link-chip:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 767px) {
+    [data-view-panel="table"] {
+        display: none !important;
+    }
+    [data-view-panel="cards"] {
+        display: block !important;
+    }
+    .view-toggle {
+        display: none !important;
+    }
+    .marquee-container {
+        white-space: normal;
+    }
+    .marquee {
+        animation: none;
+    }
+    .marquee::after {
+        content: none;
+    }
+    body.player-expanded #sticky-player {
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    body:not(.player-expanded) #expanded-player {
+        display: none;
+    }
+
+    body.player-expanded .player-layout {
+        display: none;
+    }
+
+    body.player-expanded #expanded-player {
+        display: flex;
+        background: linear-gradient(180deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.7));
+    }
+
+    #pl-expand, #pl-collapse {
+        background-color: hsl(var(--primary) / 0.5) !important;
+        color: hsl(var(--primary-foreground)) !important;
+    }
+}
