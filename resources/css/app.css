@@ -8,7 +8,7 @@
     --sticky-safe: env(safe-area-inset-bottom, 0px);
     --radius: 0.75rem;
 
-    --background: 0 0% 30.98%;
+    --background: 210 20% 94%;
     --foreground: 220 13% 16%;
     --card: 0 0% 100%;
     --card-foreground: 220 13% 16%;
@@ -1079,3 +1079,24 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
         color: hsl(var(--primary-foreground)) !important;
     }
 }
+
+@media (max-width: 767px) {
+    /* Player expanded styles (Mobile Only) */
+    body.player-expanded #sticky-player {
+        inset: 0;
+        padding: 0;
+    }
+    body.player-expanded #minimized-player {
+        display: none;
+    }
+    body.player-expanded #expanded-player {
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+    body.player-expanded .player-layout {
+        display: none;
+    }
+}
+
+

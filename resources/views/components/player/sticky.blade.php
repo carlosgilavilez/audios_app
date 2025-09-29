@@ -33,7 +33,7 @@
             <div class="truncate text-sm opacity-70" id="pl-author" aria-live="polite">-</div>
           </div>
 
-          <div class="player-progress flex flex-1 items-center gap-3 md:max-w-lg">
+          <div class="player-progress flex flex-1 items-center gap-3">
             <span id="pl-current"  class="hidden text-xs tabular-nums text-right">0:00</span>
             <input id="pl-seek" type="range" min="0" value="0" step="1"
                    class="flex-1 appearance-none h-2 rounded-full bg-muted/50 outline-none accent-primary"
@@ -71,9 +71,15 @@
                     <div class="truncate text-sm opacity-70" id="pl-author-minimized" aria-live="polite">-</div>
                 </div>
                 <div class="player-controls-primary flex items-center gap-2">
+                    <button id="pl-prev-minimized" class="inline-flex items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Pista anterior">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM4.5 12l10 6V6z"/></svg>
+                    </button>
                     <button id="pl-play-minimized" class="inline-flex items-center justify-center rounded-full border border-success/60 bg-success text-success-foreground shadow-sm transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Reproducir">
                         <svg id="pl-play-icon-minimized"  class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                         <svg id="pl-pause-icon-minimized" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                    </button>
+                    <button id="pl-next-minimized"  class="inline-flex items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Pista siguiente">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM14.5 12l-10 6V6z"/></svg>
                     </button>
                     <button id="pl-expand" class="inline-flex items-center justify-center rounded-full border border-border bg-background text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Expandir reproductor">
                         <i data-lucide="chevron-up" class="h-5 w-5"></i>
@@ -89,15 +95,15 @@
 
         <div id="expanded-player" class="hidden h-full flex-col bg-gradient-to-b from-primary/90 to-primary/70">
             <div class="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border/60">
-                <button id="pl-collapse" class="inline-flex items-center justify-center rounded-full border border-border bg-transparent text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Minimizar reproductor">
-                    <i data-lucide="chevron-down" class="h-5 w-5"></i>
-                </button>
-                <div class="text-lg font-semibold">Reproduciendo ahora</div>
                 <a id="pl-download-expanded" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-transparent text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Descargar" download>
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M5 20h14v-2H5v2zM12 3v10l4-4h-3V3h-2v6H8l4 4z"/>
                   </svg>
                 </a>
+                <div class="text-lg font-semibold">Reproduciendo ahora</div>
+                <button id="pl-collapse" class="inline-flex items-center justify-center rounded-full border border-border bg-transparent text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Minimizar reproductor">
+                    <i data-lucide="chevron-down" class="h-5 w-5"></i>
+                </button>
             </div>
             <div class="flex-1 flex flex-col items-center justify-center p-8">
                 <div class="player-meta min-w-0 flex-1 md:max-w-xl text-center">
