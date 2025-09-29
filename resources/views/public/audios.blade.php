@@ -22,7 +22,7 @@
     <div class="space-y-6" data-public-audios data-initial-view="{{ $viewMode }}" data-initial-dark="{{ $dark ? '1' : '0' }}" data-preview-width="{{ $previewWidth }}" data-embed="{{ $isEmbed ? '1' : '0' }}">
         @if($showPreviewBar)
             <div data-preview-bar class="rounded-md border border-border bg-card/90 backdrop-blur px-4 py-3 flex flex-wrap items-center justify-end gap-3 text-sm text-muted-foreground">
-                <a href="{{ $backUrl }}" class="inline-flex items-center rounded-md bg-destructive text-destructive-foreground px-3 py-1.5 text-xs font-medium transition hover:bg-destructive/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
+                <a href="{{ $backUrl }}" target="_top" class="inline-flex items-center rounded-md bg-destructive text-destructive-foreground px-3 py-1.5 text-xs font-medium transition hover:bg-destructive/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
                     Salir
                 </a>
             </div>
