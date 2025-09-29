@@ -186,4 +186,11 @@
     window.addEventListener('resize', update);
   });
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.Player && typeof window.Player.bind === 'function') {
+      window.Player.bind();
+    }
+  });
+</script>
 @endpush

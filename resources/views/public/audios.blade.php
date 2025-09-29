@@ -147,7 +147,7 @@
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--duration"></th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-border bg-background" data-view-active="{{ $viewMode === 'table' ? 'true' : 'false' }}">
+                                    <tbody class="divide-y divide-border bg-card" data-view-active="{{ $viewMode === 'table' ? 'true' : 'false' }}">
                                         @forelse ($audios as $audio)
                                             @php
                                                 $publishDate = $audio->fecha_publicacion ? \Illuminate\Support\Carbon::parse($audio->fecha_publicacion)->locale('es') : null;

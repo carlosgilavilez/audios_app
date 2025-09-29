@@ -31,12 +31,12 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-q" class="text-xs font-semibold tracking-wide text-muted-foreground">Buscar</label>
-        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor" class="w-full rounded-full border border-border bg-background px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
     </div>
 
     <div class="space-y-2">
         <label for="{{ $formId }}-categoria" class="text-xs font-semibold tracking-wide text-muted-foreground">Categoría</label>
-        <select name="categoria_id" id="{{ $formId }}-categoria" class="w-full rounded-full border border-border bg-background px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <select name="categoria_id" id="{{ $formId }}-categoria" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             <option value="">Todas</option>
             @foreach($categorias as $categoria)
                 <option value="{{ $categoria->id }}" @selected($resolvedFilters['categoria_id'] == $categoria->id)>{{ $categoria->nombre }}</option>
@@ -46,7 +46,7 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-autor" class="text-xs font-semibold tracking-wide text-muted-foreground">Autor</label>
-        <select name="autor_id" id="{{ $formId }}-autor" class="w-full rounded-full border border-border bg-background px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <select name="autor_id" id="{{ $formId }}-autor" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             <option value="">Todos</option>
             @foreach($autores as $autor)
                 <option value="{{ $autor->id }}" @selected($resolvedFilters['autor_id'] == $autor->id)>{{ $autor->nombre }}</option>
@@ -56,7 +56,7 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-anio" class="text-xs font-semibold tracking-wide text-muted-foreground">Año</label>
-        <select name="anio" id="{{ $formId }}-anio" class="w-full rounded-full border border-border bg-background px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <select name="anio" id="{{ $formId }}-anio" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             <option value="">Todos</option>
             @foreach($years as $year)
                 <option value="{{ $year }}" @selected($resolvedFilters['anio'] == $year)>{{ $year }}</option>
