@@ -49,9 +49,9 @@
   }
 
   .dark {
-    --background: 220 8% 24%; /* Lighter and grayer */
+    --background: 220 40% 15%; /* Dark Blue */
     --foreground: 210 30% 90%;
-    --card: 220 20% 18%; /* Darker */
+    --card: 220 20% 18% / 0.2; /* Darker and semi-transparent */
     --card-foreground: 210 30% 90%;
     --popover: 220 20% 16%; /* Original dark blue */
     --popover-foreground: 210 30% 90%;

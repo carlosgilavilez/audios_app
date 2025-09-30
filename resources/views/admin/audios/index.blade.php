@@ -65,7 +65,6 @@
                   <th scope="col"></th> {{-- Play --}}
                   <th scope="col" class="w-[280px]">Nombre</th>
                   <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-muted-foreground uppercase tracking-wider">Categoría</th>
-                  <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-muted-foreground uppercase tracking-wider">Autor</th>
                   <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-muted-foreground uppercase tracking-wider">Serie</th>
                   <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-muted-foreground uppercase tracking-wider">Fecha</th>
                   <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-muted-foreground uppercase tracking-wider">Cita Bíblica</th>
@@ -97,11 +96,11 @@
                     @foreach($chunks as $i => $chunk)
                       <span class="block {{ $i>0 ? 'opacity-90' : '' }}">{{ implode(' ', $chunk) }}</span>
                     @endforeach
+                    <div class="text-xs text-muted-foreground">{{ $audio->autor?->nombre ?? '' }}</div>
                   </td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm">
                     <x-ui.cat-badge :name="$audio->categoria?->nombre ?? ''" />
                   </td>
-                  <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm">{{ $audio->autor?->nombre ?? '' }}</td>
                   <td class="px-2 md:px-3 py-3 text-sm whitespace-normal break-words" style="max-width: 220px;">{{ $audio->serie?->nombre ?? '' }}</td>
                   <td class="px-2 md:px-3 py-3 whitespace-nowrap text-sm">{{ $audio->fecha_publicacion ? \Carbon\Carbon::parse($audio->fecha_publicacion)->format('d/m/Y') : '' }}</td>
                   <td class="px-2 md:px-3 py-3 text-sm whitespace-normal break-words" style="max-width: 260px;">{{ trim(($audio->libro?->nombre ?? '') . ' ' . ($audio->cita_biblica ?? '')) }}</td>
