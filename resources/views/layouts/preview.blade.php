@@ -36,6 +36,7 @@
         })();
     </script>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/player.js', 'resources/js/public-audios.js'])
+    @stack('styles')
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-sans antialiased bg-background">

@@ -18,6 +18,50 @@
     };
 @endphp
 
+@push('styles')
+<style>
+    body {
+        background: linear-gradient(to bottom, #e5e7eb, #111827);
+    }
+    .bg-card {
+        background-color: hsla(var(--card) / 0.7) !important;
+    }
+    .bg-muted\/60 {
+        background-color: hsla(var(--muted) / 0.4) !important;
+    }
+    .border-border {
+        border-color: hsla(var(--border) / 0.5) !important;
+    }
+    .bg-card\/80 {
+        background-color: hsla(var(--card) / 0.6) !important;
+    }
+    .bg-card\/90 {
+        background-color: hsla(var(--card) / 0.7) !important;
+    }
+    .bg-background {
+        background-color: transparent !important;
+    }
+    .bg-muted\/40 {
+        background-color: hsla(var(--muted) / 0.2) !important;
+    }
+    [data-results-count] {
+        color: #fff !important;
+    }
+    .text-muted-foreground {
+        color: #d1d5db !important;
+    }
+    .text-foreground {
+        color: #fff !important;
+    }
+    .date-year-link {
+        color: #fff !important;
+    }
+    .link-chip {
+        color: #fff !important;
+    }
+</style>
+@endpush
+
 @section('content')
     <div class="space-y-6" data-public-audios data-initial-view="{{ $viewMode }}" data-initial-dark="{{ $dark ? '1' : '0' }}" data-preview-width="{{ $previewWidth }}" data-embed="{{ $isEmbed ? '1' : '0' }}">
         @if($showPreviewBar)
@@ -63,7 +107,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(260px,320px)_1fr] lg:items-start lg:gap-6 xl:grid-cols-[minmax(280px,320px)_1fr]">
+            <div class="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(220px,280px)_1fr] lg:gap-6 xl:grid-cols-[minmax(240px,300px)_1fr]">
                 <aside class="hidden lg:block" data-sidebar role="complementary" aria-labelledby="desktopFiltersTitle">
                     <div class="sticky top-4 space-y-4">
                         <div class="rounded-2xl border border-border bg-card/90 p-5 shadow-sm">
@@ -105,6 +149,7 @@
                             </button>
                         </div>
                         <div class="flex items-center gap-3">
+                            @include('public.partials.per-page-selector', ['perPage' => $perPage])
                             <p class="text-sm text-muted-foreground" data-results-count aria-live="polite">
                                 {{ trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]) }}
                             </p>
@@ -139,7 +184,6 @@
                                         <tr>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold"></th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold">Título</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold">Autor</th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--category">Categoría</th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--serie">Serie</th>
                                             <th scope="col" class="px-3 py-3 text-left font-semibold table-col--date">Fecha</th>
@@ -186,14 +230,16 @@
                                                         :citation="$cita"
                                                     />
                                                 </td>
-                                                <td class="px-3 py-3 align-top text-foreground font-medium" data-label="Título">{{ $audio->titulo ?? '' }}</td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap" data-label="Autor">
-                                                    @php $authorLink = $audio->autor_id ? route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) : null; @endphp
-                                                    @if($authorLink)
-                                                        <a href="{{ $authorLink }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
-                                                    @else
-                                                        {{ $audio->autor->nombre ?? '' }}
-                                                    @endif
+                                                <td class="px-3 py-3 align-top" data-label="Título">
+                                                    <div class="text-foreground font-medium">{{ $audio->titulo ?? '' }}</div>
+                                                    <div class="text-muted-foreground text-xs">
+                                                        @php $authorLink = $audio->autor_id ? route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) : null; @endphp
+                                                        @if($authorLink)
+                                                            <a href="{{ $authorLink }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
+                                                        @else
+                                                            {{ $audio->autor->nombre ?? '' }}
+                                                        @endif
+                                                    </div>
                                                 </td>
                                                 <td class="px-3 py-3 align-top whitespace-nowrap table-col--category" data-label="Categoría">
                                                     @php $categoryLink = $audio->categoria_id ? route('public.audios', $queryFor(['categoria_id' => $audio->categoria_id])) : null; @endphp
@@ -223,7 +269,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="8" class="px-3 py-12 text-center text-muted-foreground">No hay audios que coincidan con la búsqueda.</td>
+                                                <td colspan="7" class="px-3 py-12 text-center text-muted-foreground">No hay audios que coincidan con la búsqueda.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -322,6 +368,29 @@
                                             <span><span class="sr-only">Duración:</span> <span class="text-foreground">{{ $audio->duracion ?? '' }}</span></span>
                                             <a href="{{ route('public.download_audio', $audio) }}" class="inline-flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1 text-xs font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
                                                 <i data-lucide="download" class="h-4 w-4"></i>
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </article>
+                                @empty
+                                    <div class="col-span-full rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center text-muted-foreground">
+                                        No hay audios que coincidan con la búsqueda.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+                    @if ($audios->hasPages())
+                        <div class="border-t border-border bg-card/70 px-4 py-3 sm:px-6">
+                            {{ $audios->onEachSide(1)->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection"h-4 w-4"></i>
                                                 Descargar
                                             </a>
                                         </div>
