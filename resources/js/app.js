@@ -9,7 +9,7 @@ Alpine.start();
 const ThemeManager = (() => {
   const defaultTheme = 'spotify';
   const themeKey = 'audios-color-theme';
-  const darkKey = 'audios-dark-mode';
+  const darkKey = document.querySelector('[data-public-audios]') ? 'audios-public-dark-mode' : 'audios-dark-mode';
   const root = document.documentElement;
 
   const emit = () => {

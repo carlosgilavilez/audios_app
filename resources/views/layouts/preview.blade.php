@@ -16,7 +16,7 @@
             try {
                 var params = new URLSearchParams(window.location.search);
                 var themeKey = 'audios-color-theme';
-                var darkKey = 'audios-dark-mode';
+                var darkKey = 'audios-public-dark-mode';
                 var theme = 'spotify';
                 document.documentElement.setAttribute('data-theme', theme);
                 try { localStorage.setItem(themeKey, theme); } catch (error) {}
