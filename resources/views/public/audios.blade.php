@@ -20,8 +20,12 @@
 
 @push('styles')
 <style>
-    body {
-        background: linear-gradient(to bottom, #e5e7eb, #111827);
+    html.dark body {
+        background-image: linear-gradient(to bottom, rgba(156, 163, 175, 0.9) 0%, rgba(17, 24, 39, 0.95) 40%), url("{{ asset('images/logo rectangulo total.png') }}");
+        background-size: 100% auto;
+        background-position: top;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
     }
     .bg-card {
         background-color: hsla(var(--card) / 0.7) !important;
@@ -44,19 +48,19 @@
     .bg-muted\/40 {
         background-color: hsla(var(--muted) / 0.2) !important;
     }
-    [data-results-count] {
+    html.dark [data-results-count] {
         color: #fff !important;
     }
-    .text-muted-foreground {
+    html.dark .text-muted-foreground {
         color: #d1d5db !important;
     }
-    .text-foreground {
+    html.dark .text-foreground {
         color: #fff !important;
     }
-    .date-year-link {
+    html.dark .date-year-link {
         color: #fff !important;
     }
-    .link-chip {
+    html.dark .link-chip {
         color: #fff !important;
     }
 </style>
@@ -178,17 +182,17 @@
 
                     <div class="space-y-5" data-view-container>
                         <div data-view-panel="table" @class(['block' => $viewMode === 'table', 'hidden' => $viewMode !== 'table'])>
-                            <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm custom-hscroll">
                                 <table class="wp-track-table w-full min-w-[720px] divide-y divide-border text-sm">
                                     <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
                                         <tr>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold"></th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold">Título</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--category">Categoría</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--serie">Serie</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--date">Fecha</th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--cita"></th>
-                                            <th scope="col" class="px-3 py-3 text-left font-semibold table-col--duration"></th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold"></th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold">Título</th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold table-col--category">Categoría</th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date">Fecha</th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold table-col--cita"></th>
+                                            <th scope="col" class="px-4 py-5 text-left font-semibold table-col--duration"></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-border bg-card" data-view-active="{{ $viewMode === 'table' ? 'true' : 'false' }}">
@@ -215,7 +219,7 @@
                                                 $cita = trim(($audio->libro->nombre ?? '') . ' ' . ($audio->cita_biblica ?? ''));
                                             @endphp
                                             <tr class="transition hover:bg-muted/60">
-                                                <td class="px-3 py-3 whitespace-nowrap align-top" data-label="Reproducir">
+                                                <td class="px-4 py-5 whitespace-nowrap align-top" data-label="Reproducir">
                                                     <x-player.play-button
                                                         :src="route('public.audios.play', $audio)"
                                                         :title="$audio->titulo ?? ''"
@@ -230,7 +234,7 @@
                                                         :citation="$cita"
                                                     />
                                                 </td>
-                                                <td class="px-3 py-3 align-top" data-label="Título">
+                                                <td class="px-4 py-5 align-top" data-label="Título">
                                                     <div class="text-foreground font-medium">{{ $audio->titulo ?? '' }}</div>
                                                     <div class="text-muted-foreground text-xs">
                                                         @php $authorLink = $audio->autor_id ? route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) : null; @endphp
@@ -241,7 +245,7 @@
                                                         @endif
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--category" data-label="Categoría">
+                                                <td class="px-4 py-5 align-top whitespace-nowrap table-col--category" data-label="Categoría">
                                                     @php $categoryLink = $audio->categoria_id ? route('public.audios', $queryFor(['categoria_id' => $audio->categoria_id])) : null; @endphp
                                                     @if($categoryLink)
                                                         <a href="{{ $categoryLink }}" class="link-chip" data-filter-link="categoria">{{ $categoryName }}</a>
@@ -249,8 +253,8 @@
                                                         {{ $categoryName }}
                                                     @endif
                                                 </td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--serie" data-label="Serie">{{ $seriesName }}</td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--date" data-label="Fecha">
+                                                <td class="px-4 py-5 align-top whitespace-nowrap table-col--serie" data-label="Serie">{{ $seriesName }}</td>
+                                                <td class="px-4 py-5 align-top whitespace-nowrap table-col--date" data-label="Fecha">
                                                     @if($formattedDate)
                                                         @if($dateWithoutYear)
                                                             <span class="date-prefix">{{ $dateWithoutYear }}</span>
@@ -264,12 +268,12 @@
                                                         @endif
                                                     @endif
                                                 </td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--cita" data-label="Cita bíblica">{{ $cita }}</td>
-                                                <td class="px-3 py-3 align-top whitespace-nowrap table-col--duration" data-label="">{{ $audio->duracion ?? '' }}</td>
+                                                <td class="px-4 py-5 align-top whitespace-nowrap table-col--cita" data-label="Cita bíblica">{{ $cita }}</td>
+                                                <td class="px-4 py-5 align-top whitespace-nowrap table-col--duration" data-label="">{{ $audio->duracion ?? '' }}</td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="px-3 py-12 text-center text-muted-foreground">No hay audios que coincidan con la búsqueda.</td>
+                                                <td colspan="7" class="px-4 py-12 text-center text-muted-foreground">No hay audios que coincidan con la búsqueda.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -368,29 +372,6 @@
                                             <span><span class="sr-only">Duración:</span> <span class="text-foreground">{{ $audio->duracion ?? '' }}</span></span>
                                             <a href="{{ route('public.download_audio', $audio) }}" class="inline-flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1 text-xs font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
                                                 <i data-lucide="download" class="h-4 w-4"></i>
-                                                Descargar
-                                            </a>
-                                        </div>
-                                    </article>
-                                @empty
-                                    <div class="col-span-full rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center text-muted-foreground">
-                                        No hay audios que coincidan con la búsqueda.
-                                    </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($audios->hasPages())
-                        <div class="border-t border-border bg-card/70 px-4 py-3 sm:px-6">
-                            {{ $audios->onEachSide(1)->links() }}
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection"h-4 w-4"></i>
                                                 Descargar
                                             </a>
                                         </div>
