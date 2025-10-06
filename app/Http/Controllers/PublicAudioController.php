@@ -21,7 +21,7 @@ class PublicAudioController extends Controller
         $isInvalidBackUrl = !$previousUrl || $previousUrl === url()->current() || str_contains($previousUrl, '/login');
         $backUrl = $isInvalidBackUrl ? $homeUrl : $previousUrl;
 
-        $isEmbed = $request->boolean('embed', false);
+        $isEmbed = $request->boolean('embed', false) || $request->routeIs('public.embed');
         $showPreviewBar = !$isEmbed && $request->integer('preview', 1) === 1;
 
         $perPage = (int) $request->input('per_page', 25);
@@ -240,7 +240,6 @@ class PublicAudioController extends Controller
         return $chips;
     }
 }
-
 
 
 

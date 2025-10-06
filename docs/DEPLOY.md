@@ -61,6 +61,7 @@ El programador debe revisar los siguientes puntos en el servidor donde se aloja 
     *   En su lugar, se debe usar la cabecera `Content-Security-Policy` con la directiva `frame-ancestors`.
     *   **Importante:** Esta directiva debe especificar *únicamente* los dominios del sitio de WordPress para asegurar que la aplicación no pueda ser incrustada en otros sitios no autorizados.
     *   **Ejemplo:** `Content-Security-Policy: frame-ancestors https://iglesiapalma.org https://www.iglesiapalma.org;`
+    *   **Mantenimiento:** Los dominios permitidos se controlan con la variable `EMBED_FRAME_ANCESTORS` en `.env` (ver tambi�n `config/security.php`). Ajusta esa lista si cambia la URL que hace el embed.
 
 2.  **HTTPS Obligatorio:**
     *   Toda la aplicación de audios debe servirse bajo HTTPS para evitar problemas de contenido mixto en el navegador.

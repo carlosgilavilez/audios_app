@@ -115,15 +115,12 @@
                 <div class="space-y-5" data-view-container>
                     <div data-view-panel="table" @class(['block' => $viewMode === 'table', 'hidden' => $viewMode !== 'table'])>
                         <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm custom-hscroll">
-                            <table class="wp-track-table w-full min-w-[720px] divide-y divide-border text-sm">
-                                <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
+                                                                        <table class="wp-track-table w-full divide-y divide-border text-sm">                                <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
                                     <tr>
                                         <th scope="col" class="px-4 py-5 text-left font-semibold"></th>
                                         <th scope="col" class="px-4 py-5 text-left font-semibold">Título</th>
-                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--category">Categoría</th>
-                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
-                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date">Fecha</th>
-                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--cita"></th>
+                                                                                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--category hidden lg:table-cell">Categoría</th>                                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--serie hidden lg:table-cell">Serie</th>
+                                                                                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date hidden lg:table-cell">Fecha</th>                                                        <th scope="col" class="px-4 py-5 text-left font-semibold table-col--cita hidden lg:table-cell"></th>
                                         <th scope="col" class="px-4 py-5 text-left font-semibold table-col--duration"></th>
                                     </tr>
                                 </thead>
@@ -177,30 +174,28 @@
                                                     @endif
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--category" data-label="Categoría">
-                                                @php $categoryLink = $audio->categoria_id ? route('public.audios', $queryFor(['categoria_id' => $audio->categoria_id])) : null; @endphp
-                                                @if($categoryLink)
-                                                    <a href="{{ $categoryLink }}" class="link-chip" data-filter-link="categoria">{{ $categoryName }}</a>
-                                                @else
-                                                    {{ $categoryName }}
-                                                @endif
-                                            </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--serie" data-label="Serie">{{ $seriesName }}</td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--date" data-label="Fecha">
-                                                @if($formattedDate)
-                                                    @if($dateWithoutYear)
-                                                        <span class="date-prefix">{{ $dateWithoutYear }}</span>
-                                                    @endif
-                                                    @if($yearToken)
-                                                        @if($yearLink)
-                                                            <a href="{{ $yearLink }}" class="date-year-link" data-filter-link="anio">{{ $yearToken }}</a>
-                                                        @else
-                                                            <span class="date-year-link">{{ $yearToken }}</span>
-                                                        @endif
-                                                    @endif
-                                                @endif
-                                            </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--cita" data-label="Cita bíblica">{{ $cita }}</td>
+                                                                                                        <td class="px-4 py-5 align-top whitespace-nowrap table-col--category hidden lg:table-cell" data-label="Categoría">
+                                                                                                            @php $categoryLink = $audio->categoria_id ? route('public.audios', $queryFor(['categoria_id' => $audio->categoria_id])) : null; @endphp
+                                                                                                            @if($categoryLink)
+                                                                                                                <a href="{{ $categoryLink }}" class="link-chip" data-filter-link="categoria">{{ $categoryName }}</a>
+                                                                                                            @else
+                                                                                                                {{ $categoryName }}
+                                                                                                            @endif
+                                                                                                        </td>                                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--serie hidden lg:table-cell" data-label="Serie">{{ $seriesName }}</td>
+                                                                                                        <td class="px-4 py-5 align-top whitespace-nowrap table-col--date hidden lg:table-cell" data-label="Fecha">
+                                                                                                            @if($formattedDate)
+                                                                                                                @if($dateWithoutYear)
+                                                                                                                    <span class="date-prefix">{{ $dateWithoutYear }}</span>
+                                                                                                                @endif
+                                                                                                                @if($yearToken)
+                                                                                                                    @if($yearLink)
+                                                                                                                        <a href="{{ $yearLink }}" class="date-year-link" data-filter-link="anio">{{ $yearToken }}</a>
+                                                                                                                    @else
+                                                                                                                        <span class="date-year-link">{{ $yearToken }}</span>
+                                                                                                                    @endif
+                                                                                                                @endif
+                                                                                                            @endif
+                                                                                                        </td>                                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--cita hidden lg:table-cell" data-label="Cita bíblica">{{ $cita }}</td>
                                             <td class="px-4 py-5 align-top whitespace-nowrap table-col--duration" data-label="">{{ $audio->duracion ?? '' }}</td>
                                         </tr>
                                     @empty

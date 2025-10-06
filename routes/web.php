@@ -36,8 +36,12 @@ Route::middleware('auth')->group(function () {
 });
 
 // ---------- Rutas públicas ----------
-Route::get('/audios', [PublicAudioController::class, 'index'])->name('public.audios');
-Route::get('/embed', [PublicAudioController::class, 'index'])->name('public.embed');
+Route::get('/audios', [PublicAudioController::class, 'index'])
+    ->middleware('embed.headers')
+    ->name('public.audios');
+Route::get('/embed', [PublicAudioController::class, 'index'])
+    ->middleware('embed.headers')
+    ->name('public.embed');
 Route::get('/public', [PublicAudioController::class, 'view'])->name('public.view');
 Route::get('/play-audio/{audio}', function (Audio $audio) {
     if (!$audio->archivo || !Storage::disk('public')->exists($audio->archivo)) {
