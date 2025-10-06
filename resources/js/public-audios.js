@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const keys = {
-    view: 'public-audios-view',
     width: 'public-audios-preview-width',
   };
 
@@ -69,19 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const viewButtons = Array.from(root.querySelectorAll('[data-view-option]'));
-  const panels = Array.from(root.querySelectorAll('[data-view-panel]'));
-
-  let currentView = params.get('view')
-    || root.dataset.initialView
-    || storage.get(keys.view)
-    || 'table';
-  if (!['table', 'cards'].includes(currentView)) {
-    currentView = 'table';
-  }
-
   const syncUrl = () => {
-    params.set('view', currentView);
+    params.delete('view');
 
     if (previewBar) {
       params.set('wp_width', String(previewWidth));
@@ -145,43 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     applyShellBreakpoint(width);
-  };
-
-  const applyView = (view, { persist = true, skipHistory = false } = {}) => {
-    if (!['table', 'cards'].includes(view)) {
-      view = 'table';
-    }
-    currentView = view;
-
-    panels.forEach((panel) => {
-      const target = panel.getAttribute('data-view-panel');
-      const active = target === view;
-      panel.classList.toggle('hidden', !active);
-      panel.classList.toggle('block', active);
-      if (active) {
-        panel.setAttribute('data-view-active', 'true');
-      } else {
-        panel.removeAttribute('data-view-active');
-      }
-    });
-
-    viewButtons.forEach((button) => {
-      const value = button.getAttribute('data-view-option');
-      const isActive = value === view;
-      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-      button.classList.toggle('is-active', isActive);
-    });
-
-    if (persist) {
-      storage.set(keys.view, view);
-    }
-    if (!skipHistory) {
-      syncUrl();
-    }
-
-    if (window.Player && typeof window.Player.bind === 'function') {
-      window.Player.bind();
-    }
   };
 
   const drawer = root.querySelector('[data-filters-dialog]');
@@ -287,13 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  viewButtons.forEach((button) => {
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      applyView(button.getAttribute('data-view-option'));
-    });
-  });
-
   previewButtons.forEach((button) => {
     button.addEventListener('click', (event) => {
       event.preventDefault();
@@ -313,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', computeWidth);
   }
 
-  applyView(currentView, { persist: false, skipHistory: true });
   syncUrl();
 
   if (window.Player && typeof window.Player.bind === 'function') {

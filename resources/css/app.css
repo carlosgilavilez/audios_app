@@ -796,49 +796,40 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
 }
 
 @media (max-width: 767px) {
+  .wp-track-table {
+    font-size: 0.9rem;
+  }
+
   .wp-track-table thead {
-    display: none;
+    display: table-header-group;
   }
 
   .wp-track-table tr {
-    display: grid;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-bottom: 1px solid hsl(var(--border));
+    display: table-row;
+  }
+
+  .wp-track-table th,
+  .wp-track-table td {
+    white-space: nowrap;
   }
 
   .wp-track-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1.5rem;
-    padding-inline: 0;
-    padding-block: 0.25rem;
-    font-size: 0.95rem;
+    display: table-cell;
+    padding: 0.75rem 1rem;
+    vertical-align: top;
   }
 
   .wp-track-table td::before {
-    content: attr(data-label);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: hsl(var(--muted-foreground));
+    content: none;
   }
 
-  .table-col--category,
-  .table-col--serie,
-  .table-col--cita {
+  .wp-track-table th.table-col--category,
+  .wp-track-table th.table-col--serie,
+  .wp-track-table th.table-col--cita,
+  .wp-track-table td.table-col--category,
+  .wp-track-table td.table-col--serie,
+  .wp-track-table td.table-col--cita {
     display: none;
-  }
-
-  .table-col--date,
-  .table-col--duration {
-    justify-content: flex-start;
-  }
-
-  .table-col--duration::before {
-    content: attr(data-label);
-    margin-right: 0.5rem;
   }
 }
 
@@ -1098,5 +1089,4 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
         display: none;
     }
 }
-
 
