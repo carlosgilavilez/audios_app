@@ -202,6 +202,7 @@
       if (isNaN(this.audio.duration)) return;
       const progress = (this.audio.currentTime / this.audio.duration) * 100;
       this.updateNodeList(this.elements.seek, (element) => { element.value = progress; });
+      this.updateNodeList(this.elements.progressLine, (element) => { element.style.width = `${progress}%`; });
       this.updateNodeList(this.elements.current, (element) => { element.textContent = this.formatTime(this.audio.currentTime); });
     },
 
@@ -284,3 +285,9 @@
 
   playerManager.init();
 });
+
+
+
+
+
+

@@ -68,7 +68,10 @@
     </div>
 
     <div class="md:hidden">
-        <div id="minimized-player" class="mx-auto max-w-screen-xl px-3 py-1.5">
+        <div id="minimized-player" class="relative mx-auto max-w-screen-xl px-3 pt-4 pb-2">
+            <div class="absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden rounded-full">
+                <div id="pl-progress-line-minimized" class="h-full w-0 bg-primary transition-[width] duration-150 ease-out"></div>
+            </div>
             <div class="flex items-center gap-3">
                 <div class="player-meta min-w-0 flex-1">
                     <div class="player-title-marquee" aria-live="polite">
@@ -76,9 +79,6 @@
                     </div>
                     <div class="truncate text-sm opacity-70" id="pl-author-minimized" aria-live="polite">-</div>
                     <div class="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                        <span id="pl-date-minimized" class="hidden"></span>
-                        <span id="pl-category-minimized" class="hidden"></span>
-                        <span id="pl-series-minimized" class="hidden"></span>
                         <span id="pl-citation-minimized" class="hidden"></span>
                     </div>
                 </div>
@@ -105,7 +105,10 @@
             </div>
         </div>
 
-        <div id="expanded-player" class="hidden h-full flex-col bg-gradient-to-b from-primary/90 to-primary/70">
+        <div id="expanded-player" class="relative hidden h-full flex-col bg-gradient-to-b from-primary/90 to-primary/70 pt-6">
+            <div class="absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden">
+                <div id="pl-progress-line-expanded" class="h-full w-0 bg-primary transition-[width] duration-150 ease-out"></div>
+            </div>
             <div class="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border/60">
                 <a id="pl-download-expanded" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-transparent text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Descargar" download>
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -161,3 +164,5 @@
 
   <audio id="pl-audio" preload="metadata" crossorigin="anonymous"></audio>
 </div>
+
+
