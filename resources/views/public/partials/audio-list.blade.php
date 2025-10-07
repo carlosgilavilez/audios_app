@@ -1,6 +1,6 @@
 <div @class([
     'space-y-6',
-    'pt-6 lg:pt-8' => $isEmbed,
+    'pt-10 lg:pt-12' => $isEmbed,
 ])
      data-public-audios
      data-initial-view="{{ $viewMode }}"
