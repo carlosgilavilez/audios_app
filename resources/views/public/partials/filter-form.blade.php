@@ -31,7 +31,7 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-q" class="text-xs font-semibold tracking-wide text-muted-foreground">Buscar</label>
-        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor o serie" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
     </div>
 
     <div class="space-y-2">

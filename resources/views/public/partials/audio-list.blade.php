@@ -91,14 +91,16 @@
             </aside>
 
             <div class="flex flex-col gap-5" data-results>
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        @include('public.partials.per-page-selector', ['perPage' => $perPage])
-                        <p class="text-sm text-muted-foreground" data-results-count aria-live="polite">
-                            {{ trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]) }}
-                        </p>
+                <div class="sticky top-2 z-30 rounded-full border border-border/40 bg-card/95 px-4 py-2 backdrop-blur-md shadow-sm lg:static lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-0 lg:shadow-none">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            @include('public.partials.per-page-selector', ['perPage' => $perPage])
+                            <p class="text-sm text-muted-foreground" data-results-count aria-live="polite">
+                                {{ trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]) }}
+                            </p>
+                        </div>
                         <button type="button"
-                                class="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
+                                class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
                                 data-filters-toggle
                                 aria-haspopup="dialog"
                                 aria-expanded="false"
@@ -127,16 +129,15 @@
                 @endif
 
                 <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm custom-hscroll">
-                    <table class="wp-track-table w-full min-w-[720px] divide-y divide-border text-sm">
+                    <table class="wp-track-table w-full table-fixed divide-y divide-border text-sm">
                         <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
                             <tr>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold"></th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold">T&iacute;tulo</th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--category">Categor&iacute;a</th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date">Fecha</th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--cita"></th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--duration"></th>
+                                <th scope="col" class="w-12 px-4 py-5 text-left font-semibold"></th>
+                                <th scope="col" class="px-4 py-5 text-left font-semibold sm:w-auto w-full">T&iacute;tulo</th>
+                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date w-28 sm:w-32 lg:w-40">Fecha</th>
+                                <th scope="col" class="hidden lg:table-cell px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
+                                <th scope="col" class="hidden xl:table-cell px-4 py-5 text-left font-semibold table-col--cita"></th>
+                                <th scope="col" class="hidden md:table-cell w-20 px-4 py-5 text-left font-semibold table-col--duration"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border bg-card">
@@ -180,9 +181,9 @@
                                                     :citation="$cita"
                                                 />
                                             </td>
-                                            <td class="px-4 py-5 align-top" data-label="T&iacute;tulo">
-                                                <div class="text-foreground font-medium">{{ $audio->titulo ?? '' }}</div>
-                                                <div class="text-muted-foreground text-xs">
+                                            <td class="px-4 py-5 align-top break-words" data-label="T&iacute;tulo">
+                                                <div class="text-foreground font-medium break-words">{{ $audio->titulo ?? '' }}</div>
+                                                <div class="text-muted-foreground text-xs break-words">
                                                     @php
                                                         $authorLink = $audio->autor_id
                                                             ? route('public.audios', $queryFor(['autor_id' => $audio->autor_id]))
@@ -194,23 +195,13 @@
                                                         {{ $audio->autor->nombre ?? '' }}
                                                     @endif
                                                 </div>
-                                            </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--category" data-label="Categor&iacute;a">
-                                                @php
-                                                    $categoryLink = $audio->categoria_id
-                                                        ? route('public.audios', $queryFor(['categoria_id' => $audio->categoria_id]))
-                                                        : null;
-                                                @endphp
-                                                @if ($categoryLink)
-                                                    <a href="{{ $categoryLink }}" class="link-chip" data-filter-link="categoria">{{ $categoryName }}</a>
-                                                @else
-                                                    {{ $categoryName }}
+                                                @if(!empty($audio->duracion))
+                                                    <div class="mt-1 text-[11px] text-muted-foreground md:hidden">
+                                                        {{ $audio->duracion }}
+                                                    </div>
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--serie" data-label="Serie">
-                                                {{ $seriesName }}
-                                            </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--date" data-label="Fecha">
+                                            <td class="px-4 py-5 align-top break-words table-col--date" data-label="Fecha">
                                                 @if ($formattedDate)
                                                     @if ($dateWithoutYear)
                                                         <span class="date-prefix">{{ $dateWithoutYear }}</span>
@@ -224,10 +215,13 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--cita" data-label="Cita b&iacute;blica">
+                                            <td class="hidden lg:table-cell px-4 py-5 align-top break-words table-col--serie" data-label="Serie">
+                                                {{ $seriesName }}
+                                            </td>
+                                            <td class="hidden xl:table-cell px-4 py-5 align-top break-words table-col--cita" data-label="Cita b&iacute;blica">
                                                 {{ $cita }}
                                             </td>
-                                            <td class="px-4 py-5 align-top whitespace-nowrap table-col--duration" data-label="Duraci&oacute;n">
+                                            <td class="hidden md:table-cell px-4 py-5 align-top table-col--duration break-words">
                                                 {{ $audio->duracion ?? '' }}
                                             </td>
                                         </tr>

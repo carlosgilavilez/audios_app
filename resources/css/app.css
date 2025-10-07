@@ -792,12 +792,24 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
 .wp-track-table .table-col--date,
 .wp-track-table .table-col--cita,
 .wp-track-table .table-col--duration {
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+}
+
+@media (min-width: 1024px) {
+  .wp-track-table .table-col--category,
+  .wp-track-table .table-col--serie,
+  .wp-track-table .table-col--date,
+  .wp-track-table .table-col--cita,
+  .wp-track-table .table-col--duration {
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 767px) {
   .wp-track-table {
     font-size: 0.9rem;
+    table-layout: fixed;
   }
 
   .wp-track-table thead {
@@ -810,26 +822,17 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
 
   .wp-track-table th,
   .wp-track-table td {
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .wp-track-table td {
     display: table-cell;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0.75rem;
     vertical-align: top;
   }
 
   .wp-track-table td::before {
     content: none;
-  }
-
-  .wp-track-table th.table-col--category,
-  .wp-track-table th.table-col--serie,
-  .wp-track-table th.table-col--cita,
-  .wp-track-table td.table-col--category,
-  .wp-track-table td.table-col--serie,
-  .wp-track-table td.table-col--cita {
-    display: none;
   }
 }
 
@@ -1089,4 +1092,3 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
         display: none;
     }
 }
-
