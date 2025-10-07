@@ -93,26 +93,25 @@
             <div class="flex flex-col gap-5" data-results>
                 @php
                     $resultLabel = trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]);
-                    $resultParts = explode(' ', $resultLabel, 2);
                 @endphp
-                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-1.5 backdrop-blur-md shadow-sm mobile-results-toolbar lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
+                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-2 backdrop-blur-md shadow-sm mobile-results-toolbar lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
+                    <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                        <div class="flex flex-col gap-1">
                             @include('public.partials.per-page-selector', ['perPage' => $perPage])
-                            <div class="flex flex-col leading-tight text-muted-foreground text-[11px] uppercase tracking-wide">
-                                <span class="text-base font-semibold text-foreground leading-none">{{ $resultParts[0] ?? $resultCount }}</span>
-                                <span class="truncate">{{ $resultParts[1] ?? 'audios encontrados' }}</span>
-                            </div>
+                            <span class="text-[11px] uppercase tracking-wide text-muted-foreground lg:hidden">{{ $resultLabel }}</span>
                         </div>
-                        <button type="button"
-                                class="inline-flex items-center gap-2 bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
-                                data-filters-toggle
-                                aria-haspopup="dialog"
-                                aria-expanded="false"
-                                aria-controls="mobile-filters-form">
-                            <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
-                            <span>Filtros</span>
-                        </button>
+                        <div class="flex items-center justify-end gap-2">
+                            <span class="hidden text-sm font-medium text-foreground lg:inline">{{ $resultLabel }}</span>
+                            <button type="button"
+                                    class="inline-flex items-center gap-2 bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-full lg:hidden"
+                                    data-filters-toggle
+                                    aria-haspopup="dialog"
+                                    aria-expanded="false"
+                                    aria-controls="mobile-filters-form">
+                                <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                                <span>Filtros</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -330,3 +329,6 @@
         </div>
     </div>
 </div>
+
+
+

@@ -1,7 +1,7 @@
 <div id="sticky-player"
      data-player-expanded="false"
-     class="hidden opacity-0 transition-all duration-200
-            fixed inset-x-0 top-0 md:top-auto md:bottom-0 bottom-auto z-50 border-b md:border-t border-border/60
+     class="hidden opacity-0 translate-y-2 transition-all duration-200
+            fixed inset-x-0 bottom-0 z-50 border-t border-border/60
             bg-card/85 backdrop-blur-md supports-[backdrop-filter]:bg-card/80
             text-foreground">
 
@@ -35,6 +35,7 @@
               <span id="pl-date" class="hidden"></span>
               <span id="pl-category" class="hidden"></span>
               <span id="pl-series" class="hidden"></span>
+              <span id="pl-citation" class="hidden"></span>
             </div>
           </div>
 
@@ -78,6 +79,7 @@
                         <span id="pl-date-minimized" class="hidden"></span>
                         <span id="pl-category-minimized" class="hidden"></span>
                         <span id="pl-series-minimized" class="hidden"></span>
+                        <span id="pl-citation-minimized" class="hidden"></span>
                     </div>
                 </div>
                 <div class="player-controls-primary flex items-center gap-2">
@@ -123,6 +125,7 @@
                         <div id="pl-date-expanded" class="hidden"></div>
                         <div id="pl-category-expanded" class="hidden"></div>
                         <div id="pl-series-expanded" class="hidden"></div>
+                        <div id="pl-citation-expanded" class="hidden"></div>
                     </div>
                 </div>
                 <div class="player-progress w-full max-w-md flex flex-col items-center gap-3 mt-8">
