@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function () {
             forward10: document.querySelectorAll('[id^="pl-forward-10"]'),
             title: document.querySelectorAll('[id^="pl-title"]'),
             author: document.querySelectorAll('[id^="pl-author"]'),
+            category: document.querySelectorAll('[id^="pl-category"]'),
+            series: document.querySelectorAll('[id^="pl-series"]'),
+            dateMeta: document.querySelectorAll('[id^="pl-date"]'),
             current: document.querySelectorAll('[id^="pl-current"]'),
             duration: document.querySelectorAll('[id^="pl-duration"]'),
             seek: document.querySelectorAll('[id^="pl-seek"]'),
@@ -46,8 +49,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const trackButtons = document.querySelectorAll('.btn-play[data-audio-src]');
             this.state.playlist = Array.from(trackButtons).map((button, index) => ({
                 src: button.dataset.audioSrc,
-                title: button.dataset.title || 'Pista sin tÃ­tulo',
+                title: button.dataset.title || 'Pista sin título',
                 author: button.dataset.author || 'Autor desconocido',
+                category: button.dataset.category || '',
+                series: button.dataset.series || '',
+                date: button.dataset.date || '',
                 download: button.dataset.download,
                 button: button
             }));
@@ -105,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.audio.play().catch(e => console.error('Error playing audio:', e));
 
             if (this.stickyPlayer.classList.contains('hidden')) {
-                this.stickyPlayer.classList.remove('hidden', 'opacity-0', 'translate-y-2');
+                this.stickyPlayer.classList.remove('hidden', 'opacity-0', '-translate-y-2', 'translate-y-2');
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         },
@@ -147,6 +153,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     el.style.display = 'none';
                 }
             });
+            this.updateMetaField(this.elements.category, track.category);
+            this.updateMetaField(this.elements.series, track.series);
+            this.updateMetaField(this.elements.dateMeta, track.date);
         },
 
         togglePlayPause() {
@@ -226,3 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     playerManager.init();
 });
+
+
+
+
+
+

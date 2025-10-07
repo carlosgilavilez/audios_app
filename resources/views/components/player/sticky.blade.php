@@ -1,7 +1,7 @@
 <div id="sticky-player"
      data-player-expanded="false"
-     class="hidden opacity-0 translate-y-2 transition-all duration-200
-            fixed inset-x-0 bottom-0 z-50 border-t border-border/60
+     class="hidden opacity-0 -translate-y-2 md:translate-y-2 transition-all duration-200
+            fixed inset-x-0 top-0 md:top-auto md:bottom-0 bottom-auto z-50 border-b md:border-t border-border/60
             bg-card/85 backdrop-blur-md supports-[backdrop-filter]:bg-card/80
             text-foreground">
 
@@ -31,6 +31,11 @@
               <span id="pl-title" data-marquee="-">-</span>
             </div>
             <div class="truncate text-sm opacity-70" id="pl-author" aria-live="polite">-</div>
+            <div class="hidden md:flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-1">
+              <span id="pl-date" class="hidden"></span>
+              <span id="pl-category" class="hidden"></span>
+              <span id="pl-series" class="hidden"></span>
+            </div>
           </div>
 
           <div class="player-progress flex flex-1 items-center gap-3">
@@ -62,13 +67,18 @@
     </div>
 
     <div class="md:hidden">
-        <div id="minimized-player" class="mx-auto max-w-screen-xl px-3 sm:px-6 py-2">
+        <div id="minimized-player" class="mx-auto max-w-screen-xl px-3 py-1.5">
             <div class="flex items-center gap-3">
                 <div class="player-meta min-w-0 flex-1">
                     <div class="player-title-marquee" aria-live="polite">
                         <span id="pl-title-minimized" data-marquee="-">-</span>
                     </div>
                     <div class="truncate text-sm opacity-70" id="pl-author-minimized" aria-live="polite">-</div>
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                        <span id="pl-date-minimized" class="hidden"></span>
+                        <span id="pl-category-minimized" class="hidden"></span>
+                        <span id="pl-series-minimized" class="hidden"></span>
+                    </div>
                 </div>
                 <div class="player-controls-primary flex items-center gap-2">
                     <button id="pl-prev-minimized" class="inline-flex items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Pista anterior">
@@ -109,6 +119,11 @@
                 <div class="player-meta min-w-0 flex-1 md:max-w-xl text-center">
                     <div class="text-2xl font-bold" id="pl-title-expanded">-</div>
                     <div class="text-lg opacity-70" id="pl-author-expanded">-</div>
+                    <div class="mt-3 space-y-1 text-sm text-foreground/80" aria-live="polite">
+                        <div id="pl-date-expanded" class="hidden"></div>
+                        <div id="pl-category-expanded" class="hidden"></div>
+                        <div id="pl-series-expanded" class="hidden"></div>
+                    </div>
                 </div>
                 <div class="player-progress w-full max-w-md flex flex-col items-center gap-3 mt-8">
                     <div class="w-full flex justify-between text-xs tabular-nums">

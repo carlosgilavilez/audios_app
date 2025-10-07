@@ -91,16 +91,21 @@
             </aside>
 
             <div class="flex flex-col gap-5" data-results>
-                <div class="sticky top-2 z-30 rounded-full border border-border/40 bg-card/95 px-4 py-2 backdrop-blur-md shadow-sm lg:static lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-0 lg:shadow-none">
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
+                @php
+                    $resultLabel = trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]);
+                    $resultParts = explode(' ', $resultLabel, 2);
+                @endphp
+                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-1.5 backdrop-blur-md shadow-sm lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
                             @include('public.partials.per-page-selector', ['perPage' => $perPage])
-                            <p class="text-sm text-muted-foreground" data-results-count aria-live="polite">
-                                {{ trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]) }}
-                            </p>
+                            <div class="flex flex-col leading-tight text-muted-foreground text-[11px] uppercase tracking-wide">
+                                <span class="text-base font-semibold text-foreground leading-none">{{ $resultParts[0] ?? $resultCount }}</span>
+                                <span class="truncate">{{ $resultParts[1] ?? 'audios encontrados' }}</span>
+                            </div>
                         </div>
                         <button type="button"
-                                class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
+                                class="inline-flex items-center gap-2 bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
                                 data-filters-toggle
                                 aria-haspopup="dialog"
                                 aria-expanded="false"
@@ -132,9 +137,9 @@
                     <table class="wp-track-table w-full table-fixed divide-y divide-border text-sm">
                         <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
                             <tr>
-                                <th scope="col" class="w-12 px-4 py-5 text-left font-semibold"></th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold sm:w-auto w-full">T&iacute;tulo</th>
-                                <th scope="col" class="px-4 py-5 text-left font-semibold table-col--date w-28 sm:w-32 lg:w-40">Fecha</th>
+                                <th scope="col" class="w-12 px-4 py-4 text-left font-semibold"></th>
+                                <th scope="col" class="px-4 py-4 text-left font-semibold sm:w-auto w-full">T&iacute;tulo</th>
+                                <th scope="col" class="px-4 py-4 text-left font-semibold table-col--date w-28 sm:w-32 lg:w-36 xl:w-40">Fecha</th>
                                 <th scope="col" class="hidden lg:table-cell px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
                                 <th scope="col" class="hidden xl:table-cell px-4 py-5 text-left font-semibold table-col--cita"></th>
                                 <th scope="col" class="hidden md:table-cell w-20 px-4 py-5 text-left font-semibold table-col--duration"></th>
@@ -181,9 +186,9 @@
                                                     :citation="$cita"
                                                 />
                                             </td>
-                                            <td class="px-4 py-5 align-top break-words" data-label="T&iacute;tulo">
+                                            <td class="px-4 py-4 align-top break-words" data-label="T&iacute;tulo">
                                                 <div class="text-foreground font-medium break-words">{{ $audio->titulo ?? '' }}</div>
-                                                <div class="text-muted-foreground text-xs break-words">
+                                                <div class="text-muted-foreground text-xs break-words mt-1">
                                                     @php
                                                         $authorLink = $audio->autor_id
                                                             ? route('public.audios', $queryFor(['autor_id' => $audio->autor_id]))
@@ -196,23 +201,30 @@
                                                     @endif
                                                 </div>
                                                 @if(!empty($audio->duracion))
-                                                    <div class="mt-1 text-[11px] text-muted-foreground md:hidden">
+                                                    <div class="mt-1.5 text-[11px] text-muted-foreground md:hidden">
                                                         {{ $audio->duracion }}
                                                     </div>
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-5 align-top break-words table-col--date" data-label="Fecha">
+                                            <td class="px-4 py-4 align-top break-words table-col--date" data-label="Fecha">
                                                 @if ($formattedDate)
-                                                    @if ($dateWithoutYear)
-                                                        <span class="date-prefix">{{ $dateWithoutYear }}</span>
-                                                    @endif
-                                                    @if ($yearToken)
-                                                        @if ($yearLink)
-                                                            <a href="{{ $yearLink }}" class="date-year-link" data-filter-link="anio">{{ $yearToken }}</a>
-                                                        @else
-                                                            <span class="date-year-link">{{ $yearToken }}</span>
+                                                    <div class="flex flex-wrap items-baseline gap-1">
+                                                        @if ($dateWithoutYear)
+                                                            <span class="date-prefix">{{ $dateWithoutYear }}</span>
                                                         @endif
-                                                    @endif
+                                                        @if ($yearToken)
+                                                            @if ($yearLink)
+                                                                <a href="{{ $yearLink }}" class="date-year-link font-semibold" data-filter-link="anio">{{ $yearToken }}</a>
+                                                            @else
+                                                                <span class="date-year-link font-semibold">{{ $yearToken }}</span>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                @if ($categoryName)
+                                                    <div class="mt-1 text-[11px] text-muted-foreground">
+                                                        {{ $categoryName }}
+                                                    </div>
                                                 @endif
                                             </td>
                                             <td class="hidden lg:table-cell px-4 py-5 align-top break-words table-col--serie" data-label="Serie">
