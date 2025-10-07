@@ -1092,3 +1092,28 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
         display: none;
     }
 }
+
+body.player-visible-top {
+  padding-top: var(--player-top-offset, 72px);
+}
+
+body.player-visible-bottom {
+  padding-bottom: var(--player-bottom-offset, 80px);
+}
+
+@media (min-width: 768px) {
+  body.player-visible-top {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  body.player-visible-bottom {
+    padding-bottom: 0;
+  }
+
+  body.player-visible-top .mobile-results-toolbar {
+    top: calc(var(--player-top-offset, 0px) + 0.5rem);
+  }
+}
+

@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', function () {
+ï»¿document.addEventListener('DOMContentLoaded', function () {
     const playerManager = {
         audio: document.getElementById('pl-audio'),
         stickyPlayer: document.getElementById('sticky-player'),
-        
+
         elements: {
             play: document.querySelectorAll('[id^="pl-play"]'),
             playIcon: document.querySelectorAll('[id^="pl-play-icon"]'),
@@ -43,19 +43,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             this.collectPlaylist();
             this.bindEventListeners();
+            window.addEventListener('resize', () => this.adjustBodyOffset());
         },
 
         collectPlaylist() {
             const trackButtons = document.querySelectorAll('.btn-play[data-audio-src]');
             this.state.playlist = Array.from(trackButtons).map((button, index) => ({
                 src: button.dataset.audioSrc,
-                title: button.dataset.title || 'Pista sin título',
+                title: button.dataset.title || 'Pista sin titulo',
                 author: button.dataset.author || 'Autor desconocido',
                 category: button.dataset.category || '',
                 series: button.dataset.series || '',
                 date: button.dataset.date || '',
                 download: button.dataset.download,
-                button: button
+                button,
             }));
         },
 
@@ -71,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
 
-            this.elements.play.forEach(btn => btn.addEventListener('click', () => this.togglePlayPause()));
-            this.elements.next.forEach(btn => btn.addEventListener('click', () => this.playNext()));
-            this.elements.prev.forEach(btn => btn.addEventListener('click', () => this.playPrev()));
-            this.elements.back10.forEach(btn => btn.addEventListener('click', () => this.audio.currentTime -= 10));
-            this.elements.forward10.forEach(btn => btn.addEventListener('click', () => this.audio.currentTime += 10));
+            this.elements.play.forEach((btn) => btn.addEventListener('click', () => this.togglePlayPause()));
+            this.elements.next.forEach((btn) => btn.addEventListener('click', () => this.playNext()));
+            this.elements.prev.forEach((btn) => btn.addEventListener('click', () => this.playPrev()));
+            this.elements.back10.forEach((btn) => btn.addEventListener('click', () => { this.audio.currentTime -= 10; }));
+            this.elements.forward10.forEach((btn) => btn.addEventListener('click', () => { this.audio.currentTime += 10; }));
 
             this.audio.addEventListener('timeupdate', () => this.updateProgress());
             this.audio.addEventListener('loadedmetadata', () => this.updateDuration());
@@ -83,11 +84,14 @@ document.addEventListener('DOMContentLoaded', function () {
             this.audio.addEventListener('play', () => this.updatePlayState(true));
             this.audio.addEventListener('pause', () => this.updatePlayState(false));
 
-            this.elements.seek.forEach(bar => bar.addEventListener('input', (e) => this.seek(e.target.value)));
-            this.elements.volume.addEventListener('input', (e) => this.setVolume(e.target.value));
-            this.elements.volumeToggle.addEventListener('click', () => this.toggleMute());
+            this.elements.seek.forEach((bar) => bar.addEventListener('input', (e) => this.seek(e.target.value)));
+            if (this.elements.volume) {
+                this.elements.volume.addEventListener('input', (e) => this.setVolume(e.target.value));
+            }
+            if (this.elements.volumeToggle) {
+                this.elements.volumeToggle.addEventListener('click', () => this.toggleMute());
+            }
 
-            // Mobile expand/collapse
             if (this.elements.expand) {
                 this.elements.expand.addEventListener('click', () => this.expandPlayer());
             }
@@ -107,19 +111,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.audio.src = track.src;
             this.updateMetadata(track);
-            
-            this.audio.play().catch(e => console.error('Error playing audio:', e));
+
+            this.audio.play().catch((e) => console.error('Error playing audio:', e));
 
             if (this.stickyPlayer.classList.contains('hidden')) {
-                this.stickyPlayer.classList.remove('hidden', 'opacity-0', '-translate-y-2', 'translate-y-2');
+                this.stickyPlayer.classList.remove('hidden', 'opacity-0', '-translate-y-2', 'translate-y-2', 'md:translate-y-2');
+                this.stickyPlayer.style.transform = 'translateY(0)';
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
+
+            this.adjustBodyOffset();
         },
-        
+
         updatePlayState(isPlaying) {
             this.state.isPlaying = isPlaying;
-            this.updateNodeList(this.elements.playIcon, el => el.classList.toggle('hidden', isPlaying));
-            this.updateNodeList(this.elements.pauseIcon, el => el.classList.toggle('hidden', !isPlaying));
+            this.updateNodeList(this.elements.playIcon, (el) => el.classList.toggle('hidden', isPlaying));
+            this.updateNodeList(this.elements.pauseIcon, (el) => el.classList.toggle('hidden', !isPlaying));
             this.updateActiveButton(isPlaying);
         },
 
@@ -127,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (this.state.activeButton) {
                 this.setButtonState(this.state.activeButton, false);
             }
-            
+
             const currentTrack = this.state.playlist[this.state.currentIndex];
             if (currentTrack) {
                 this.state.activeButton = currentTrack.button;
@@ -143,9 +150,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         updateMetadata(track) {
-            this.updateNodeList(this.elements.title, el => el.textContent = track.title);
-            this.updateNodeList(this.elements.author, el => el.textContent = track.author);
-            this.updateNodeList(this.elements.download, el => {
+            this.updateNodeList(this.elements.title, (el) => { el.textContent = track.title; });
+            this.updateNodeList(this.elements.author, (el) => { el.textContent = track.author; });
+            this.updateNodeList(this.elements.download, (el) => {
                 if (track.download) {
                     el.href = track.download;
                     el.style.display = 'inline-flex';
@@ -165,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (this.state.currentIndex === -1) {
                     this.playTrack(0);
                 } else {
-                    this.audio.play().catch(e => console.error('Error resuming audio:', e));
+                    this.audio.play().catch((e) => console.error('Error resuming audio:', e));
                 }
             }
         },
@@ -173,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
         playNext() {
             let nextIndex = this.state.currentIndex + 1;
             if (nextIndex >= this.state.playlist.length) {
-                nextIndex = 0; 
+                nextIndex = 0;
             }
             this.playTrack(nextIndex);
         },
@@ -189,12 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
         updateProgress() {
             if (isNaN(this.audio.duration)) return;
             const progress = (this.audio.currentTime / this.audio.duration) * 100;
-            this.updateNodeList(this.elements.seek, el => el.value = progress);
-            this.updateNodeList(this.elements.current, el => el.textContent = this.formatTime(this.audio.currentTime));
+            this.updateNodeList(this.elements.seek, (el) => { el.value = progress; });
+            this.updateNodeList(this.elements.current, (el) => { el.textContent = this.formatTime(this.audio.currentTime); });
         },
 
         updateDuration() {
-            this.updateNodeList(this.elements.duration, el => el.textContent = this.formatTime(this.audio.duration));
+            this.updateNodeList(this.elements.duration, (el) => { el.textContent = this.formatTime(this.audio.duration); });
         },
 
         seek(value) {
@@ -203,11 +210,12 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         setVolume(value) {
+            if (!this.audio) return;
             this.audio.volume = value;
             this.audio.muted = value == 0;
             this.state.isMuted = value == 0;
         },
-        
+
         toggleMute() {
             this.audio.muted = !this.audio.muted;
             this.state.isMuted = this.audio.muted;
@@ -216,10 +224,12 @@ document.addEventListener('DOMContentLoaded', function () {
         expandPlayer() {
             document.body.classList.add('player-expanded');
             if (typeof lucide !== 'undefined') lucide.createIcons();
+            this.adjustBodyOffset();
         },
 
         collapsePlayer() {
             document.body.classList.remove('player-expanded');
+            this.adjustBodyOffset();
         },
 
         formatTime(seconds) {
@@ -228,16 +238,45 @@ document.addEventListener('DOMContentLoaded', function () {
             return `${min}:${sec < 10 ? '0' : ''}${sec}`;
         },
 
+        updateMetaField(nodes, value) {
+            this.updateNodeList(nodes, (el) => {
+                if (!el) return;
+                if (value) {
+                    el.textContent = value;
+                    el.classList.remove('hidden');
+                } else {
+                    el.textContent = '';
+                    el.classList.add('hidden');
+                }
+            });
+        },
+
+        adjustBodyOffset() {
+            if (!this.stickyPlayer) return;
+            const height = this.stickyPlayer.offsetHeight || 0;
+            const body = document.body;
+
+            if (height === 0) return;
+
+            const isMobile = window.matchMedia('(max-width: 767px)').matches;
+            if (isMobile) {
+                body.classList.add('player-visible-top');
+                body.classList.remove('player-visible-bottom');
+                body.style.setProperty('--player-top-offset', `${height}px`);
+                body.style.removeProperty('--player-bottom-offset');
+            } else {
+                body.classList.add('player-visible-bottom');
+                body.classList.remove('player-visible-top');
+                body.style.setProperty('--player-bottom-offset', `${height}px`);
+                body.style.removeProperty('--player-top-offset');
+            }
+        },
+
         updateNodeList(nodeList, callback) {
-            nodeList.forEach(node => callback(node));
-        }
+            if (!nodeList) return;
+            nodeList.forEach((node) => callback(node));
+        },
     };
 
     playerManager.init();
 });
-
-
-
-
-
-

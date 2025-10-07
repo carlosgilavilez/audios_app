@@ -1,4 +1,4 @@
-{
+﻿{
   "_pusher-LfkwaHMO.js": {
     "file": "assets/pusher-LfkwaHMO.js",
     "name": "pusher",
@@ -11,7 +11,7 @@
     "isDynamicEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dr5FxVrU.css",
+    "file": "assets/app-OpP00fnr.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -19,7 +19,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-Bl8yMvwA.js",
+    "file": "assets/app-BDvLMp5c.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -29,7 +29,7 @@
     ]
   },
   "resources/js/player.js": {
-    "file": "assets/player-8lVK80kf.js",
+    "file": "assets/player-CuOIJpsJ.js",
     "name": "player",
     "src": "resources/js/player.js",
     "isEntry": true

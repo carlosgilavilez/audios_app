@@ -95,7 +95,7 @@
                     $resultLabel = trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]);
                     $resultParts = explode(' ', $resultLabel, 2);
                 @endphp
-                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-1.5 backdrop-blur-md shadow-sm lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
+                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-1.5 backdrop-blur-md shadow-sm mobile-results-toolbar lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
                             @include('public.partials.per-page-selector', ['perPage' => $perPage])
@@ -133,20 +133,102 @@
                     </div>
                 @endif
 
-                <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm custom-hscroll">
-                    <table class="wp-track-table w-full table-fixed divide-y divide-border text-sm">
-                        <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
-                            <tr>
-                                <th scope="col" class="w-12 px-4 py-4 text-left font-semibold"></th>
-                                <th scope="col" class="px-4 py-4 text-left font-semibold sm:w-auto w-full">T&iacute;tulo</th>
-                                <th scope="col" class="px-4 py-4 text-left font-semibold table-col--date w-28 sm:w-32 lg:w-36 xl:w-40">Fecha</th>
-                                <th scope="col" class="hidden lg:table-cell px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
-                                <th scope="col" class="hidden xl:table-cell px-4 py-5 text-left font-semibold table-col--cita"></th>
-                                <th scope="col" class="hidden md:table-cell w-20 px-4 py-5 text-left font-semibold table-col--duration"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border bg-card">
-                                    @forelse ($audios as $audio)
+                @if ($audios->isEmpty())
+                    <div class="rounded-xl border border-border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
+                        No hay audios que coincidan con la busqueda.
+                    </div>
+                @else
+                    <div class="md:hidden space-y-3">
+                        @foreach ($audios as $audio)
+                            @php
+                                $publishDate = $audio->fecha_publicacion
+                                    ? \Illuminate\Support\Carbon::parse($audio->fecha_publicacion)->locale('es')
+                                    : null;
+                                $formattedDate = '';
+                                $dateParts = [];
+                                $yearValue = null;
+                                $yearLink = null;
+                                if ($publishDate) {
+                                    $formattedDate = \Illuminate\Support\Str::lower(str_replace('.', '', $publishDate->isoFormat('D MMM YYYY')));
+                                    $dateParts = array_values(array_filter(explode(' ', $formattedDate)));
+                                    $yearValue = (int) $publishDate->year;
+                                    $yearLink = route('public.audios', $queryFor(['anio' => $yearValue]));
+                                }
+                                $yearToken = null;
+                                if (!empty($dateParts)) {
+                                    $yearToken = array_pop($dateParts);
+                                }
+                                $dateWithoutYear = trim(implode(' ', $dateParts));
+                                $categoryName = $audio->categoria->nombre ?? '';
+                                $seriesName = $audio->serie->nombre ?? '';
+                                $cita = trim(($audio->libro->nombre ?? '') . ' ' . ($audio->cita_biblica ?? ''));
+                            @endphp
+                            <article class="flex items-start gap-3 rounded-2xl border border-border bg-card/90 px-4 py-3 shadow-sm">
+                                <x-player.play-button
+                                    :src="route('public.audios.play', $audio)"
+                                    :title="$audio->titulo ?? ''"
+                                    :author="$audio->autor->nombre ?? ''"
+                                    :download="route('public.download_audio', $audio)"
+                                    :index="$loop->index"
+                                    :category="$categoryName"
+                                    :series="$seriesName"
+                                    :date="$formattedDate"
+                                    :year="$yearValue"
+                                    :year-link="$yearLink"
+                                    :citation="$cita"
+                                />
+                                <div class="min-w-0 flex-1 space-y-1.5">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-semibold text-foreground break-words">{{ $audio->titulo ?? '' }}</div>
+                                            <div class="text-xs text-muted-foreground break-words">{{ $audio->autor->nombre ?? '' }}</div>
+                                        </div>
+                                        <div class="text-right text-xs text-muted-foreground">
+                                            @if ($formattedDate)
+                                                <div class="whitespace-nowrap">
+                                                    @if ($dateWithoutYear)
+                                                        <span class="date-prefix">{{ $dateWithoutYear }}</span>
+                                                    @endif
+                                                    @if ($yearToken)
+                                                        @if ($yearLink)
+                                                            <a href="{{ $yearLink }}" class="date-year-link font-semibold" data-filter-link="anio">{{ $yearToken }}</a>
+                                                        @else
+                                                            <span class="date-year-link font-semibold">{{ $yearToken }}</span>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            @if(!empty($audio->duracion))
+                                                <div class="mt-1 text-[11px] text-muted-foreground">{{ $audio->duracion }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if ($categoryName)
+                                        <div class="text-[11px] uppercase tracking-wide text-muted-foreground">{{ $categoryName }}</div>
+                                    @endif
+                                    @if ($seriesName)
+                                        <div class="text-[11px] text-muted-foreground">{{ $seriesName }}</div>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="hidden md:block">
+                        <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm custom-hscroll">
+                            <table class="wp-track-table w-full table-fixed divide-y divide-border text-sm">
+                                <thead class="bg-muted/60 text-muted-foreground tracking-wide text-xs uppercase">
+                                    <tr>
+                                        <th scope="col" class="w-12 px-4 py-4 text-left font-semibold"></th>
+                                        <th scope="col" class="px-4 py-4 text-left font-semibold">T&iacute;tulo</th>
+                                        <th scope="col" class="px-4 py-4 text-left font-semibold table-col--date w-32">Fecha</th>
+                                        <th scope="col" class="hidden lg:table-cell px-4 py-5 text-left font-semibold table-col--serie">Serie</th>
+                                        <th scope="col" class="hidden xl:table-cell px-4 py-5 text-left font-semibold table-col--cita"></th>
+                                        <th scope="col" class="hidden md:table-cell w-24 px-4 py-5 text-left font-semibold table-col--duration"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-border bg-card">
+                                    @foreach ($audios as $audio)
                                         @php
                                             $publishDate = $audio->fecha_publicacion
                                                 ? \Illuminate\Support\Carbon::parse($audio->fecha_publicacion)->locale('es')
@@ -171,7 +253,7 @@
                                             $cita = trim(($audio->libro->nombre ?? '') . ' ' . ($audio->cita_biblica ?? ''));
                                         @endphp
                                         <tr class="transition hover:bg-muted/60">
-                                            <td class="px-4 py-5 whitespace-nowrap align-top" data-label="Reproducir">
+                                            <td class="px-4 py-5 whitespace-nowrap align-top">
                                                 <x-player.play-button
                                                     :src="route('public.audios.play', $audio)"
                                                     :title="$audio->titulo ?? ''"
@@ -186,7 +268,7 @@
                                                     :citation="$cita"
                                                 />
                                             </td>
-                                            <td class="px-4 py-4 align-top break-words" data-label="T&iacute;tulo">
+                                            <td class="px-4 py-4 align-top break-words">
                                                 <div class="text-foreground font-medium break-words">{{ $audio->titulo ?? '' }}</div>
                                                 <div class="text-muted-foreground text-xs break-words mt-1">
                                                     @php
@@ -200,13 +282,8 @@
                                                         {{ $audio->autor->nombre ?? '' }}
                                                     @endif
                                                 </div>
-                                                @if(!empty($audio->duracion))
-                                                    <div class="mt-1.5 text-[11px] text-muted-foreground md:hidden">
-                                                        {{ $audio->duracion }}
-                                                    </div>
-                                                @endif
                                             </td>
-                                            <td class="px-4 py-4 align-top break-words table-col--date" data-label="Fecha">
+                                            <td class="px-4 py-4 align-top break-words table-col--date">
                                                 @if ($formattedDate)
                                                     <div class="flex flex-wrap items-baseline gap-1">
                                                         @if ($dateWithoutYear)
@@ -227,30 +304,22 @@
                                                     </div>
                                                 @endif
                                             </td>
-                                            <td class="hidden lg:table-cell px-4 py-5 align-top break-words table-col--serie" data-label="Serie">
+                                            <td class="hidden lg:table-cell px-4 py-5 align-top break-words table-col--serie">
                                                 {{ $seriesName }}
                                             </td>
-                                            <td class="hidden xl:table-cell px-4 py-5 align-top break-words table-col--cita" data-label="Cita b&iacute;blica">
+                                            <td class="hidden xl:table-cell px-4 py-5 align-top break-words table-col--cita">
                                                 {{ $cita }}
                                             </td>
                                             <td class="hidden md:table-cell px-4 py-5 align-top table-col--duration break-words">
                                                 {{ $audio->duracion ?? '' }}
                                             </td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7" class="px-4 py-10 text-center text-sm text-muted-foreground">
-                                                No hay audios que coincidan con la busqueda.
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
-                    
-                </div>
+                @endif
 
                 @if ($audios->hasPages())
                     <div class="border-t border-border bg-card/70 px-4 py-3 sm:px-6">

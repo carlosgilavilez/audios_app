@@ -1,6 +1,6 @@
 <div id="sticky-player"
      data-player-expanded="false"
-     class="hidden opacity-0 -translate-y-2 md:translate-y-2 transition-all duration-200
+     class="hidden opacity-0 transition-all duration-200
             fixed inset-x-0 top-0 md:top-auto md:bottom-0 bottom-auto z-50 border-b md:border-t border-border/60
             bg-card/85 backdrop-blur-md supports-[backdrop-filter]:bg-card/80
             text-foreground">
