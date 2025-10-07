@@ -1,4 +1,7 @@
-<div class="space-y-6"
+<div @class([
+    'space-y-6',
+    'pt-6 lg:pt-8' => $isEmbed,
+])
      data-public-audios
      data-initial-view="{{ $viewMode }}"
      data-initial-dark="{{ $dark ? '1' : '0' }}"
@@ -23,7 +26,7 @@
                  aria-modal="true"
                  aria-labelledby="mobileFiltersTitle">
                 <div class="pointer-events-auto absolute inset-0 bg-black/50" data-filters-scrim></div>
-                <div class="pointer-events-auto absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-background shadow-2xl transition-transform"
+                <div class="pointer-events-auto absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-card/95 dark:bg-background/90 backdrop-blur-md border-l border-border/40 shadow-2xl transition-transform"
                      data-filters-panel>
                     <div class="flex items-center justify-between border-b border-border px-5 py-4">
                         <div class="space-y-1">
@@ -252,4 +255,3 @@
         </div>
     </div>
 </div>
-
