@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log; // <-- IMPORT LOG FACADE
+use Illuminate\Support\Facades\Cache;
 use getID3;
 
 class AudioAdminController extends Controller
@@ -330,6 +331,8 @@ class AudioAdminController extends Controller
             'entity_id' => $audio->id,
         ]);
 
+        Cache::forget('public.audios.years');
+
         $rolePrefix = auth()->check() ? auth()->user()->role : 'admin';
         return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio subido y procesado correctamente.');
     }
@@ -414,6 +417,8 @@ class AudioAdminController extends Controller
             'entity_id' => $audio->id,
         ]);
 
+        Cache::forget('public.audios.years');
+
         $rolePrefix = auth()->check() ? auth()->user()->role : 'admin';
         return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio actualizado correctamente.');
     }
@@ -430,6 +435,7 @@ class AudioAdminController extends Controller
             'entity_type' => 'Audio',
             'entity_id' => $audio->id,
         ]);
+        Cache::forget('public.audios.years');
         return redirect()->route('admin.audios.index')->with('success', 'Audio eliminado exitosamente.');
     }
 
