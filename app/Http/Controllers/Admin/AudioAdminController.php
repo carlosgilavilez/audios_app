@@ -371,6 +371,39 @@ class AudioAdminController extends Controller
             'new_series_name' => 'nullable|string|max:255',
         ]);
 
+        if ($data['estado'] === 'Publicado') {
+            $query = Audio::where('id', '!=', $audio->id)
+                ->where('titulo', $data['titulo'])
+                ->where('autor_id', $data['autor_id'])
+                ->where('fecha_publicacion', $data['fecha_publicacion']);
+
+            $existingAudio = $query->first();
+
+            if ($existingAudio) {
+                $matchingFields = ['título', 'autor', 'fecha de publicación'];
+                
+                if (($data['serie_id'] ?? null) !== null && $existingAudio->serie_id == ($data['serie_id'] ?? null)) {
+                    $matchingFields[] = 'serie';
+                }
+                if (($data['categoria_id'] ?? null) !== null && $existingAudio->categoria_id == ($data['categoria_id'] ?? null)) {
+                    $matchingFields[] = 'categoría';
+                }
+                if (($data['libro_id'] ?? null) !== null && $existingAudio->libro_id == ($data['libro_id'] ?? null)) {
+                    $matchingFields[] = 'libro';
+                }
+                if (($data['turno_id'] ?? null) !== null && $existingAudio->turno_id == ($data['turno_id'] ?? null)) {
+                    $matchingFields[] = 'turno';
+                }
+                if (($data['cita_biblica'] ?? null) !== null && trim($data['cita_biblica']) !== '' && $existingAudio->cita_biblica == ($data['cita_biblica'] ?? null)) {
+                    $matchingFields[] = 'cita bíblica';
+                }
+
+                $errorMessage = 'No se puede publicar el audio porque ya existe uno con el mismo ' . implode(', ', $matchingFields) . '.';
+                
+                return back()->withErrors(['estado' => $errorMessage])->withInput();
+            }
+        }
+
         $audio->update($data);
 
         ActivityLog::create([
