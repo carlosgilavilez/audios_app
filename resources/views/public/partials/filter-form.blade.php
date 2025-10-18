@@ -9,7 +9,7 @@
     $hasActiveFilters = $hasActiveFilters ?? false;
     $clearButtonClasses = $hasActiveFilters
         ? 'inline-flex items-center justify-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary shadow-sm transition hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
-        : 'inline-flex items-center justify-center rounded-full border border-transparent px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:bg-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+        : 'inline-flex items-center justify-center rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-semibold text-foreground transition hover:bg-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 @endphp
 
 <form id="{{ $formId }}" action="{{ route('public.audios') }}" method="GET" class="grid gap-4 text-sm" data-filters-form>

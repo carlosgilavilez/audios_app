@@ -20,7 +20,7 @@
 
     <div class="relative" data-layout-shell>
         <div class="lg:hidden" data-mobile-drawer>
-            <div class="pointer-events-none fixed inset-0 z-40 hidden"
+            <div class="pointer-events-none fixed inset-0 z-[51] hidden"
                  data-filters-dialog
                  role="dialog"
                  aria-modal="true"
