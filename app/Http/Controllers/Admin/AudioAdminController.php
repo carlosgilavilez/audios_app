@@ -373,7 +373,8 @@ class AudioAdminController extends Controller
 
         if ($data['estado'] === 'Publicado') {
             $query = Audio::where('id', '!=', $audio->id)
-                ->where('titulo', $data['titulo'])
+                ->where('estado', 'Publicado')
+                ->whereRaw('LOWER(titulo) = ?', [strtolower($data['titulo'])])
                 ->where('autor_id', $data['autor_id'])
                 ->where('fecha_publicacion', $data['fecha_publicacion']);
 
