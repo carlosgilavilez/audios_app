@@ -17,10 +17,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log; // <-- IMPORT LOG FACADE
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 use getID3;
 
 class AudioAdminController extends Controller
 {
+    private const BULK_UPLOAD_MAX_FILES = 50;
+
     private function ensureDefaultCategories(): void
     {
         try {
@@ -125,6 +131,7 @@ class AudioAdminController extends Controller
             'years' => $years,
             'search' => $search ?? '',
             'estado' => $estado ?? '',
+            'bulkUploadLimit' => $this->getBulkUploadLimit(),
         ]);
     }
 
@@ -167,7 +174,7 @@ class AudioAdminController extends Controller
 
         $metadata = [];
         $metadata['duracion'] = $fileInfo['playtime_string'] ?? null;
-        $metadata['titulo'] = $raw_metadata['title'][0] ?? null;
+        $metadata['titulo'] = $this->sanitizeTitulo($raw_metadata['title'][0] ?? null);
         $metadata['artista'] = $raw_metadata['artist'][0] ?? null;
         $metadata['serie'] = $raw_metadata['subtitle'][0] ?? null;
         $metadata['categoria'] = $raw_metadata['genre'][0] ?? null;
@@ -275,6 +282,10 @@ class AudioAdminController extends Controller
             'new_series_name' => 'nullable|string|max:255',
         ]);
 
+        if (array_key_exists('titulo', $data)) {
+            $data['titulo'] = $this->sanitizeTitulo($data['titulo']);
+        }
+
         $tempPath = $data['temp_file_path'];
         if (!Storage::disk('local')->exists($tempPath)) {
             return back()->withErrors(['archivo' => 'El archivo subido no se ha encontrado. Por favor, súbelo de nuevo.'])->withInput();
@@ -337,6 +348,65 @@ class AudioAdminController extends Controller
         return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio subido y procesado correctamente.');
     }
 
+    public function bulkUpload(Request $request)
+    {
+        $maxFiles = $this->getBulkUploadLimit();
+
+        Validator::make(
+            $request->all(),
+            [
+                'audios' => ['required', 'array', 'min:1', 'max:' . $maxFiles],
+                'audios.*' => 'file|mimes:mp3,wav,aac|max:51200',
+            ],
+            [
+                'audios.max' => "Solo puedes subir {$maxFiles} archivos por tanda.",
+            ]
+        )->validate();
+
+        $files = $request->file('audios', []);
+
+        if (count($files) > $maxFiles) {
+            throw ValidationException::withMessages([
+                'audios' => "Solo puedes subir {$maxFiles} archivos por tanda.",
+            ]);
+        }
+
+        $created = [];
+        $errors = [];
+
+        foreach ($files as $file) {
+            try {
+                $audio = $this->createAudioFromUploadedFile($file);
+                $created[] = [
+                    'id' => $audio->id,
+                    'titulo' => $audio->titulo,
+                    'autor' => $audio->autor?->nombre,
+                    'estado' => $audio->estado,
+                    'fecha_publicacion' => $audio->fecha_publicacion,
+                ];
+            } catch (\Throwable $e) {
+                Log::error('Bulk audio upload failed', [
+                    'file' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage(),
+                ]);
+
+                $errors[] = [
+                    'file' => $file->getClientOriginalName(),
+                    'message' => $e->getMessage(),
+                ];
+            }
+        }
+
+        if (!empty($created)) {
+            Cache::forget('public.audios.years');
+        }
+
+        return response()->json([
+            'created' => $created,
+            'errors' => $errors,
+        ]);
+    }
+
     // ... other methods ...
     public function edit(Audio $audio)
     {
@@ -374,38 +444,26 @@ class AudioAdminController extends Controller
             'new_series_name' => 'nullable|string|max:255',
         ]);
 
-        if ($data['estado'] === 'Publicado') {
-            $query = Audio::where('id', '!=', $audio->id)
-                ->where('estado', 'Publicado')
-                ->whereRaw('LOWER(titulo) = ?', [strtolower($data['titulo'])])
-                ->where('autor_id', $data['autor_id'])
-                ->where('fecha_publicacion', $data['fecha_publicacion']);
+        if (array_key_exists('titulo', $data)) {
+            $data['titulo'] = $this->sanitizeTitulo($data['titulo']);
+        }
 
-            $existingAudio = $query->first();
+        $publishCheckPayload = [
+            'estado' => $data['estado'],
+            'titulo' => $data['titulo'] ?? $audio->titulo,
+            'autor_id' => $data['autor_id'] ?? $audio->autor_id,
+            'fecha_publicacion' => $data['fecha_publicacion'] ?? $audio->fecha_publicacion,
+            'serie_id' => $data['serie_id'] ?? $audio->serie_id,
+            'categoria_id' => $data['categoria_id'] ?? $audio->categoria_id,
+            'libro_id' => $data['libro_id'] ?? $audio->libro_id,
+            'turno_id' => $data['turno_id'] ?? $audio->turno_id,
+            'cita_biblica' => $data['cita_biblica'] ?? $audio->cita_biblica,
+        ];
 
-            if ($existingAudio) {
-                $matchingFields = ['título', 'autor', 'fecha de publicación'];
-                
-                if (($data['serie_id'] ?? null) !== null && $existingAudio->serie_id == ($data['serie_id'] ?? null)) {
-                    $matchingFields[] = 'serie';
-                }
-                if (($data['categoria_id'] ?? null) !== null && $existingAudio->categoria_id == ($data['categoria_id'] ?? null)) {
-                    $matchingFields[] = 'categoría';
-                }
-                if (($data['libro_id'] ?? null) !== null && $existingAudio->libro_id == ($data['libro_id'] ?? null)) {
-                    $matchingFields[] = 'libro';
-                }
-                if (($data['turno_id'] ?? null) !== null && $existingAudio->turno_id == ($data['turno_id'] ?? null)) {
-                    $matchingFields[] = 'turno';
-                }
-                if (($data['cita_biblica'] ?? null) !== null && trim($data['cita_biblica']) !== '' && $existingAudio->cita_biblica == ($data['cita_biblica'] ?? null)) {
-                    $matchingFields[] = 'cita bíblica';
-                }
-
-                $errorMessage = 'No se puede publicar el audio porque ya existe uno con el mismo ' . implode(', ', $matchingFields) . '.';
-                
-                return back()->withErrors(['estado' => $errorMessage])->withInput();
-            }
+        try {
+            $this->guardAgainstDuplicatePublished($audio, $publishCheckPayload);
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
         }
 
         $audio->update($data);
@@ -421,6 +479,224 @@ class AudioAdminController extends Controller
 
         $rolePrefix = auth()->check() ? auth()->user()->role : 'admin';
         return redirect()->route($rolePrefix . '.audios.index')->with('ok', 'Audio actualizado correctamente.');
+    }
+
+    public function updateEstado(Request $request, Audio $audio)
+    {
+        $data = $request->validate([
+            'estado' => 'required|string|in:Pendiente,Publicado',
+        ]);
+
+        $payload = [
+            'estado' => $data['estado'],
+            'titulo' => $audio->titulo,
+            'autor_id' => $audio->autor_id,
+            'fecha_publicacion' => $audio->fecha_publicacion,
+            'serie_id' => $audio->serie_id,
+            'categoria_id' => $audio->categoria_id,
+            'libro_id' => $audio->libro_id,
+            'turno_id' => $audio->turno_id,
+            'cita_biblica' => $audio->cita_biblica,
+        ];
+
+        try {
+            $this->guardAgainstDuplicatePublished($audio, $payload);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+
+        $audio->estado = $data['estado'];
+        $audio->save();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'updated',
+            'entity_type' => 'Audio',
+            'entity_id' => $audio->id,
+        ]);
+
+        Cache::forget('public.audios.years');
+
+        return response()->json([
+            'message' => 'Estado actualizado correctamente.',
+            'audio' => [
+                'id' => $audio->id,
+                'estado' => $audio->estado,
+            ],
+        ]);
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $maxSelection = 50;
+
+        $data = $request->validate([
+            'action' => 'required|string|in:delete,pendiente,publicar',
+            'audio_ids' => 'required|array',
+            'audio_ids.*' => 'integer|exists:audios,id',
+        ], [
+            'audio_ids.required' => 'Selecciona al menos un audio.',
+            'audio_ids.*.exists' => 'Alguno de los audios seleccionados no existe.',
+        ]);
+
+        $ids = array_values(array_unique(array_map('intval', $data['audio_ids'])));
+        if (!count($ids)) {
+            return redirect()->back()->with('error', 'Selecciona al menos un audio.');
+        }
+        if (count($ids) > $maxSelection) {
+            return redirect()->back()->with('error', "Solo puedes seleccionar hasta {$maxSelection} audios por acci\u00f3n.");
+        }
+
+        $audios = Audio::whereIn('id', $ids)->get();
+        if ($audios->isEmpty()) {
+            return redirect()->back()->with('error', 'No se encontraron los audios seleccionados.');
+        }
+
+        $affected = 0;
+        $action = $data['action'];
+
+        if ($action === 'delete') {
+            foreach ($audios as $audio) {
+                if ($audio->archivo) {
+                    $relativePath = str_replace('/storage/', '', $audio->archivo);
+                    if (Storage::disk('public')->exists($relativePath)) {
+                        Storage::disk('public')->delete($relativePath);
+                    }
+                }
+                $audio->delete();
+                ActivityLog::create([
+                    'user_id' => Auth::id(),
+                    'action' => 'deleted',
+                    'entity_type' => 'Audio',
+                    'entity_id' => $audio->id,
+                ]);
+                $affected++;
+            }
+
+            Cache::forget('public.audios.years');
+
+            return redirect()->back()->with(
+                'success',
+                $affected === 1 ? 'Se elimin\u00f3 1 audio.' : "Se eliminaron {$affected} audios."
+            );
+        }
+
+        if ($action === 'pendiente') {
+            foreach ($audios as $audio) {
+                if ($audio->estado !== 'Pendiente') {
+                    $audio->estado = 'Pendiente';
+                    $audio->save();
+                    ActivityLog::create([
+                        'user_id' => Auth::id(),
+                        'action' => 'updated',
+                        'entity_type' => 'Audio',
+                        'entity_id' => $audio->id,
+                    ]);
+                    $affected++;
+                }
+            }
+
+            Cache::forget('public.audios.years');
+
+            if ($affected === 0) {
+                return redirect()->back()->with('success', 'Los audios seleccionados ya estaban en estado Pendiente.');
+            }
+
+            return redirect()->back()->with(
+                'success',
+                $affected === 1 ? 'Se actualiz\u00f3 1 audio a estado Pendiente.' : "Se actualizaron {$affected} audios a estado Pendiente."
+            );
+        }
+
+        if ($action === 'publicar') {
+            $publishable = [];
+            $publishErrors = [];
+
+            foreach ($audios as $audio) {
+                $issues = [];
+
+                if ($audio->estado === 'Publicado') {
+                    $issues[] = 'ya est\u00e1 publicado';
+                }
+
+                $missing = [];
+                if (!$audio->titulo) {
+                    $missing[] = 't\u00edtulo';
+                }
+                if (!$audio->autor_id) {
+                    $missing[] = 'autor';
+                }
+                if (!$audio->fecha_publicacion) {
+                    $missing[] = 'fecha de publicaci\u00f3n';
+                }
+
+                foreach ($missing as $label) {
+                    $issues[] = "falta {$label}";
+                }
+
+                if (!$issues) {
+                    try {
+                        $this->guardAgainstDuplicatePublished($audio, [
+                            'estado' => 'Publicado',
+                            'titulo' => $audio->titulo,
+                            'autor_id' => $audio->autor_id,
+                            'fecha_publicacion' => $audio->fecha_publicacion,
+                        ]);
+                    } catch (ValidationException $e) {
+                        $errorsArray = $e->errors();
+                        $issues[] = $errorsArray['estado'][0] ?? $e->getMessage() ?? 'No se puede publicar por duplicado.';
+                    }
+                }
+
+                if ($issues) {
+                    $publishErrors[] = $this->formatAudioLabel($audio) . ': ' . implode(', ', $issues);
+                    continue;
+                }
+
+                $publishable[] = $audio;
+            }
+
+            if (!count($publishable)) {
+                $message = 'No se pudo publicar ninguno de los audios seleccionados.';
+                if ($publishErrors) {
+                    $message .= ' ' . implode(' ', $publishErrors);
+                }
+                return redirect()->back()->with('error', $message);
+            }
+
+            $publishedCount = 0;
+            foreach ($publishable as $audio) {
+                if ($audio->estado !== 'Publicado') {
+                    $audio->estado = 'Publicado';
+                    $audio->save();
+                    ActivityLog::create([
+                        'user_id' => Auth::id(),
+                        'action' => 'updated',
+                        'entity_type' => 'Audio',
+                        'entity_id' => $audio->id,
+                    ]);
+                }
+                $publishedCount++;
+            }
+
+            Cache::forget('public.audios.years');
+
+            $successMessage = $publishedCount === 1
+                ? 'Se public\u00f3 1 audio.'
+                : "Se publicaron {$publishedCount} audios.";
+
+            if ($publishErrors) {
+                $successMessage .= ' No se pudieron publicar: ' . implode(' | ', $publishErrors);
+            }
+
+            return redirect()->back()->with('success', $successMessage);
+        }
+    }
+
+    private function formatAudioLabel(Audio $audio): string
+    {
+        $title = $audio->titulo ? '«' . $audio->titulo . '»' : 'Audio sin t\u00edtulo';
+        return $title . ' (#' . $audio->id . ')';
     }
 
     public function destroy(Audio $audio)
@@ -454,4 +730,217 @@ class AudioAdminController extends Controller
     {
         return 'Pendiente';
     }
+
+    private function guardAgainstDuplicatePublished(?Audio $currentAudio, array $data): void
+    {
+        if (($data['estado'] ?? null) !== 'Publicado') {
+            return;
+        }
+
+        $titulo = $data['titulo'] ?? ($currentAudio?->titulo);
+        $autorId = $data['autor_id'] ?? ($currentAudio?->autor_id);
+        $fecha = $data['fecha_publicacion'] ?? ($currentAudio?->fecha_publicacion);
+
+        if (!$titulo || !$autorId || !$fecha) {
+            throw ValidationException::withMessages([
+                'estado' => 'Para publicar debes definir titulo, autor y fecha de publicacion.',
+            ]);
+        }
+
+        $query = Audio::query()
+            ->where('estado', 'Publicado')
+            ->whereRaw('LOWER(titulo) = ?', [Str::lower($titulo)])
+            ->where('autor_id', $autorId)
+            ->where('fecha_publicacion', $fecha);
+
+        if ($currentAudio && $currentAudio->exists) {
+            $query->where('id', '!=', $currentAudio->id);
+        }
+
+        $match = $query->first();
+
+        if (!$match) {
+            return;
+        }
+
+        $matchingFields = ['titulo', 'autor', 'fecha de publicacion'];
+
+        $serieId = $data['serie_id'] ?? ($currentAudio?->serie_id);
+        if ($serieId !== null && $match->serie_id == $serieId) {
+            $matchingFields[] = 'serie';
+        }
+
+        $categoriaId = $data['categoria_id'] ?? ($currentAudio?->categoria_id);
+        if ($categoriaId !== null && $match->categoria_id == $categoriaId) {
+            $matchingFields[] = 'categoria';
+        }
+
+        $libroId = $data['libro_id'] ?? ($currentAudio?->libro_id);
+        if ($libroId !== null && $match->libro_id == $libroId) {
+            $matchingFields[] = 'libro';
+        }
+
+        $turnoId = $data['turno_id'] ?? ($currentAudio?->turno_id);
+        if ($turnoId !== null && $match->turno_id == $turnoId) {
+            $matchingFields[] = 'turno';
+        }
+
+        $cita = $data['cita_biblica'] ?? ($currentAudio?->cita_biblica);
+        if ($cita !== null && trim($cita) !== '' && $match->cita_biblica === $cita) {
+            $matchingFields[] = 'cita biblica';
+        }
+
+        throw ValidationException::withMessages([
+            'estado' => 'No se puede publicar el audio porque ya existe uno con el mismo ' . implode(', ', $matchingFields) . '.',
+        ]);
+    }
+    private function createAudioFromUploadedFile(UploadedFile $file): Audio
+    {
+        $metadata = $this->extractMetadataFromFile($file);
+        $metadata['titulo'] = $this->sanitizeTitulo($metadata['titulo'] ?? null);
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'mp3');
+        $baseName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        $baseName = $baseName ?: 'audio';
+        $storedName = $baseName . '-' . Str::random(8) . '.' . $extension;
+        $relativePath = 'audios/' . $storedName;
+
+        Storage::disk('public')->makeDirectory('audios');
+        Storage::disk('public')->putFileAs('audios', $file, $storedName);
+
+        $categoriaId = $this->resolveModelIdByName(Categoria::class, $metadata['categoria'] ?? null);
+        $serieId = $this->resolveModelIdByName(Serie::class, $metadata['serie'] ?? null);
+        $turnoId = $this->resolveModelIdByName(Turno::class, $metadata['turno'] ?? null);
+        $autorId = $this->resolveModelIdByName(Autor::class, $metadata['autor'] ?? null);
+        $libroId = $this->resolveModelIdByName(Libro::class, $metadata['libro'] ?? null);
+
+        $defaultTitulo = $this->sanitizeTitulo(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+
+        $audio = Audio::create([
+            'titulo' => $metadata['titulo'] ?? $defaultTitulo,
+            'archivo' => $relativePath,
+            'autor_id' => $autorId,
+            'serie_id' => $serieId,
+            'categoria_id' => $categoriaId,
+            'libro_id' => $libroId,
+            'turno_id' => $turnoId,
+            'cita_biblica' => $metadata['cita_biblica'] ?? null,
+            'duracion' => $metadata['duracion'] ?? null,
+            'descripcion' => null,
+            'fecha_publicacion' => $metadata['fecha_publicacion'] ?? null,
+            'estado' => 'Pendiente',
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'created',
+            'entity_type' => 'Audio',
+            'entity_id' => $audio->id,
+        ]);
+
+        return $audio;
+    }
+
+    private function extractMetadataFromFile(UploadedFile $file): array
+    {
+        $metadata = [
+            'titulo' => null,
+            'autor' => null,
+            'serie' => null,
+            'categoria' => null,
+            'turno' => null,
+            'libro' => null,
+            'cita_biblica' => null,
+            'duracion' => null,
+            'fecha_publicacion' => null,
+        ];
+
+        try {
+            $getID3 = new getID3();
+            $fileInfo = $getID3->analyze($file->getRealPath());
+            $getID3->CopyTagsToComments($fileInfo);
+            $comments = $fileInfo['comments'] ?? [];
+
+            $metadata['duracion'] = $fileInfo['playtime_string'] ?? null;
+            $metadata['titulo'] = $this->sanitizeTitulo($comments['title'][0] ?? null);
+            $metadata['autor'] = $comments['artist'][0] ?? null;
+            $metadata['serie'] = $comments['subtitle'][0] ?? null;
+            $metadata['categoria'] = $comments['genre'][0] ?? null;
+            $metadata['turno'] = $comments['conductor'][0] ?? null;
+
+            $dateTag = $comments['encoded_by'][0] ?? $comments['recording_time'][0] ?? $comments['year'][0] ?? null;
+            if ($dateTag) {
+                try {
+                    $date = \DateTime::createFromFormat('d/m/Y', $dateTag);
+                    if ($date === false) {
+                        $date = new \DateTime($dateTag);
+                    }
+                    $metadata['fecha_publicacion'] = $date->format('Y-m-d');
+                } catch (\Throwable $e) {
+                    Log::warning('Bulk upload date parsing failed: ' . $e->getMessage());
+                }
+            }
+
+            $album = $comments['album'][0] ?? null;
+            if ($album && isset($metadata['categoria']) && Str::lower($metadata['categoria']) === 'predicaciones') {
+                $libros = Libro::all()->pluck('nombre')->toArray();
+                usort($libros, function ($a, $b) {
+                    return strlen($b) <=> strlen($a);
+                });
+
+                $normalizedAlbum = trim(str_replace(['�', '�', '.'], '', $album));
+                foreach ($libros as $nombre) {
+                    $normalizedLibro = trim(str_replace(['�', '�', '.'], '', $nombre));
+                    if (stripos($normalizedAlbum, $normalizedLibro) === 0) {
+                        $metadata['libro'] = $nombre;
+                        $metadata['cita_biblica'] = trim(substr($album, strlen($nombre)));
+                        break;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo leer metadata del archivo: ' . $e->getMessage());
+        }
+
+        return $metadata;
+    }
+
+    private function sanitizeTitulo(?string $titulo): ?string
+    {
+        if ($titulo === null) {
+            return null;
+        }
+
+        $parts = explode('|', $titulo);
+        $cleaned = trim($parts[0]);
+
+        return $cleaned === '' ? null : $cleaned;
+    }
+
+    private function getBulkUploadLimit(): int
+    {
+        $serverLimit = (int) ini_get('max_file_uploads');
+        if ($serverLimit <= 0) {
+            $serverLimit = self::BULK_UPLOAD_MAX_FILES;
+        }
+
+        return min(self::BULK_UPLOAD_MAX_FILES, $serverLimit);
+    }
+
+    private function resolveModelIdByName(string $modelClass, ?string $name): ?int
+    {
+        if (!$name || !class_exists($modelClass)) {
+            return null;
+        }
+
+        return $modelClass::whereRaw('LOWER(nombre) = ?', [Str::lower($name)])->value('id');
+    }
 }
+
+
+
+
+
+
+
+

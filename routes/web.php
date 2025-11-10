@@ -83,6 +83,9 @@ Route::middleware(['auth', 'verified', 'can:admin'])
 
         Route::post('audios/upload-temp', [App\Http\Controllers\Admin\AudioAdminController::class, 'uploadTemp'])->name('audios.uploadTemp');
         Route::get('audios/check-date', [App\Http\Controllers\Admin\AudioAdminController::class, 'checkDate'])->name('audios.checkDate');
+        Route::post('audios/bulk-upload', [App\Http\Controllers\Admin\AudioAdminController::class, 'bulkUpload'])->name('audios.bulk-upload');
+        Route::post('audios/bulk-action', [App\Http\Controllers\Admin\AudioAdminController::class, 'bulkAction'])->name('audios.bulk-action');
+        Route::patch('audios/{audio}/estado', [App\Http\Controllers\Admin\AudioAdminController::class, 'updateEstado'])->name('audios.updateEstado');
         Route::resource('audios', App\Http\Controllers\Admin\AudioAdminController::class)
             ->parameters(['audios' => 'audio']);
 
