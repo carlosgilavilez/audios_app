@@ -144,14 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
           otherForm.elements.namedItem(field.name).value = field.value;
         }
       });
-      filterForms.forEach((targetForm) => {
-        const from = targetForm.elements.namedItem('fecha_desde');
-        const to = targetForm.elements.namedItem('fecha_hasta');
-        if (from && to) {
-          from.max = to.value;
-          to.min = from.value;
-        }
-      });
     };
     form.addEventListener('input', syncField);
     form.addEventListener('change', syncField);

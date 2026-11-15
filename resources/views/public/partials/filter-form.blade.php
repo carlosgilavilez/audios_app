@@ -4,9 +4,8 @@
         'categoria_id' => null,
         'autor_id' => null,
         'libro_id' => null,
+        'serie_id' => null,
         'anio' => null,
-        'fecha_desde' => null,
-        'fecha_hasta' => null,
     ], $filters ?? []);
     $formId = $formId ?? 'filters-form';
     $hasActiveFilters = $hasActiveFilters ?? false;
@@ -35,7 +34,7 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-q" class="text-xs font-semibold tracking-wide text-muted-foreground">Buscar</label>
-        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor, libro, categoría o fecha" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor, libro, serie, categoría o año" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
     </div>
 
     <div class="space-y-2">
@@ -78,16 +77,17 @@
         </select>
     </div>
 
-    <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
-        <div class="min-w-0 space-y-2">
-            <label for="{{ $formId }}-desde" class="text-xs font-semibold tracking-wide text-muted-foreground">Desde</label>
-            <input type="date" name="fecha_desde" id="{{ $formId }}-desde" value="{{ $resolvedFilters['fecha_desde'] }}" max="{{ $resolvedFilters['fecha_hasta'] }}" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm">
-        </div>
-        <div class="min-w-0 space-y-2">
-            <label for="{{ $formId }}-hasta" class="text-xs font-semibold tracking-wide text-muted-foreground">Hasta</label>
-            <input type="date" name="fecha_hasta" id="{{ $formId }}-hasta" value="{{ $resolvedFilters['fecha_hasta'] }}" min="{{ $resolvedFilters['fecha_desde'] }}" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm">
-        </div>
+    @if($series->isNotEmpty())
+    <div class="space-y-2">
+        <label for="{{ $formId }}-serie" class="text-xs font-semibold tracking-wide text-muted-foreground">Serie</label>
+        <select name="serie_id" id="{{ $formId }}-serie" class="w-full rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <option value="">Todas</option>
+            @foreach($series as $serie)
+                <option value="{{ $serie->id }}" @selected($resolvedFilters['serie_id'] == $serie->id)>{{ $serie->nombre }}</option>
+            @endforeach
+        </select>
     </div>
+    @endif
 
     <div class="flex items-center justify-between gap-3 pt-1">
         <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Buscar</button>
