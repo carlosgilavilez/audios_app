@@ -677,7 +677,16 @@ body[data-wp-preview="1"] .wp-track-body td .btn-play.bg-success {
 @layer components {
   body.filters-open {
     overflow: hidden;
-    touch-action: none;
+  }
+
+  [data-filters-scroll] {
+    touch-action: pan-y;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  [data-filters-form] select {
+    min-width: 0;
+    font-size: 1rem;
   }
 
   body[data-embed-mode="1"] [data-preview-bar],

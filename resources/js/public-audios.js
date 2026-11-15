@@ -69,8 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const syncUrl = () => {
-    params.delete('view');
-
     if (previewBar) {
       params.set('wp_width', String(previewWidth));
     } else {
@@ -136,6 +134,28 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const drawer = root.querySelector('[data-filters-dialog]');
+  const filterForms = Array.from(root.querySelectorAll('[data-filters-form]'));
+  filterForms.forEach((form) => {
+    const syncField = (event) => {
+      const field = event.target;
+      if (!field.name || field.type === 'hidden') return;
+      filterForms.forEach((otherForm) => {
+        if (otherForm !== form && otherForm.elements.namedItem(field.name)) {
+          otherForm.elements.namedItem(field.name).value = field.value;
+        }
+      });
+      filterForms.forEach((targetForm) => {
+        const from = targetForm.elements.namedItem('fecha_desde');
+        const to = targetForm.elements.namedItem('fecha_hasta');
+        if (from && to) {
+          from.max = to.value;
+          to.min = from.value;
+        }
+      });
+    };
+    form.addEventListener('input', syncField);
+    form.addEventListener('change', syncField);
+  });
   const drawerPanel = drawer
     ? drawer.querySelector('[data-filters-panel]')
     : null;
@@ -146,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeFiltersButton = root.querySelector('[data-filters-close]');
   const focusableSelector = 'a[href], button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
   let lastFocus = null;
+  let drawerCloseTimer;
 
   const trapFocus = (event) => {
     if (!drawerPanel || event.key !== 'Tab') return;
@@ -169,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const setDrawerOpen = (open) => {
     if (!drawer || !drawerPanel) return;
+    clearTimeout(drawerCloseTimer);
 
     if (open) {
       lastFocus = document.activeElement && typeof document.activeElement.focus === 'function'
@@ -197,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
       body.classList.remove('filters-open');
       drawer.removeEventListener('keydown', trapFocus);
 
-      setTimeout(() => {
+      drawerCloseTimer = setTimeout(() => {
         drawer.classList.add('hidden');
       }, 200);
 
@@ -210,6 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   };
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024 && drawer && !drawer.classList.contains('hidden')) {
+      setDrawerOpen(false);
+    }
+  });
 
   if (openFiltersButton) {
     openFiltersButton.addEventListener('click', (event) => {

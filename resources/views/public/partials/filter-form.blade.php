@@ -3,7 +3,10 @@
         'q' => null,
         'categoria_id' => null,
         'autor_id' => null,
+        'libro_id' => null,
         'anio' => null,
+        'fecha_desde' => null,
+        'fecha_hasta' => null,
     ], $filters ?? []);
     $formId = $formId ?? 'filters-form';
     $hasActiveFilters = $hasActiveFilters ?? false;
@@ -14,6 +17,7 @@
 
 <form id="{{ $formId }}" action="{{ route('public.audios') }}" method="GET" class="grid gap-4 text-sm" data-filters-form>
     <input type="hidden" name="view" value="{{ request('view', $viewMode ?? 'table') }}">
+    <input type="hidden" name="per_page" value="{{ $perPage ?? 25 }}">
     @if(($isEmbed ?? false) || request()->has('embed'))
         <input type="hidden" name="embed" value="{{ request('embed', ($isEmbed ?? false) ? '1' : '0') }}">
     @endif
@@ -31,7 +35,7 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-q" class="text-xs font-semibold tracking-wide text-muted-foreground">Buscar</label>
-        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor o serie" class="w-full rounded-full border border-border bg-input px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor, libro, categoría o fecha" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
     </div>
 
     <div class="space-y-2">
@@ -64,8 +68,29 @@
         </select>
     </div>
 
+    <div class="space-y-2">
+        <label for="{{ $formId }}-libro" class="text-xs font-semibold tracking-wide text-muted-foreground">Libro de la Biblia</label>
+        <select name="libro_id" id="{{ $formId }}-libro" class="w-full rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <option value="">Todos</option>
+            @foreach($libros as $libro)
+                <option value="{{ $libro->id }}" @selected($resolvedFilters['libro_id'] == $libro->id)>{{ $libro->nombre }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <div class="min-w-0 space-y-2">
+            <label for="{{ $formId }}-desde" class="text-xs font-semibold tracking-wide text-muted-foreground">Desde</label>
+            <input type="date" name="fecha_desde" id="{{ $formId }}-desde" value="{{ $resolvedFilters['fecha_desde'] }}" max="{{ $resolvedFilters['fecha_hasta'] }}" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm">
+        </div>
+        <div class="min-w-0 space-y-2">
+            <label for="{{ $formId }}-hasta" class="text-xs font-semibold tracking-wide text-muted-foreground">Hasta</label>
+            <input type="date" name="fecha_hasta" id="{{ $formId }}-hasta" value="{{ $resolvedFilters['fecha_hasta'] }}" min="{{ $resolvedFilters['fecha_desde'] }}" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm">
+        </div>
+    </div>
+
     <div class="flex items-center justify-between gap-3 pt-1">
-        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Aplicar</button>
+        <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Buscar</button>
         <a href="{{ $clearFiltersUrl ?? route('public.audios') }}" class="{{ $clearButtonClasses }}">Limpiar</a>
     </div>
 </form>

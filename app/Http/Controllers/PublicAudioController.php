@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Audio;
 use App\Models\Autor;
 use App\Models\Categoria;
+use App\Models\Libro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PublicAudioController extends Controller
 {
@@ -18,29 +19,53 @@ class PublicAudioController extends Controller
     {
         $previousUrl = url()->previous();
         $homeUrl = route('dashboard');
-        $isInvalidBackUrl = !$previousUrl || $previousUrl === url()->current() || str_contains($previousUrl, '/login');
+        $isInvalidBackUrl = ! $previousUrl || $previousUrl === url()->current() || str_contains($previousUrl, '/login');
         $backUrl = $isInvalidBackUrl ? $homeUrl : $previousUrl;
 
         $isEmbed = $request->boolean('embed', false) || $request->routeIs('public.embed');
-        $showPreviewBar = !$isEmbed && $request->integer('preview', 1) === 1;
+        $showPreviewBar = ! $isEmbed && $request->integer('preview', 1) === 1;
 
         $perPage = (int) $request->input('per_page', 25);
         $perPage = max(5, min(100, $perPage));
         $page = max(1, (int) $request->input('page', 1));
 
+        $categorias = Cache::remember('public.audios.categories', now()->addHour(), fn () => Categoria::orderBy('nombre')->get(['id', 'nombre']));
+        $autores = Cache::remember('public.audios.authors', now()->addHour(), fn () => Autor::orderBy('nombre')->get(['id', 'nombre']));
+        $libros = Cache::remember('public.audios.books', now()->addHour(), fn () => Libro::orderBy('id')->get(['id', 'nombre', 'abreviatura']));
+        $years = Cache::remember('public.audios.years.v2', now()->addHour(), function () {
+            return Audio::whereIn('estado', ['Publicado', 'Publico'])
+                ->whereNotNull('fecha_publicacion')
+                ->select('fecha_publicacion')->distinct()->orderByDesc('fecha_publicacion')
+                ->pluck('fecha_publicacion')
+                ->map(fn ($date) => (int) substr($date, 0, 4))->unique()->values();
+        });
+
         $rawFilters = [
             'q' => $request->query('q', $request->query('search')),
             'categoria_id' => $request->query('categoria_id'),
             'autor_id' => $request->query('autor_id'),
+            'libro_id' => $request->query('libro_id'),
             'anio' => $request->query('anio', $request->query('year')),
         ];
 
         $filters = [
-            'q' => $rawFilters['q'] ? trim((string) $rawFilters['q']) : null,
+            'q' => is_string($rawFilters['q']) ? (trim($rawFilters['q']) ?: null) : null,
             'categoria_id' => $this->sanitizeIntegerFilter($rawFilters['categoria_id']),
             'autor_id' => $this->sanitizeIntegerFilter($rawFilters['autor_id']),
+            'libro_id' => $this->sanitizeIntegerFilter($rawFilters['libro_id']),
             'anio' => $this->sanitizeIntegerFilter($rawFilters['anio']),
+            'fecha_desde' => $this->sanitizeDateFilter($request->query('fecha_desde')),
+            'fecha_hasta' => $this->sanitizeDateFilter($request->query('fecha_hasta')),
         ];
+
+        // Keep typed criteria, selects, chips and URLs in the same explicit state.
+        $resolvedFilters = $this->resolveSearchFilter($filters, $autores, $categorias, $libros, $years);
+        if ($resolvedFilters !== $filters) {
+            $params = Arr::except($request->query(), array_merge(array_keys($filters), ['search', 'year', 'page']));
+            $params = array_merge($params, array_filter($resolvedFilters, fn ($value) => $value !== null && $value !== ''));
+
+            return redirect()->route($request->routeIs('public.embed') ? 'public.embed' : 'public.audios', $params);
+        }
 
         $baseQuery = Audio::query()
             ->with(['autor', 'serie', 'categoria', 'libro'])
@@ -51,6 +76,10 @@ class PublicAudioController extends Controller
             $baseQuery->where(function ($builder) use ($search) {
                 $builder->where('titulo', 'like', "%{$search}%")
                     ->orWhere('descripcion', 'like', "%{$search}%")
+                    ->orWhere('cita_biblica', 'like', "%{$search}%")
+                    ->orWhereHas('libro', function ($bookQuery) use ($search) {
+                        $bookQuery->where('nombre', 'like', "%{$search}%");
+                    })
                     ->orWhereHas('autor', function ($authorQuery) use ($search) {
                         $authorQuery->where('nombre', 'like', "%{$search}%");
                     })
@@ -69,11 +98,20 @@ class PublicAudioController extends Controller
         if ($filters['autor_id']) {
             $baseQuery->where('autor_id', $filters['autor_id']);
         }
+        if ($filters['libro_id']) {
+            $baseQuery->where('libro_id', $filters['libro_id']);
+        }
         if ($filters['anio']) {
             $baseQuery->whereYear('fecha_publicacion', $filters['anio']);
         }
+        if ($filters['fecha_desde']) {
+            $baseQuery->whereDate('fecha_publicacion', '>=', $filters['fecha_desde']);
+        }
+        if ($filters['fecha_hasta']) {
+            $baseQuery->whereDate('fecha_publicacion', '<=', $filters['fecha_hasta']);
+        }
 
-        $cacheKey = 'public.audios.list.v2.' . md5(json_encode([
+        $cacheKey = 'public.audios.list.v3.'.md5(json_encode([
             'filters' => $filters,
             'page' => $page,
             'per_page' => $perPage,
@@ -85,31 +123,14 @@ class PublicAudioController extends Controller
                 ->orderByDesc('id')
                 ->paginate($perPage, ['*'], 'page', $page);
         });
-        $audios->appends($request->query());
-
-        $categorias = Cache::remember('public.audios.categories', now()->addHour(), function () {
-            return Categoria::orderBy('nombre')->get(['id', 'nombre']);
-        });
-        $autores = Cache::remember('public.audios.authors', now()->addHour(), function () {
-            return Autor::orderBy('nombre')->get(['id', 'nombre']);
-        });
-        $years = Cache::remember('public.audios.years', now()->addHour(), function () {
-            return Audio::whereIn('estado', ['Publicado', 'Publico'])
-                ->whereNotNull('fecha_publicacion')
-                ->select(DB::raw('YEAR(fecha_publicacion) as year'))
-                ->distinct()
-                ->orderByDesc('year')
-                ->pluck('year')
-                ->filter()
-                ->values();
-        });
+        $audios->withPath($request->url())->appends($request->query());
 
         $activeFilters = $this->buildActiveFilters(
             $filters,
             $request->query(),
             $categorias,
             $autores,
-            $years
+            $libros
         );
 
         $filterKeys = array_keys($filters);
@@ -119,14 +140,14 @@ class PublicAudioController extends Controller
         ));
 
         $viewMode = $request->query('view');
-        if (!in_array($viewMode, ['table', 'cards'], true)) {
+        if (! in_array($viewMode, ['table', 'cards'], true)) {
             $viewMode = 'table';
         }
 
         $dark = $request->boolean('dark', false);
         $allowedWidths = [414, 820, 1280];
         $previewWidth = (int) $request->query('wp_width', 1280);
-        if (!in_array($previewWidth, $allowedWidths, true)) {
+        if (! in_array($previewWidth, $allowedWidths, true)) {
             $previewWidth = 1280;
         }
 
@@ -137,6 +158,7 @@ class PublicAudioController extends Controller
             'clearFiltersUrl' => $clearFiltersUrl,
             'categorias' => $categorias,
             'autores' => $autores,
+            'libros' => $libros,
             'years' => $years,
             'viewMode' => $viewMode,
             'dark' => $dark,
@@ -151,7 +173,7 @@ class PublicAudioController extends Controller
 
     public function playAudio(Audio $audio)
     {
-        if (!Storage::disk('public')->exists($audio->archivo)) {
+        if (! Storage::disk('public')->exists($audio->archivo)) {
             abort(404, 'Archivo no encontrado en el almacenamiento.');
         }
 
@@ -161,7 +183,7 @@ class PublicAudioController extends Controller
     public function download(Audio $audio)
     {
         if (Storage::disk('public')->exists($audio->archivo)) {
-            return Storage::disk('public')->download($audio->archivo, $audio->titulo . '.mp3');
+            return Storage::disk('public')->download($audio->archivo, $audio->titulo.'.mp3');
         }
         abort(404, 'Audio not found.');
     }
@@ -171,24 +193,82 @@ class PublicAudioController extends Controller
         if ($value === null || $value === '') {
             return null;
         }
-        if (!is_numeric($value)) {
+
+        return filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
+    }
+
+    private function sanitizeDateFilter($value, string $format = 'Y-m-d'): ?string
+    {
+        if (! is_string($value)) {
             return null;
         }
+        $date = \DateTimeImmutable::createFromFormat('!'.$format, $value);
 
-        return (int) $value;
+        return $date && $date->format($format) === $value ? $date->format('Y-m-d') : null;
+    }
+
+    private function resolveSearchFilter(array $filters, Collection $autores, Collection $categorias, Collection $libros, Collection $years): array
+    {
+        if ($filters['q'] === null) {
+            return $filters;
+        }
+
+        $search = $filters['q'];
+        $matches = [];
+        if (preg_match('/^\d{4}$/', $search) && $years->contains((int) $search)) {
+            $matches['anio'] = (int) $search;
+        } elseif ($date = $this->sanitizeDateFilter($search) ?? $this->sanitizeDateFilter($search, 'd/m/Y')) {
+            $matches = ['fecha_desde' => $date, 'fecha_hasta' => $date];
+        } else {
+            $normalize = fn ($text) => Str::lower(Str::ascii(Str::squish($text)));
+            $needle = $normalize($search);
+            $exact = [];
+            $partial = [];
+            foreach (['autor_id' => $autores, 'categoria_id' => $categorias, 'libro_id' => $libros] as $key => $items) {
+                foreach ($items as $item) {
+                    $name = $normalize($item->nombre);
+                    if ($name === $needle || ($key === 'libro_id' && $normalize($item->abreviatura ?? '') === $needle)) {
+                        $exact[] = [$key, $item->id];
+                    } elseif (mb_strlen($needle) >= 3 && str_contains($name, $needle)) {
+                        $partial[] = [$key, $item->id];
+                    }
+                }
+            }
+            $candidates = $exact ?: $partial;
+            if (count($candidates) === 1) {
+                [$key, $id] = $candidates[0];
+                $matches[$key] = $id;
+            }
+        }
+
+        // Never replace an explicitly selected criterion with a different one.
+        foreach ($matches as $key => $value) {
+            if ($filters[$key] !== null && $filters[$key] !== $value) {
+                return $filters;
+            }
+        }
+        if ($matches) {
+            $filters = array_merge($filters, $matches, ['q' => null]);
+        }
+
+        return $filters;
     }
 
     private function buildActiveFilters(
         array $filters,
         array $queryParams,
         Collection $categorias,
-        Collection $autores
+        Collection $autores,
+        Collection $libros
     ): array {
         $labels = [
             'q' => 'Buscar',
             'categoria_id' => 'Categoría',
             'autor_id' => 'Autor',
+            'libro_id' => 'Libro de la Biblia',
             'anio' => 'Año',
+            'fecha_desde' => 'Desde',
+            'fecha_hasta' => 'Hasta',
         ];
 
         $chips = [];
@@ -207,6 +287,13 @@ class PublicAudioController extends Controller
                 case 'autor_id':
                     $display = optional($autores->firstWhere('id', $value))->nombre;
                     break;
+                case 'libro_id':
+                    $display = optional($libros->firstWhere('id', $value))->nombre;
+                    break;
+                case 'fecha_desde':
+                case 'fecha_hasta':
+                    $display = \DateTimeImmutable::createFromFormat('!Y-m-d', $value)->format('d/m/Y');
+                    break;
                 case 'anio':
                     $display = (string) $value;
                     break;
@@ -216,7 +303,7 @@ class PublicAudioController extends Controller
                     break;
             }
 
-            if (!$display) {
+            if (! $display) {
                 continue;
             }
 
@@ -240,17 +327,3 @@ class PublicAudioController extends Controller
         return $chips;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

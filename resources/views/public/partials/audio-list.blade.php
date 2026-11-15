@@ -21,6 +21,7 @@
     <div class="relative" data-layout-shell>
         <div class="lg:hidden" data-mobile-drawer>
             <div class="pointer-events-none fixed inset-0 z-[51] hidden"
+                 id="public-audio-filters"
                  data-filters-dialog
                  role="dialog"
                  aria-modal="true"
@@ -28,7 +29,7 @@
                 <div class="pointer-events-auto absolute inset-0 bg-black/50" data-filters-scrim></div>
                 <div class="pointer-events-auto absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-card/95 dark:bg-background/90 backdrop-blur-md border-l border-border/40 shadow-2xl transition-transform"
                      data-filters-panel>
-                    <div class="flex items-center justify-between border-b border-border px-5 py-4">
+                    <div class="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
                         <div class="space-y-1">
                             <h2 id="mobileFiltersTitle" class="text-lg font-semibold text-foreground">Filtros</h2>
                             <p class="text-xs text-muted-foreground">Selecciona criterios y aplica la busqueda.</p>
@@ -43,7 +44,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="flex-1 overflow-y-auto px-5 py-4">
+                    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4" data-filters-scroll>
                         @include('public.partials.filter-form', [
                             'filters' => $filters,
                             'categorias' => $categorias,
@@ -61,9 +62,9 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(220px,280px)_1fr] lg:gap-6 xl:grid-cols-[minmax(240px,300px)_1fr]">
+        <div class="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[minmax(240px,300px)_minmax(0,1fr)]">
             <aside class="hidden lg:block" data-sidebar role="complementary" aria-labelledby="desktopFiltersTitle">
-                <div class="sticky top-4 space-y-4">
+                <div class="sticky top-4 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto">
                     <div class="rounded-2xl border border-border bg-card/90 p-5 shadow-sm">
                         <div class="flex items-start justify-between gap-3">
                             <div>
@@ -90,7 +91,7 @@
                 </div>
             </aside>
 
-            <div class="flex flex-col gap-5" data-results>
+            <div class="flex min-w-0 flex-col gap-5" data-results>
                 @php
                     $resultLabel = trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]);
                 @endphp
@@ -103,7 +104,7 @@
                                     data-filters-toggle
                                     aria-haspopup="dialog"
                                     aria-expanded="false"
-                                    aria-controls="mobile-filters-form">
+                                    aria-controls="public-audio-filters">
                                 <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
                                 <span>Filtros</span>
                             </button>
@@ -178,7 +179,11 @@
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="min-w-0">
                                             <div class="text-sm font-semibold text-foreground break-words">{{ $audio->titulo ?? '' }}</div>
-                                            <div class="text-xs text-muted-foreground break-words">{{ $audio->autor->nombre ?? '' }}</div>
+                                            <div class="text-xs text-muted-foreground break-words">
+                                                @if ($audio->autor_id)
+                                                    <a href="{{ route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
+                                                @endif
+                                            </div>
                                         </div>
                                         <div class="text-right text-xs text-muted-foreground">
                                             @if ($formattedDate)
@@ -205,6 +210,15 @@
                                     @endif
                                     @if ($seriesName)
                                         <div class="text-[11px] text-muted-foreground">{{ $seriesName }}</div>
+                                    @endif
+                                    @if ($cita)
+                                        <div class="text-xs text-muted-foreground break-words">
+                                            @if ($audio->libro_id)
+                                                <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
+                                            @else
+                                                {{ $cita }}
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             </article>
@@ -305,7 +319,11 @@
                                                 {{ $seriesName }}
                                             </td>
                                             <td class="hidden xl:table-cell px-4 py-5 align-top break-words table-col--cita">
-                                                {{ $cita }}
+                                                @if ($audio->libro_id)
+                                                    <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
+                                                @else
+                                                    {{ $cita }}
+                                                @endif
                                             </td>
                                             <td class="hidden md:table-cell px-4 py-5 align-top table-col--duration break-words">
                                                 {{ $audio->duracion ?? '' }}
