@@ -1,4 +1,4 @@
-﻿@php
+@php
     $resolvedFilters = array_merge([
         'q' => null,
         'categoria_id' => null,
@@ -9,12 +9,9 @@
     ], $filters ?? []);
     $formId = $formId ?? 'filters-form';
     $hasActiveFilters = $hasActiveFilters ?? false;
-    $clearButtonClasses = $hasActiveFilters
-        ? 'inline-flex items-center justify-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary shadow-sm transition hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
-        : 'inline-flex items-center justify-center rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-semibold text-foreground transition hover:bg-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 @endphp
 
-<form id="{{ $formId }}" action="{{ route('public.audios') }}" method="GET" class="grid gap-4 text-sm" data-filters-form>
+<form id="{{ $formId }}" action="{{ route('public.audios') }}" method="GET" class="audio-filter-form grid gap-4 text-sm" data-filters-form>
     <input type="hidden" name="view" value="{{ request('view', $viewMode ?? 'table') }}">
     <input type="hidden" name="per_page" value="{{ $perPage ?? 25 }}">
     @if(($isEmbed ?? false) || request()->has('embed'))
@@ -34,8 +31,23 @@
 
     <div class="space-y-2">
         <label for="{{ $formId }}-q" class="text-xs font-semibold tracking-wide text-muted-foreground">Buscar</label>
-        <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor, libro, serie, categoría o año" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <div class="filter-search-wrap">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+            <input type="search" name="q" id="{{ $formId }}-q" value="{{ $resolvedFilters['q'] }}" placeholder="Título, autor o cita" class="w-full min-w-0 rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        </div>
     </div>
+
+    @if($series->isNotEmpty())
+    <div class="space-y-2">
+        <label for="{{ $formId }}-serie" class="text-xs font-semibold tracking-wide text-muted-foreground">Serie</label>
+        <select name="serie_id" id="{{ $formId }}-serie" class="w-full rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <option value="">Todas</option>
+            @foreach($series as $serie)
+                <option value="{{ $serie->id }}" @selected($resolvedFilters['serie_id'] == $serie->id)>{{ $serie->nombre }}</option>
+            @endforeach
+        </select>
+    </div>
+    @endif
 
     <div class="space-y-2">
         <label for="{{ $formId }}-categoria" class="text-xs font-semibold tracking-wide text-muted-foreground">Categoría</label>
@@ -77,20 +89,8 @@
         </select>
     </div>
 
-    @if($series->isNotEmpty())
-    <div class="space-y-2">
-        <label for="{{ $formId }}-serie" class="text-xs font-semibold tracking-wide text-muted-foreground">Serie</label>
-        <select name="serie_id" id="{{ $formId }}-serie" class="w-full rounded-full border border-border bg-input px-4 py-2 text-base sm:text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-            <option value="">Todas</option>
-            @foreach($series as $serie)
-                <option value="{{ $serie->id }}" @selected($resolvedFilters['serie_id'] == $serie->id)>{{ $serie->nombre }}</option>
-            @endforeach
-        </select>
-    </div>
-    @endif
-
-    <div class="flex items-center justify-between gap-3 pt-1">
+    <div class="filter-actions flex items-center justify-between gap-3 pt-1">
         <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-full bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Buscar</button>
-        <a href="{{ $clearFiltersUrl ?? route('public.audios') }}" class="{{ $clearButtonClasses }}">Limpiar</a>
+        <a href="{{ $clearFiltersUrl ?? route('public.audios') }}" class="filter-clear">Limpiar</a>
     </div>
 </form>

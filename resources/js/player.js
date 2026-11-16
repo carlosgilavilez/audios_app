@@ -4,7 +4,7 @@
     stickyPlayer: document.getElementById('sticky-player'),
 
     elements: {
-      play: document.querySelectorAll('[id^="pl-play"]'),
+      play: document.querySelectorAll('button[id^="pl-play"]'),
       playIcon: document.querySelectorAll('[id^="pl-play-icon"]'),
       pauseIcon: document.querySelectorAll('[id^="pl-pause-icon"]'),
       prev: document.querySelectorAll('[id^="pl-prev"]'),
@@ -20,6 +20,7 @@
       current: document.querySelectorAll('[id^="pl-current"]'),
       duration: document.querySelectorAll('[id^="pl-duration"]'),
       seek: document.querySelectorAll('[id^="pl-seek"]'),
+      progressLine: document.querySelectorAll('[id^="pl-progress-line"]'),
       volume: document.getElementById('pl-volume'),
       volumeToggle: document.getElementById('pl-volume-toggle'),
       download: document.querySelectorAll('[id^="pl-download"]'),
@@ -85,6 +86,7 @@
       this.audio.addEventListener('ended', () => this.playNext());
       this.audio.addEventListener('play', () => this.updatePlayState(true));
       this.audio.addEventListener('pause', () => this.updatePlayState(false));
+      this.audio.addEventListener('volumechange', () => this.updateVolumeState());
 
       this.elements.seek.forEach((bar) => bar.addEventListener('input', (event) => this.seek(event.target.value)));
       if (this.elements.volume) {
@@ -129,6 +131,10 @@
 
     updatePlayState(isPlaying) {
       this.state.isPlaying = isPlaying;
+      this.updateNodeList(this.elements.play, (button) => {
+        button.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproducir');
+        button.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+      });
       this.updateNodeList(this.elements.playIcon, (element) => element.classList.toggle('hidden', isPlaying));
       this.updateNodeList(this.elements.pauseIcon, (element) => element.classList.toggle('hidden', !isPlaying));
       this.updateActiveButton(isPlaying);
@@ -147,6 +153,8 @@
     },
 
     setButtonState(button, isPlaying) {
+      button.setAttribute('aria-label', `${isPlaying ? 'Pausar' : 'Reproducir'} ${button.dataset.title || 'audio'}`);
+      button.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
       const playIcon = button.querySelector('.icon-play');
       const eqIcon = button.querySelector('.icon-eq');
       if (playIcon) playIcon.classList.toggle('hidden', isPlaying);
@@ -201,7 +209,10 @@
     updateProgress() {
       if (isNaN(this.audio.duration)) return;
       const progress = (this.audio.currentTime / this.audio.duration) * 100;
-      this.updateNodeList(this.elements.seek, (element) => { element.value = progress; });
+      this.updateNodeList(this.elements.seek, (element) => {
+        element.value = progress;
+        element.style.setProperty('--range-progress', `${progress}%`);
+      });
       this.updateNodeList(this.elements.progressLine, (element) => { element.style.width = `${progress}%`; });
       this.updateNodeList(this.elements.current, (element) => { element.textContent = this.formatTime(this.audio.currentTime); });
     },
@@ -227,8 +238,21 @@
       this.state.isMuted = this.audio.muted;
     },
 
+    updateVolumeState() {
+      const muted = this.audio.muted || this.audio.volume === 0;
+      this.state.isMuted = muted;
+      if (this.elements.volume) {
+        this.elements.volume.style.setProperty('--range-progress', `${muted ? 0 : this.audio.volume * 100}%`);
+      }
+      if (this.elements.volumeToggle) {
+        this.elements.volumeToggle.setAttribute('aria-label', muted ? 'Activar sonido' : 'Silenciar');
+        this.elements.volumeToggle.setAttribute('aria-pressed', muted ? 'true' : 'false');
+      }
+    },
+
     expandPlayer() {
       document.body.classList.add('player-expanded');
+      this.stickyPlayer.dataset.playerExpanded = 'true';
       if (typeof lucide !== 'undefined') {
         lucide.createIcons();
       }
@@ -237,6 +261,7 @@
 
     collapsePlayer() {
       document.body.classList.remove('player-expanded');
+      this.stickyPlayer.dataset.playerExpanded = 'false';
       this.adjustBodyOffset();
     },
 

@@ -1,26 +1,37 @@
-# Public Audio Library Guide
+# Biblioteca pública de audios - v0.2.0
 
-## URL parameters
-- `view=table|cards` selecciona entre la tabla responsive y las tarjetas (persiste en `localStorage`).
-- `theme=neutral|verde|azul|vino` define la paleta aplicada a la UI y al reproductor sticky.
-- `dark=1|0` fuerza modo oscuro o claro sin importar la preferencia del sistema.
-- `wp_preview=1` activa el modo Vista WordPress; combinalo con `wp_width=360|414|768|780|1024|1366` para fijar el ancho simulado.
-- Los filtros (`search`, `categoria_id`, `year`, `per_page`) se conservan cuando compartes la URL.
+Código de versión: **v0.2.0**, registrado también en package.json, package-lock.json y CHANGELOG.md.
 
-## Add a new color theme
-1. Agrega el slug al arreglo `themes` exportado por `ThemeManager` en `resources/js/app.js`.
-2. Declara las variables CSS claras en `resources/css/app.css` dentro de `:root[data-theme="tu-tema"]`.
-3. Duplica el bloque dentro de `.dark[data-theme="tu-tema"]` para la version oscura manteniendo contraste AA.
-4. Anade la opcion al picker en `resources/views/public/audios.blade.php`.
-5. Ejecuta `npm run build` (o `npm run dev`) para regenerar los assets y validar el reproductor.
+## Uso y parámetros
 
-## WordPress preview mode controls
-- Activalo con el boton "Vista WordPress" o agrega `?wp_preview=1` a la URL.
-- La barra superior permite alternar anchos predefinidos y muestra el valor vigente.
-- El modo oculta la cromatica externa y restringe el layout al ancho elegido para simular un post embebido.
+La biblioteca se sirve en /audios y /embed. En WordPress se utiliza /audios?view=table&embed=1.
 
-## CSP y CORS para una futura integracion en iframe
-- Configura `frame-ancestors` permitiendo el dominio de WordPress que embebara la vista.
-- Sirve los audios con `Access-Control-Allow-Origin` apuntando al host remoto si se reproduce cross-origin.
-- Manten `script-src` y `style-src` alineados con las rutas de Vite o el CDN empleado.
-- Evita dependencias de cookies o autenticacion: expon unicamente rutas publicas dentro del iframe.
+- q: título, autor, referencia bíblica, serie, categoría o año. Un criterio inequívoco se captura en su campo; el texto ambiguo permanece como búsqueda libre.
+- serie_id, categoria_id, autor_id, libro_id y anio: criterios explícitos combinables. Se conservan en campos, chips, paginación y enlaces.
+- view=table|cards, per_page=10|25|50|100 y embed=1: presentación y tamaño de página.
+- dark=1|0: modo oscuro o claro. El botón de tema conserva la preferencia.
+- Desde/Hasta se retiraron por decisión del proyecto; sus parámetros antiguos se limpian al entrar.
+
+Orden del filtro: **Buscar, Serie, Categoría, Autor, Año y Libro de la Biblia**. Serie aparece cuando hay series con audios publicados. Buscar aplica la selección; Limpiar conserva la presentación y retira los criterios.
+
+## Diseño y reproductor
+
+La interfaz utiliza superficies neutras, verde para la acción principal y botones Limpiar de contraste alto. Las barras de desplazamiento son finas y conservan la navegación por teclado y táctil. La inspiración en Spotify se limita al estilo visual; no se incorporan sus marcas ni contenidos.
+
+En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. El progreso compacto y los deslizadores se actualizan con el audio.
+
+La hoja resources/css/public-library.css está limitada a html.audio-library, aplicado a las rutas públicas desde layouts/preview.blade.php. Se carga desde public/audios.blade.php después de los estilos compartidos. Los paneles internos mantienen su tema existente. Evitar reintroducir estilos inline con transparencias o el logotipo detrás del texto.
+
+## Compilación y comprobación
+
+Ejecutar npm run build para actualizar manifest y assets. Conservar los archivos fingerprint anteriores para páginas cacheadas. Documentar la versión en CHANGELOG.md y mantener coherentes las versiones de package.json y package-lock.json.
+
+Comprobar modo claro/oscuro, anchos de360,390,820y1280px, títulos largos, orden/selección de filtros, Buscar/Limpiar y navegación. Probar reproducción/pausa, pulsación del icono SVG, progreso, volumen, salto de diez segundos y reproductor móvil ampliado. Respetar movimiento reducido y foco visible.
+
+La prueba aislada se hace con SQLite en memoria o una copia de prueba; RefreshDatabase nunca debe apuntar al MySQL del usuario o producción.
+
+## Integración WordPress
+
+El snippet canónico es iframe-embed.html. Además de la altura bajo la cabecera Divi y los ajustes del anfitrión, v0.2.0 estiliza la barra externa solo en la página205. La hoja Laravel no puede modificar esa barra porque el iframe es de otro origen.
+
+Actualizar el módulo Divi con respaldo fresco y el helper update-wordpress-audio-embed.php. Comprobar la página WordPress real, sus widgets, extremos del iframe y reproductor; una simulación local no acredita ese resultado. Las cabeceras permiten la incrustación solo en los dominios de la iglesia configurados por el proyecto.

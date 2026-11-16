@@ -32,7 +32,7 @@
                     <div class="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
                         <div class="space-y-1">
                             <h2 id="mobileFiltersTitle" class="text-lg font-semibold text-foreground">Filtros</h2>
-                            <p class="text-xs text-muted-foreground">Selecciona criterios y aplica la busqueda.</p>
+                            <p class="text-xs text-muted-foreground">Encuentra el mensaje que buscas.</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <x-theme-toggle />
@@ -69,7 +69,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <h2 id="desktopFiltersTitle" class="text-base font-semibold text-foreground">Filtros</h2>
-                                <p class="text-xs text-muted-foreground">Combina criterios y aplica la busqueda.</p>
+                                <p class="text-xs text-muted-foreground">Encuentra el mensaje que buscas.</p>
                             </div>
                             <x-theme-toggle />
                         </div>
@@ -125,7 +125,7 @@
                             </a>
                         @endforeach
                         <a href="{{ $clearFiltersUrl }}"
-                           class="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                           class="filter-clear filter-clear-all">
                             Limpiar todo
                         </a>
                     </div>

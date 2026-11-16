@@ -11,11 +11,19 @@
     "isDynamicEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-DCkus9Xq.css",
+    "file": "assets/app-BgTB1WQT.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
       "app.css"
+    ]
+  },
+  "resources/css/public-library.css": {
+    "file": "assets/public-library-CnqYzboF.css",
+    "src": "resources/css/public-library.css",
+    "isEntry": true,
+    "names": [
+      "public-library.css"
     ]
   },
   "resources/js/app.js": {
@@ -29,7 +37,7 @@
     ]
   },
   "resources/js/player.js": {
-    "file": "assets/player-ainVXABY.js",
+    "file": "assets/player-Dald54Xc.js",
     "name": "player",
     "src": "resources/js/player.js",
     "isEntry": true

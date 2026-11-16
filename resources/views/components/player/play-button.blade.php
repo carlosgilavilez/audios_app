@@ -1,4 +1,4 @@
-﻿@props([
+@props([
   'src' => '#',
   'title' => '',
   'author' => '',

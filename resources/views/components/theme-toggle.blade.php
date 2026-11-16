@@ -1,4 +1,4 @@
-﻿<button
+<button
     type="button"
     data-dark-toggle
     class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium border border-border bg-secondary text-secondary-foreground transition hover:bg-muted/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"

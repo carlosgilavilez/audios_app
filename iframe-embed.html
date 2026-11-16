@@ -1,55 +1,107 @@
-
 <style>
-.iframe-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  padding-top: 100vh; /* Fallback height */
+/* v0.2.0: the host scrollbar belongs to WordPress, outside the Laravel iframe. */
+html:has(body.page-id-205) {
+  scrollbar-width: thin;
+  scrollbar-color: #7a857f transparent;
 }
-
-.iframe-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
+html:has(body.page-id-205)::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html:has(body.page-id-205)::-webkit-scrollbar-track {
+  background: transparent;
+}
+html:has(body.page-id-205)::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #7a857f;
+  background-clip: padding-box;
+}
+html:has(body.page-id-205)::-webkit-scrollbar-button {
+  display: none;
+}
+.palma-audio-library {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 180px;
+  overflow: hidden;
+}
+.palma-audio-library iframe {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;
 }
+  /* Keep this page's WhatsApp control after the footer, clear of the player. */
+  .page-id-205 #wa .wa__btn_popup {
+    position: relative !important;
+    width: 56px;
+    right: auto !important;
+    bottom: auto !important;
+    margin: 16px 30px 16px auto;
+  }
+  .page-id-205 #wa .wa__btn_popup_txt {
+    display: none !important;
+  }
+@media (max-width: 980px) {
+  .page-id-205 .cky-btn-revisit-wrapper {
+    top: 18px !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: 85px !important;
+  }
+}
 </style>
 
-<div class="iframe-container">
-  <!-- 
-    IMPORTANTE: 
-    1. Cambia 'http://localhost/audios_app/public' por la URL de producción de tu aplicación.
-    2. La ruta '/embed' la crearemos en Laravel para que esto funcione.
-  -->
-  <iframe src="http://localhost/audios_app/public/embed" title="Biblioteca de Audios"></iframe>
+<div class="palma-audio-library" data-palma-audio-library>
+  <iframe src="https://audios.iglesiapalma.org/audios?view=table&amp;embed=1" title="Biblioteca de Audios"></iframe>
 </div>
 
 <script>
-// Este script ajusta la altura del iframe para que ocupe el espacio disponible
-// entre el encabezado (header) y el pie de página (footer) de Divi.
-function adjustIframeHeight() {
-  // Busca el header principal de Divi
-  const header = document.getElementById('main-header');
-  const headerHeight = header ? header.offsetHeight : 0;
+(() => {
+  const container = document.querySelector('[data-palma-audio-library]');
+  if (!container) return;
 
-  // Busca el footer principal de Divi
-  const footer = document.getElementById('main-footer');
-  const footerHeight = footer ? footer.offsetHeight : 0;
-
-  const iframeContainer = document.querySelector('.iframe-container');
-  
-  if (iframeContainer) {
-    // Calcula la altura disponible en la ventana del navegador
-    const availableHeight = window.innerHeight - headerHeight - footerHeight;
-    
-    // Ajusta el padding-top del contenedor para establecer la altura del iframe
-    iframeContainer.style.paddingTop = availableHeight + 'px';
+  // Theme Builder uses a different header from the classic #main-header.
+  // The footer follows this section; do not subtract its full height.
+  const headers = document.querySelectorAll('#main-header, .et-l--header, .et-l--header .et_pb_section, #wpadminbar');
+  let scheduled = false;
+  let headerOffset = 0;
+  const updateHeight = () => {
+    scheduled = false;
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    let headerBottom = 0;
+    headers.forEach((header) => {
+      const position = getComputedStyle(header).position;
+      const rect = header.getBoundingClientRect();
+      if ((position === 'fixed' || position === 'sticky') && rect.top <= viewportHeight && rect.bottom > 0) {
+        headerBottom = Math.max(headerBottom, rect.bottom);
+      }
+    });
+    // Divi can start the desktop module above the bottom of its fixed header.
+    const documentTop = container.getBoundingClientRect().top + window.scrollY - headerOffset;
+    const nextOffset = Math.max(0, Math.ceil(headerBottom - documentTop));
+    if (nextOffset !== headerOffset) {
+      container.style.marginTop = nextOffset + 'px';
+      headerOffset = nextOffset;
+    }
+    const top = Math.max(0, headerBottom, container.getBoundingClientRect().top);
+    container.style.height = Math.max(180, Math.floor(viewportHeight - top)) + 'px';
+  };
+  const scheduleUpdate = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(updateHeight);
+  };
+  scheduleUpdate();
+  window.addEventListener('load', scheduleUpdate);
+  window.addEventListener('resize', scheduleUpdate);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', scheduleUpdate);
+  if (window.ResizeObserver) {
+    const observer = new ResizeObserver(scheduleUpdate);
+    headers.forEach((header) => observer.observe(header));
   }
-}
-
-// Ejecuta la función cuando la página carga y cuando se redimensiona la ventana
-window.addEventListener('load', adjustIframeHeight);
-window.addEventListener('resize', adjustIframeHeight);
+})();
 </script>
