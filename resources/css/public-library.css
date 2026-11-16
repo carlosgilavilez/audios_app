@@ -1,4 +1,4 @@
-/* v0.2.1 — public library only. Admin/editor retain the shared application theme. */
+/* v0.2.2 — public library only. Admin/editor retain the shared application theme. */
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
@@ -196,9 +196,12 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
 @media (max-width: 1023px) {
   .audio-library [data-results] { padding: 0; background: transparent; }
   .audio-library.dark [data-results] { background: transparent; }
-  .audio-library .mobile-results-toolbar { background: hsl(var(--background)); backdrop-filter: none; box-shadow: none; padding: 10px 0; }
-  .audio-library.dark .mobile-results-toolbar { background: #3b485e; }
-  .audio-library [data-filters-toggle] { min-height: 40px; }
+  .audio-library .mobile-results-toolbar { position: static; background: transparent; border: 0; border-radius: 12px; backdrop-filter: none; box-shadow: none; padding: 12px 8px 4px; }
+  .audio-library .mobile-results-toolbar > span { display: block; margin-top: 8px; }
+  .audio-library .mobile-results-toolbar select { border-radius: 999px; background-color: hsl(var(--input)); }
+  .audio-library.dark .mobile-results-toolbar label,
+  .audio-library.dark .mobile-results-toolbar > span { color: #172235; }
+  .audio-library [data-filters-toggle] { min-height: 44px; padding-inline: 16px; }
 }
 @media (max-width: 767px) {
   html.audio-library:has(body.player-expanded) { overflow: hidden; scrollbar-gutter: auto; }

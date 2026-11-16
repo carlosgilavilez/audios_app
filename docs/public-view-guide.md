@@ -1,6 +1,6 @@
-# Biblioteca pública de audios - v0.2.1
+# Biblioteca pública de audios - v0.2.2
 
-Código de versión: **v0.2.1**, registrado también en package.json, package-lock.json y CHANGELOG.md.
+Código de versión: **v0.2.2**, registrado también en package.json, package-lock.json y CHANGELOG.md.
 
 ## Uso y parámetros
 
@@ -17,6 +17,8 @@ Orden del filtro: **Buscar, Serie, Categoría, Autor, Año y Libro de la Biblia*
 ## Diseño y reproductor
 
 La interfaz utiliza verde para la acción principal y botones Limpiar de contraste alto. El modo oscuro recupera el degradado gris azulado anterior, con paneles y reproductor más luminosos; el usuario prefirió este acabado al fondo casi negro de v0.2.0. Las barras de desplazamiento son finas y conservan la navegación por teclado y táctil. La inspiración en Spotify se limita al estilo visual; no se incorporan sus marcas ni contenidos.
+
+En móvil, Mostrar/Filtros aparece sobre el fondo de la página, con espacio a ambos lados y sin la franja rectangular coloreada. La cabecera forma parte del desplazamiento normal. Las tarjetas no muestran categoría para reducir su altura; el filtro por categoría sigue disponible.
 
 En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. El progreso compacto y los deslizadores se actualizan con el audio.
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2 - Cabecera y tarjetas móviles más ligeras (2026-11-16)
+
+- La franja móvil de Mostrar/Filtros se integra en el fondo sin el bloque rectangular de color; los controles tienen más espacio lateral y el botón Filtros conserva 44 px de altura táctil.
+- Se retira la línea de categoría de las tarjetas móviles para reducir su altura. El filtro por categoría, los metadatos del reproductor y la tabla de escritorio conservan esa información.
+- Se mantiene el degradado gris azulado y el estilo de v0.2.1.
+
 ## v0.2.1 - Degradado oscuro recuperado (2026-11-16)
 
 - Se recupera el degradado gris azulado de la interfaz anterior por preferencia del cliente, con superficies más luminosas y texto legible.

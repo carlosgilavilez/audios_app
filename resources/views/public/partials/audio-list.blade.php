@@ -205,9 +205,6 @@
                                             @endif
                                         </div>
                                     </div>
-                                    @if ($categoryName)
-                                        <div class="text-[11px] uppercase tracking-wide text-muted-foreground">{{ $categoryName }}</div>
-                                    @endif
                                     @if ($seriesName)
                                         <div class="text-[11px] text-muted-foreground">{{ $seriesName }}</div>
                                     @endif
