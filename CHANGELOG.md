@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1 - Degradado oscuro recuperado (2026-11-16)
+
+- Se recupera el degradado gris azulado de la interfaz anterior por preferencia del cliente, con superficies más luminosas y texto legible.
+- Filtros, tarjetas y reproductor acompañan el degradado, conservando las barras finas, el orden de Serie, Limpiar con alto contraste y los ajustes responsive de v0.2.0.
+- El reproductor móvil ampliado mantiene el ancho completo, sin reservar una franja blanca al ocultar el desplazamiento.
+
 ## v0.2.0 - Biblioteca y reproductor renovados (2026-11-16)
 
 Código de versión: `v0.2.0` (SemVer, mejora de interfaz sin cambios de base de datos).
