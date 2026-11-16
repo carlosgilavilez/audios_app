@@ -2,6 +2,8 @@
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
+  background: hsl(var(--background));
+  scrollbar-color: var(--scroll-thumb) hsl(var(--background));
   --background: 150 12% 96%;
   --foreground: 150 12% 12%;
   --card: 0 0% 100%;
@@ -51,6 +53,7 @@ html.audio-library.dark {
 .audio-library::-webkit-scrollbar { width: 8px; height: 8px; }
 .audio-library ::-webkit-scrollbar-track,
 .audio-library::-webkit-scrollbar-track { background: transparent; }
+html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background)); }
 .audio-library ::-webkit-scrollbar-thumb,
 .audio-library::-webkit-scrollbar-thumb {
   background: var(--scroll-thumb);
