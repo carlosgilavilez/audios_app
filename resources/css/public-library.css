@@ -1,4 +1,4 @@
-/* v0.2.4 — public library only. Admin/editor retain the shared application theme. */
+/* v0.2.5 — public library only. Admin/editor retain the shared application theme. */
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
@@ -219,8 +219,15 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
   .audio-library .mobile-track-author,
   .audio-library .mobile-track-citation { min-width: 0; margin-top: 2px; overflow-wrap: anywhere; }
   .audio-library .audio-filter-form :is(input[type="search"], select) { font-size: 16px; }
-  .audio-library #minimized-player { padding-top: 12px; padding-bottom: 12px; }
+  .audio-library #minimized-player { padding-top: 26px; padding-bottom: 12px; }
   .audio-library #minimized-player .player-mini-progress-track { height: 6px; }
+  .audio-library #minimized-player #pl-seek-minimized { position: absolute; z-index: 2; top: -19px; left: 0; width: 100%; height: 44px; touch-action: pan-y; cursor: ew-resize; }
+  .audio-library #minimized-player #pl-seek-minimized::-webkit-slider-runnable-track { height: 6px; background: transparent; }
+  .audio-library #minimized-player #pl-seek-minimized::-webkit-slider-thumb { width: 16px; height: 16px; margin-top: -5px; border: 2px solid hsl(var(--primary)); background: hsl(var(--foreground)); }
+  .audio-library #minimized-player #pl-seek-minimized::-moz-range-track { height: 6px; background: transparent; }
+  .audio-library #minimized-player #pl-seek-minimized::-moz-range-progress { background: transparent; }
+  .audio-library #minimized-player #pl-seek-minimized::-moz-range-thumb { width: 16px; height: 16px; border: 2px solid hsl(var(--primary)); background: hsl(var(--foreground)); }
+  .audio-library #minimized-player #pl-seek-minimized:disabled { cursor: default; }
   .audio-library #sticky-player .player-controls-primary { gap: 4px; }
   .audio-library #sticky-player .player-controls-primary button { width: 44px; height: 44px; flex-shrink: 0; }
   .audio-library #pl-title-minimized { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }

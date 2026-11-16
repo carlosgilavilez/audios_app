@@ -20,6 +20,7 @@
       current: document.querySelectorAll('[id^="pl-current"]'),
       duration: document.querySelectorAll('[id^="pl-duration"]'),
       seek: document.querySelectorAll('[id^="pl-seek"]'),
+      miniSeek: document.getElementById('pl-seek-minimized'),
       progressLine: document.querySelectorAll('[id^="pl-progress-line"]'),
       volume: document.getElementById('pl-volume'),
       volumeToggle: document.getElementById('pl-volume-toggle'),
@@ -36,6 +37,7 @@
       isPlaying: false,
       isMuted: false,
       activeButton: null,
+      scrubbing: null,
     },
 
     init() {
@@ -88,7 +90,21 @@
       this.audio.addEventListener('pause', () => this.updatePlayState(false));
       this.audio.addEventListener('volumechange', () => this.updateVolumeState());
 
-      this.elements.seek.forEach((bar) => bar.addEventListener('input', (event) => this.seek(event.target.value)));
+      this.elements.seek.forEach((bar) => {
+        if (bar === this.elements.miniSeek) {
+          bar.addEventListener('input', () => this.previewMiniSeek(bar));
+          bar.addEventListener('change', () => this.commitMiniSeek(bar));
+          bar.addEventListener('blur', () => this.commitMiniSeek(bar));
+          bar.addEventListener('pointercancel', () => {
+            if (this.state.scrubbing === bar) {
+              this.state.scrubbing = null;
+              this.updateProgress();
+            }
+          });
+        } else {
+          bar.addEventListener('input', (event) => this.seek(event.target.value));
+        }
+      });
       if (this.elements.volume) {
         this.elements.volume.addEventListener('input', (event) => this.setVolume(event.target.value));
       }
@@ -113,6 +129,12 @@
       this.state.currentIndex = index;
       const track = this.state.playlist[index];
 
+      this.state.scrubbing = null;
+      if (this.elements.miniSeek) {
+        this.elements.miniSeek.disabled = true;
+        this.elements.miniSeek.value = 0;
+        this.elements.miniSeek.setAttribute('aria-valuetext', 'Cargando audio');
+      }
       this.audio.src = track.src;
       this.updateMetadata(track);
 
@@ -207,23 +229,50 @@
     },
 
     updateProgress() {
-      if (isNaN(this.audio.duration)) return;
-      const progress = (this.audio.currentTime / this.audio.duration) * 100;
+      if (this.state.scrubbing) return;
+      this.renderProgress(this.audio.currentTime);
+    },
+
+    renderProgress(time) {
+      const duration = this.audio.duration;
+      if (!Number.isFinite(duration) || duration <= 0 || !Number.isFinite(time)) return;
+      const position = Math.max(0, Math.min(duration, time));
+      const progress = (position / duration) * 100;
       this.updateNodeList(this.elements.seek, (element) => {
         element.value = progress;
         element.style.setProperty('--range-progress', `${progress}%`);
+        element.setAttribute('aria-valuetext', `${this.formatTime(position)} de ${this.formatTime(duration)}`);
       });
       this.updateNodeList(this.elements.progressLine, (element) => { element.style.width = `${progress}%`; });
-      this.updateNodeList(this.elements.current, (element) => { element.textContent = this.formatTime(this.audio.currentTime); });
+      this.updateNodeList(this.elements.current, (element) => { element.textContent = this.formatTime(position); });
     },
 
     updateDuration() {
+      if (this.elements.miniSeek) {
+        this.elements.miniSeek.disabled = !Number.isFinite(this.audio.duration) || this.audio.duration <= 0;
+      }
       this.updateNodeList(this.elements.duration, (element) => { element.textContent = this.formatTime(this.audio.duration); });
+      this.updateProgress();
+    },
+
+    previewMiniSeek(bar) {
+      if (!Number.isFinite(this.audio.duration) || this.audio.duration <= 0) return;
+      this.state.scrubbing = bar;
+      this.renderProgress((this.audio.duration / 100) * Number(bar.value));
+    },
+
+    commitMiniSeek(bar) {
+      if (this.state.scrubbing !== bar) return;
+      const value = bar.value;
+      this.state.scrubbing = null;
+      this.seek(value);
     },
 
     seek(value) {
-      if (isNaN(this.audio.duration)) return;
-      this.audio.currentTime = (this.audio.duration / 100) * value;
+      const percent = Number(value);
+      if (!Number.isFinite(this.audio.duration) || this.audio.duration <= 0 || !Number.isFinite(percent)) return;
+      this.audio.currentTime = (this.audio.duration / 100) * Math.max(0, Math.min(100, percent));
+      this.updateProgress();
     },
 
     setVolume(value) {
@@ -266,6 +315,7 @@
     },
 
     formatTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
       const minutes = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
       return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;

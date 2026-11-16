@@ -1,6 +1,6 @@
-# Biblioteca pública de audios - v0.2.4
+# Biblioteca pública de audios - v0.2.5
 
-Código de versión: **v0.2.4**, registrado también en package.json, package-lock.json y CHANGELOG.md.
+Código de versión: **v0.2.5**, registrado también en package.json, package-lock.json y CHANGELOG.md.
 
 ## Uso y parámetros
 
@@ -20,7 +20,7 @@ La interfaz utiliza verde para la acción principal y botones Limpiar de contras
 
 En móvil, Mostrar/Filtros aparece sobre el fondo de la página, con espacio a ambos lados y sin una franja rectangular. Mostrar y el contador usan pequeñas superficies redondeadas con contraste alto. El botón Filtros permanece fijo al desplazarse; después de96px se compacta a un icono de44px, manteniendo su nombre accesible. Las tarjetas muestran solo título, autor y cita bíblica cuando existe. Los filtros siguen disponibles.
 
-En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. El progreso compacto y los deslizadores se actualizan con el audio. La línea superior del reproductor encogido mide6px; se conservan todos sus metadatos y controles aunque la lista móvil muestre menos información.
+En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. La línea superior del reproductor encogido mide6px y permite tocar o arrastrar su punto de agarre, con zona táctil de44px. Durante el arrastre muestra la posición elegida y salta al soltar, conservando reproducción/pausa. Admite teclado y anuncia tiempo actual/total a lectores de pantalla. Se conservan todos sus metadatos y controles aunque la lista móvil muestre menos información.
 
 La hoja resources/css/public-library.css está limitada a html.audio-library, aplicado a las rutas públicas desde layouts/preview.blade.php. Se carga desde public/audios.blade.php después de los estilos compartidos. Los paneles internos mantienen su tema existente. Ajustar el degradado y las transparencias en esta hoja; conservar el texto limpio, sin el logotipo detrás.
 

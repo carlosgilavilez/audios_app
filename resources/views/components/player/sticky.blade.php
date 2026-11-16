@@ -69,9 +69,12 @@
 
     <div class="md:hidden">
         <div id="minimized-player" class="relative mx-auto max-w-screen-xl px-3 pt-4 pb-2">
-            <div class="player-mini-progress-track absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden rounded-full">
+            <div class="player-mini-progress-track absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden rounded-full" aria-hidden="true">
                 <div id="pl-progress-line-minimized" class="h-full w-0 bg-primary transition-[width] duration-150 ease-out"></div>
             </div>
+            <input id="pl-seek-minimized" type="range" min="0" max="100" value="0" step="0.1" disabled
+                   class="appearance-none rounded-full bg-transparent outline-none accent-primary"
+                   aria-label="Posición del audio" aria-valuetext="Cargando audio">
             <div class="flex items-center gap-3">
                 <div class="player-meta min-w-0 flex-1">
                     <div class="player-title-marquee" aria-live="polite">
@@ -97,11 +100,6 @@
                         <i data-lucide="chevron-up" class="h-5 w-5"></i>
                     </button>
                 </div>
-            </div>
-            <div class="player-progress flex flex-1 items-center gap-3">
-                <input id="pl-seek-minimized" type="range" min="0" value="0" step="1"
-                       class="flex-1 appearance-none h-2 rounded-full bg-muted/50 outline-none accent-primary"
-                       aria-label="Barra de progreso">
             </div>
         </div>
 

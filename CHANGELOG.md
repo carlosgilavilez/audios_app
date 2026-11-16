@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.5 - Progreso táctil en el reproductor encogido (2026-11-16)
+
+- La barra del reproductor móvil encogido permite tocar y arrastrar un punto de agarre para avanzar o retroceder, con una zona táctil de 44 px sobre la línea de 6 px.
+- Durante el arrastre se muestra la posición elegida; el salto se aplica al soltar, conservando el estado de reproducción o pausa.
+- Se mantienen los metadatos, controles y la lista móvil mínima. El deslizador admite teclado y anuncia la posición temporal a lectores de pantalla.
+
 ## v0.2.4 - Lista móvil mínima y progreso más visible (2026-11-16)
 
 - Las tarjetas móviles muestran solo título, autor y cita bíblica cuando existe, con menos espacio vertical. Fecha, serie y duración dejan de aparecer en la lista móvil.
