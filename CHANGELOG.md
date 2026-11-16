@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.4 - Lista móvil mínima y progreso más visible (2026-11-16)
+
+- Las tarjetas móviles muestran solo título, autor y cita bíblica cuando existe, con menos espacio vertical. Fecha, serie y duración dejan de aparecer en la lista móvil.
+- Los metadatos y controles del reproductor se conservan completos. La línea de progreso del reproductor móvil encogido pasa de 4 a 6 px.
+- Se mantienen el filtro fijo y compacto, el contraste del encabezado y los 50 audios por defecto.
+
 ## v0.2.3 - Filtro fijo y tarjetas móviles compactas (2026-11-16)
 
 - Texto claro del encabezado móvil sobre superficies redondeadas de contraste alto; se mantiene el fondo general transparente.

@@ -144,20 +144,13 @@
                                     ? \Illuminate\Support\Carbon::parse($audio->fecha_publicacion)->locale('es')
                                     : null;
                                 $formattedDate = '';
-                                $dateParts = [];
                                 $yearValue = null;
                                 $yearLink = null;
                                 if ($publishDate) {
                                     $formattedDate = \Illuminate\Support\Str::lower(str_replace('.', '', $publishDate->isoFormat('D MMM YYYY')));
-                                    $dateParts = array_values(array_filter(explode(' ', $formattedDate)));
                                     $yearValue = (int) $publishDate->year;
                                     $yearLink = route('public.audios', $queryFor(['anio' => $yearValue]));
                                 }
-                                $yearToken = null;
-                                if (!empty($dateParts)) {
-                                    $yearToken = array_pop($dateParts);
-                                }
-                                $dateWithoutYear = trim(implode(' ', $dateParts));
                                 $categoryName = $audio->categoria->nombre ?? '';
                                 $seriesName = $audio->serie->nombre ?? '';
                                 $cita = trim(($audio->libro->nombre ?? '') . ' ' . ($audio->cita_biblica ?? ''));
@@ -178,44 +171,20 @@
                                 />
                                 <div class="mobile-track-content min-w-0 flex-1">
                                     <div class="mobile-track-title text-sm font-semibold text-foreground break-words">{{ $audio->titulo ?? '' }}</div>
-                                    <div class="mobile-track-byline text-xs text-muted-foreground">
-                                        <div class="mobile-track-author">
-                                            @if ($audio->autor_id)
-                                                <a href="{{ route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
-                                            @endif
-                                        </div>
-                                        <div class="mobile-track-date">
-                                            @if ($formattedDate)
-                                                @if ($dateWithoutYear)
-                                                    <span class="date-prefix">{{ $dateWithoutYear }}</span>
-                                                @endif
-                                                @if ($yearToken)
-                                                    @if ($yearLink)
-                                                        <a href="{{ $yearLink }}" class="date-year-link font-semibold" data-filter-link="anio">{{ $yearToken }}</a>
-                                                    @else
-                                                        <span class="date-year-link font-semibold">{{ $yearToken }}</span>
-                                                    @endif
-                                                @endif
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @if ($seriesName)
-                                        <div class="mobile-track-series text-[11px] text-muted-foreground">{{ $seriesName }}</div>
-                                    @endif
-                                    <div class="mobile-track-details text-xs text-muted-foreground">
-                                        <div class="mobile-track-citation">
-                                            @if ($cita)
-                                                @if ($audio->libro_id)
-                                                    <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
-                                                @else
-                                                    {{ $cita }}
-                                                @endif
-                                            @endif
-                                        </div>
-                                        @if(!empty($audio->duracion))
-                                            <span class="mobile-track-duration">{{ $audio->duracion }}</span>
+                                    <div class="mobile-track-author text-xs text-muted-foreground">
+                                        @if ($audio->autor_id)
+                                            <a href="{{ route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
                                         @endif
                                     </div>
+                                    @if ($cita)
+                                        <div class="mobile-track-citation text-xs text-muted-foreground">
+                                            @if ($audio->libro_id)
+                                                <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
+                                            @else
+                                                {{ $cita }}
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </article>
                         @endforeach

@@ -1,6 +1,6 @@
-# Biblioteca pública de audios - v0.2.3
+# Biblioteca pública de audios - v0.2.4
 
-Código de versión: **v0.2.3**, registrado también en package.json, package-lock.json y CHANGELOG.md.
+Código de versión: **v0.2.4**, registrado también en package.json, package-lock.json y CHANGELOG.md.
 
 ## Uso y parámetros
 
@@ -18,9 +18,9 @@ Orden del filtro: **Buscar, Serie, Categoría, Autor, Año y Libro de la Biblia*
 
 La interfaz utiliza verde para la acción principal y botones Limpiar de contraste alto. El modo oscuro recupera el degradado gris azulado anterior, con paneles y reproductor más luminosos; el usuario prefirió este acabado al fondo casi negro de v0.2.0. Las barras de desplazamiento son finas y conservan la navegación por teclado y táctil. La inspiración en Spotify se limita al estilo visual; no se incorporan sus marcas ni contenidos.
 
-En móvil, Mostrar/Filtros aparece sobre el fondo de la página, con espacio a ambos lados y sin una franja rectangular. Mostrar y el contador usan pequeñas superficies redondeadas con contraste alto. El botón Filtros permanece fijo al desplazarse; después de96px se compacta a un icono de44px, manteniendo su nombre accesible. Las tarjetas no muestran categoría; autor y fecha comparten fila bajo el título, y cita/duración comparten otra. El filtro por categoría sigue disponible.
+En móvil, Mostrar/Filtros aparece sobre el fondo de la página, con espacio a ambos lados y sin una franja rectangular. Mostrar y el contador usan pequeñas superficies redondeadas con contraste alto. El botón Filtros permanece fijo al desplazarse; después de96px se compacta a un icono de44px, manteniendo su nombre accesible. Las tarjetas muestran solo título, autor y cita bíblica cuando existe. Los filtros siguen disponibles.
 
-En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. El progreso compacto y los deslizadores se actualizan con el audio.
+En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. El progreso compacto y los deslizadores se actualizan con el audio. La línea superior del reproductor encogido mide6px; se conservan todos sus metadatos y controles aunque la lista móvil muestre menos información.
 
 La hoja resources/css/public-library.css está limitada a html.audio-library, aplicado a las rutas públicas desde layouts/preview.blade.php. Se carga desde public/audios.blade.php después de los estilos compartidos. Los paneles internos mantienen su tema existente. Ajustar el degradado y las transparencias en esta hoja; conservar el texto limpio, sin el logotipo detrás.
 

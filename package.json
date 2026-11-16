@@ -25,5 +25,5 @@
     "dependencies": {
         "tailwindcss-animate": "^1.0.7"
     },
-    "version": "0.2.3"
+    "version": "0.2.4"
 }

@@ -1,4 +1,4 @@
-/* v0.2.3 — public library only. Admin/editor retain the shared application theme. */
+/* v0.2.4 — public library only. Admin/editor retain the shared application theme. */
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
@@ -214,18 +214,13 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
   html.audio-library:has(body.player-expanded) { overflow: hidden; scrollbar-gutter: auto; }
   .audio-library body.player-expanded { overflow: hidden; }
   .audio-library main[data-content-main] { padding-top: 8px; }
-  .audio-library [data-results] article { border-color: hsl(var(--border) / .65); border-radius: 12px; background: hsl(var(--card)); }
+  .audio-library [data-results] article { padding-block: 10px; border-color: hsl(var(--border) / .65); border-radius: 12px; background: hsl(var(--card)); }
   .audio-library.dark [data-results] article { background: hsl(var(--card) / .78); }
-  .audio-library .mobile-track-byline,
-  .audio-library .mobile-track-details { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
   .audio-library .mobile-track-author,
-  .audio-library .mobile-track-citation { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-  .audio-library .mobile-track-date,
-  .audio-library .mobile-track-duration { flex-shrink: 0; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-  .audio-library .mobile-track-duration { font-size: 11px; }
-  .audio-library .mobile-track-series { margin-top: 4px; }
+  .audio-library .mobile-track-citation { min-width: 0; margin-top: 2px; overflow-wrap: anywhere; }
   .audio-library .audio-filter-form :is(input[type="search"], select) { font-size: 16px; }
   .audio-library #minimized-player { padding-top: 12px; padding-bottom: 12px; }
+  .audio-library #minimized-player .player-mini-progress-track { height: 6px; }
   .audio-library #sticky-player .player-controls-primary { gap: 4px; }
   .audio-library #sticky-player .player-controls-primary button { width: 44px; height: 44px; flex-shrink: 0; }
   .audio-library #pl-title-minimized { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }

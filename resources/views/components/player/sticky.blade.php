@@ -69,7 +69,7 @@
 
     <div class="md:hidden">
         <div id="minimized-player" class="relative mx-auto max-w-screen-xl px-3 pt-4 pb-2">
-            <div class="absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden rounded-full">
+            <div class="player-mini-progress-track absolute inset-x-0 top-0 h-1 bg-border/50 overflow-hidden rounded-full">
                 <div id="pl-progress-line-minimized" class="h-full w-0 bg-primary transition-[width] duration-150 ease-out"></div>
             </div>
             <div class="flex items-center gap-3">
