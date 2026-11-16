@@ -193,6 +193,7 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
   .audio-library [data-filters-toggle] { min-height: 40px; }
 }
 @media (max-width: 767px) {
+  html.audio-library:has(body.player-expanded) { overflow: hidden; scrollbar-gutter: auto; }
   .audio-library body.player-expanded { overflow: hidden; }
   .audio-library main[data-content-main] { padding-top: 8px; }
   .audio-library [data-results] article { border-color: hsl(var(--border) / .65); border-radius: 12px; background: hsl(var(--card)); }
