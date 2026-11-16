@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.3 - Filtro fijo y tarjetas móviles compactas (2026-11-16)
+
+- Texto claro del encabezado móvil sobre superficies redondeadas de contraste alto; se mantiene el fondo general transparente.
+- Filtros permanece visible al desplazarse y se reduce a un botón de icono de 44 px, conservando su nombre accesible y la apertura del panel.
+- Autor y fecha comparten fila debajo del título; cita y duración comparten la fila inferior para reducir la altura de cada tarjeta.
+- La biblioteca y el iframe cargan 50 audios por defecto. Las elecciones explícitas de tamaño de página se respetan.
+
 ## v0.2.2 - Cabecera y tarjetas móviles más ligeras (2026-11-16)
 
 - La franja móvil de Mostrar/Filtros se integra en el fondo sin el bloque rectangular de color; los controles tienen más espacio lateral y el botón Filtros conserva 44 px de altura táctil.

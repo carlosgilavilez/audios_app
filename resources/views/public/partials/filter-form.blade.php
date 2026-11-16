@@ -13,7 +13,7 @@
 
 <form id="{{ $formId }}" action="{{ route('public.audios') }}" method="GET" class="audio-filter-form grid gap-4 text-sm" data-filters-form>
     <input type="hidden" name="view" value="{{ request('view', $viewMode ?? 'table') }}">
-    <input type="hidden" name="per_page" value="{{ $perPage ?? 25 }}">
+    <input type="hidden" name="per_page" value="{{ $perPage ?? 50 }}">
     @if(($isEmbed ?? false) || request()->has('embed'))
         <input type="hidden" name="embed" value="{{ request('embed', ($isEmbed ?? false) ? '1' : '0') }}">
     @endif

@@ -1,4 +1,4 @@
-/* v0.2.2 — public library only. Admin/editor retain the shared application theme. */
+/* v0.2.3 — public library only. Admin/editor retain the shared application theme. */
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
@@ -196,12 +196,19 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
 @media (max-width: 1023px) {
   .audio-library [data-results] { padding: 0; background: transparent; }
   .audio-library.dark [data-results] { background: transparent; }
-  .audio-library .mobile-results-toolbar { position: static; background: transparent; border: 0; border-radius: 12px; backdrop-filter: none; box-shadow: none; padding: 12px 8px 4px; }
-  .audio-library .mobile-results-toolbar > span { display: block; margin-top: 8px; }
+  .audio-library .mobile-results-toolbar { position: sticky; top: 8px; background: transparent; border: 0; border-radius: 12px; backdrop-filter: none; box-shadow: none; padding: 12px 8px 4px; }
+  .audio-library .mobile-results-toolbar .page-size-control,
+  .audio-library .mobile-results-count { background: hsl(var(--card) / .98); color: hsl(var(--foreground)); border: 1px solid hsl(var(--border) / .55); border-radius: 999px; box-shadow: 0 2px 8px #00000012; }
+  .audio-library .mobile-results-toolbar .page-size-control { padding: 4px 8px 4px 12px; }
+  .audio-library .mobile-results-toolbar label { color: hsl(var(--foreground)); }
+  .audio-library .mobile-results-count { display: block; width: fit-content; margin-top: 8px; padding: 4px 10px; }
   .audio-library .mobile-results-toolbar select { border-radius: 999px; background-color: hsl(var(--input)); }
-  .audio-library.dark .mobile-results-toolbar label,
-  .audio-library.dark .mobile-results-toolbar > span { color: #172235; }
-  .audio-library [data-filters-toggle] { min-height: 44px; padding-inline: 16px; }
+  .audio-library [data-filters-toggle] { width: 100px; min-width: 100px; min-height: 44px; padding-inline: 16px; justify-content: center; transition: width .18s ease, min-width .18s ease, padding .18s ease; }
+  .audio-library .mobile-results-toolbar.is-compact { pointer-events: none; }
+  .audio-library .mobile-results-toolbar.is-compact .page-size-control,
+  .audio-library .mobile-results-toolbar.is-compact .mobile-results-count { visibility: hidden; }
+  .audio-library .mobile-results-toolbar.is-compact [data-filters-toggle] { width: 44px; min-width: 44px; padding-inline: 0; pointer-events: auto; }
+  .audio-library .mobile-results-toolbar.is-compact [data-filters-toggle] > span { display: none; }
 }
 @media (max-width: 767px) {
   html.audio-library:has(body.player-expanded) { overflow: hidden; scrollbar-gutter: auto; }
@@ -209,6 +216,14 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
   .audio-library main[data-content-main] { padding-top: 8px; }
   .audio-library [data-results] article { border-color: hsl(var(--border) / .65); border-radius: 12px; background: hsl(var(--card)); }
   .audio-library.dark [data-results] article { background: hsl(var(--card) / .78); }
+  .audio-library .mobile-track-byline,
+  .audio-library .mobile-track-details { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
+  .audio-library .mobile-track-author,
+  .audio-library .mobile-track-citation { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+  .audio-library .mobile-track-date,
+  .audio-library .mobile-track-duration { flex-shrink: 0; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .audio-library .mobile-track-duration { font-size: 11px; }
+  .audio-library .mobile-track-series { margin-top: 4px; }
   .audio-library .audio-filter-form :is(input[type="search"], select) { font-size: 16px; }
   .audio-library #minimized-player { padding-top: 12px; padding-bottom: 12px; }
   .audio-library #sticky-player .player-controls-primary { gap: 4px; }
@@ -232,6 +247,7 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
   .audio-library #pl-prev-minimized { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .audio-library [data-filters-toggle] { transition: none; }
   .audio-library #sticky-player .player-meta #pl-title { animation: none; }
 }
 @media (forced-colors: active) {

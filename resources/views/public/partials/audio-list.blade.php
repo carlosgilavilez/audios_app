@@ -95,13 +95,14 @@
                 @php
                     $resultLabel = trans_choice(':count audio encontrado|:count audios encontrados', $resultCount, ['count' => $resultCount]);
                 @endphp
-                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-2 backdrop-blur-md shadow-sm mobile-results-toolbar lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
+                <div class="sticky top-0 z-30 border-b border-border/50 bg-card/90 px-3 py-2 backdrop-blur-md shadow-sm mobile-results-toolbar lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none" data-mobile-toolbar>
                     <div class="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center justify-between gap-2">
                             @include('public.partials.per-page-selector', ['perPage' => $perPage])
                             <button type="button"
                                     class="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
                                     data-filters-toggle
+                                    aria-label="Filtros"
                                     aria-haspopup="dialog"
                                     aria-expanded="false"
                                     aria-controls="public-audio-filters">
@@ -111,7 +112,7 @@
                         </div>
                         <span class="hidden text-sm font-medium text-foreground lg:inline">{{ $resultLabel }}</span>
                     </div>
-                    <span class="text-[11px] uppercase tracking-wide text-muted-foreground lg:hidden">{{ $resultLabel }}</span>
+                    <span class="mobile-results-count text-[11px] uppercase tracking-wide text-muted-foreground lg:hidden">{{ $resultLabel }}</span>
                 </div>
 
                 @if (!empty($filterChips))
@@ -175,48 +176,46 @@
                                     :year-link="$yearLink"
                                     :citation="$cita"
                                 />
-                                <div class="min-w-0 flex-1 space-y-1.5">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="min-w-0">
-                                            <div class="text-sm font-semibold text-foreground break-words">{{ $audio->titulo ?? '' }}</div>
-                                            <div class="text-xs text-muted-foreground break-words">
-                                                @if ($audio->autor_id)
-                                                    <a href="{{ route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="text-right text-xs text-muted-foreground">
-                                            @if ($formattedDate)
-                                                <div class="whitespace-nowrap">
-                                                    @if ($dateWithoutYear)
-                                                        <span class="date-prefix">{{ $dateWithoutYear }}</span>
-                                                    @endif
-                                                    @if ($yearToken)
-                                                        @if ($yearLink)
-                                                            <a href="{{ $yearLink }}" class="date-year-link font-semibold" data-filter-link="anio">{{ $yearToken }}</a>
-                                                        @else
-                                                            <span class="date-year-link font-semibold">{{ $yearToken }}</span>
-                                                        @endif
-                                                    @endif
-                                                </div>
+                                <div class="mobile-track-content min-w-0 flex-1">
+                                    <div class="mobile-track-title text-sm font-semibold text-foreground break-words">{{ $audio->titulo ?? '' }}</div>
+                                    <div class="mobile-track-byline text-xs text-muted-foreground">
+                                        <div class="mobile-track-author">
+                                            @if ($audio->autor_id)
+                                                <a href="{{ route('public.audios', $queryFor(['autor_id' => $audio->autor_id])) }}" class="link-chip" data-filter-link="autor">{{ $audio->autor->nombre ?? '' }}</a>
                                             @endif
-                                            @if(!empty($audio->duracion))
-                                                <div class="mt-1 text-[11px] text-muted-foreground">{{ $audio->duracion }}</div>
+                                        </div>
+                                        <div class="mobile-track-date">
+                                            @if ($formattedDate)
+                                                @if ($dateWithoutYear)
+                                                    <span class="date-prefix">{{ $dateWithoutYear }}</span>
+                                                @endif
+                                                @if ($yearToken)
+                                                    @if ($yearLink)
+                                                        <a href="{{ $yearLink }}" class="date-year-link font-semibold" data-filter-link="anio">{{ $yearToken }}</a>
+                                                    @else
+                                                        <span class="date-year-link font-semibold">{{ $yearToken }}</span>
+                                                    @endif
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
                                     @if ($seriesName)
-                                        <div class="text-[11px] text-muted-foreground">{{ $seriesName }}</div>
+                                        <div class="mobile-track-series text-[11px] text-muted-foreground">{{ $seriesName }}</div>
                                     @endif
-                                    @if ($cita)
-                                        <div class="text-xs text-muted-foreground break-words">
-                                            @if ($audio->libro_id)
-                                                <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
-                                            @else
-                                                {{ $cita }}
+                                    <div class="mobile-track-details text-xs text-muted-foreground">
+                                        <div class="mobile-track-citation">
+                                            @if ($cita)
+                                                @if ($audio->libro_id)
+                                                    <a href="{{ route('public.audios', $queryFor(['libro_id' => $audio->libro_id])) }}" class="link-chip" data-filter-link="libro">{{ $cita }}</a>
+                                                @else
+                                                    {{ $cita }}
+                                                @endif
                                             @endif
                                         </div>
-                                    @endif
+                                        @if(!empty($audio->duracion))
+                                            <span class="mobile-track-duration">{{ $audio->duracion }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </article>
                         @endforeach

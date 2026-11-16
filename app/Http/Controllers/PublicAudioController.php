@@ -31,7 +31,7 @@ class PublicAudioController extends Controller
         $isEmbed = $request->boolean('embed', false) || $request->routeIs('public.embed');
         $showPreviewBar = ! $isEmbed && $request->integer('preview', 1) === 1;
 
-        $perPage = (int) $request->input('per_page', 25);
+        $perPage = (int) $request->input('per_page', 50);
         $perPage = max(5, min(100, $perPage));
         $page = max(1, (int) $request->input('page', 1));
 

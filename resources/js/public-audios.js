@@ -156,6 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
     : null;
   const openFiltersButton = root.querySelector('[data-filters-toggle]');
   const closeFiltersButton = root.querySelector('[data-filters-close]');
+  const mobileToolbar = root.querySelector('[data-mobile-toolbar]');
+  if (mobileToolbar) {
+    let toolbarFrame = null;
+    const updateToolbar = () => {
+      toolbarFrame = null;
+      mobileToolbar.classList.toggle('is-compact', window.innerWidth < 1024 && window.scrollY > 96);
+    };
+    const scheduleToolbarUpdate = () => {
+      if (toolbarFrame === null) toolbarFrame = requestAnimationFrame(updateToolbar);
+    };
+    window.addEventListener('scroll', scheduleToolbarUpdate, { passive: true });
+    window.addEventListener('resize', scheduleToolbarUpdate);
+    updateToolbar();
+  }
   const focusableSelector = 'a[href], button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
   let lastFocus = null;
   let drawerCloseTimer;
