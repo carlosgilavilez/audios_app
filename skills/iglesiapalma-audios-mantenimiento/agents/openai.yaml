@@ -1,0 +1,4 @@
+interface:
+  display_name: "Iglesia Palma · Mantenimiento de audios"
+  short_description: "Revisa filtros, móvil e inventario de audios"
+  default_prompt: "Usa $iglesiapalma-audios-mantenimiento para revisar el buscador, validar móvil y contrastar los audios pendientes."

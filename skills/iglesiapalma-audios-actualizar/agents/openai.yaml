@@ -1,0 +1,4 @@
+interface:
+  display_name: "Iglesia Palma · Actualizar avances"
+  short_description: "Mantiene decisiones y continuidad para otros agentes"
+  default_prompt: "Usa $iglesiapalma-audios-actualizar para incorporar estas instrucciones y dejar actualizado el estado real del proyecto."

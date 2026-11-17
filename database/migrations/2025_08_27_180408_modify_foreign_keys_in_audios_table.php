@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('audios', function (Blueprint $table) {
             // Drop the old foreign key constraint
-            $table->dropForeign('audios_autor_id_foreign');
+            $table->dropForeign(['autor_id']);
 
             // IMPORTANT: This requires the doctrine/dbal package: composer require doctrine/dbal
             // Change autor_id column to be nullable
@@ -18,8 +18,8 @@ return new class extends Migration
 
             // Re-add the foreign key with nullOnDelete behavior
             $table->foreign('autor_id')
-                  ->references('id')->on('autores')
-                  ->nullOnDelete();
+                ->references('id')->on('autores')
+                ->nullOnDelete();
         });
     }
 
@@ -31,8 +31,8 @@ return new class extends Migration
 
             // Re-add the old foreign key with cascadeOnDelete
             $table->foreign('autor_id', 'audios_autor_id_foreign')
-                  ->references('id')->on('autores')
-                  ->cascadeOnDelete();
+                ->references('id')->on('autores')
+                ->cascadeOnDelete();
 
             // Change autor_id back to not nullable
             // Note: This will fail if there are any audios with a null autor_id

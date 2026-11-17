@@ -1,3 +1,5 @@
+> Procedimiento histórico. Para el despliegue de la biblioteca de Iglesia Palma, consultar [PROJECT_STATE.md](PROJECT_STATE.md) y la [referencia de Hostinger/WP-CLI](../skills/iglesiapalma-audios-mantenimiento/references/despliegue.md). La corrección de filtros ya se desplegó sin migraciones ni instalación de dependencias. No ejecutar automáticamente los pasos históricos siguientes.
+
 Deploy en producción (pull + build)
 
 Requisitos servidor

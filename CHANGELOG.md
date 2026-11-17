@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.6 - Búsqueda de posición y recuperación de carga (2026-11-16)
+
+- Las tres barras previsualizan durante el arrastre y piden una sola posición al soltar; la liberación fuera de la barra también finaliza el gesto.
+- La precarga se limita al audio elegido y respeta ahorro de datos/redes 2G cuando el navegador los comunica. Se conservan las respuestas parciales del servidor.
+- Un aviso discreto informa de la carga. Si la reproducción no avanza durante 12 segundos, se permite una sola recarga que restaura la posición; si sigue fallando, se ofrece reintentar con Reproducir.
+- Pausar o cambiar de pista cancela la recuperación pendiente. Se mantienen el aspecto, los metadatos y el estado de pausa al buscar.
+- El botón de apertura pasa a «Buscar». El panel móvil y la barra lateral usan «Encuentra el mensaje que buscas» como título principal más grande, sin el encabezado «Filtros».
+- Se incorporan las fuentes de skills, estado público, helpers y pruebas acumuladas. La configuración operativa privada se suministra mediante variables de entorno y permanece fuera del repositorio.
+
 ## v0.2.5 - Progreso táctil en el reproductor encogido (2026-11-16)
 
 - La barra del reproductor móvil encogido permite tocar y arrastrar un punto de agarre para avanzar o retroceder, con una zona táctil de 44 px sobre la línea de 6 px.

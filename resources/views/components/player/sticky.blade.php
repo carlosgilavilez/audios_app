@@ -4,6 +4,8 @@
             fixed inset-x-0 bottom-0 z-50 border-t border-border/60
             bg-card/85 backdrop-blur-md supports-[backdrop-filter]:bg-card/80
             text-foreground">
+    <div id="pl-status" role="status" aria-live="polite" aria-atomic="true"
+         class="hidden pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-[calc(100%_-_2rem)] -translate-x-1/2 rounded-full border border-border bg-card px-3 py-1 text-center text-xs text-foreground shadow-sm"></div>
 
     <div class="hidden md:flex mx-auto max-w-screen-xl px-3 sm:px-6 py-2 md:py-3">
         <div class="player-layout flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

@@ -11,7 +11,7 @@
     "isDynamicEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-BgTB1WQT.css",
+    "file": "assets/app-KXBpIFKR.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -19,7 +19,7 @@
     ]
   },
   "resources/css/public-library.css": {
-    "file": "assets/public-library-DNMK5H5j.css",
+    "file": "assets/public-library-DvaOcQh8.css",
     "src": "resources/css/public-library.css",
     "isEntry": true,
     "names": [
@@ -37,7 +37,7 @@
     ]
   },
   "resources/js/player.js": {
-    "file": "assets/player-CSDHxzau.js",
+    "file": "assets/player-BcoFn6iV.js",
     "name": "player",
     "src": "resources/js/player.js",
     "isEntry": true

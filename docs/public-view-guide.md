@@ -1,6 +1,6 @@
-# Biblioteca pública de audios - v0.2.5
+# Biblioteca pública de audios - v0.2.6
 
-Código de versión: **v0.2.5**, registrado también en package.json, package-lock.json y CHANGELOG.md.
+Código de versión: **v0.2.6**, registrado también en package.json, package-lock.json y CHANGELOG.md.
 
 ## Uso y parámetros
 
@@ -18,9 +18,15 @@ Orden del filtro: **Buscar, Serie, Categoría, Autor, Año y Libro de la Biblia*
 
 La interfaz utiliza verde para la acción principal y botones Limpiar de contraste alto. El modo oscuro recupera el degradado gris azulado anterior, con paneles y reproductor más luminosos; el usuario prefirió este acabado al fondo casi negro de v0.2.0. Las barras de desplazamiento son finas y conservan la navegación por teclado y táctil. La inspiración en Spotify se limita al estilo visual; no se incorporan sus marcas ni contenidos.
 
-En móvil, Mostrar/Filtros aparece sobre el fondo de la página, con espacio a ambos lados y sin una franja rectangular. Mostrar y el contador usan pequeñas superficies redondeadas con contraste alto. El botón Filtros permanece fijo al desplazarse; después de96px se compacta a un icono de44px, manteniendo su nombre accesible. Las tarjetas muestran solo título, autor y cita bíblica cuando existe. Los filtros siguen disponibles.
+En móvil, Mostrar/Buscar aparece sobre el fondo de la página, con espacio a ambos lados y sin una franja rectangular. Mostrar y el contador usan pequeñas superficies redondeadas con contraste alto. El botón Buscar permanece fijo al desplazarse; después de96px se compacta a un icono de44px, manteniendo su nombre accesible. Las tarjetas muestran solo título, autor y cita bíblica cuando existe. Los filtros siguen disponibles.
 
 En escritorio, el reproductor organiza metadatos, controles, progreso y volumen. En móvil tiene una presentación compacta y otra ampliada con progreso y controles táctiles. Los controles de reproducir/pausar actualizan su nombre accesible y estado; avance/retroceso saltan diez segundos. La línea superior del reproductor encogido mide6px y permite tocar o arrastrar su punto de agarre, con zona táctil de44px. Durante el arrastre muestra la posición elegida y salta al soltar, conservando reproducción/pausa. Admite teclado y anuncia tiempo actual/total a lectores de pantalla. Se conservan todos sus metadatos y controles aunque la lista móvil muestre menos información.
+
+Desde v0.2.6, las tres barras previsualizan la posición durante el arrastre y realizan el salto al soltar, evitando peticiones a puntos intermedios. Si se libera fuera de la barra, el gesto también termina. El aspecto normal se conserva; un aviso breve aparece solo mientras carga o si hace falta reintentar.
+
+Solo se precarga el audio seleccionado, con preload=auto después de elegirlo; si el navegador comunica ahorro de datos o red 2G, se mantiene metadata. La precarga es una sugerencia del navegador y puede consumir más transferencia del audio elegido incluso en pausa; no se descargan las otras pistas. Un salto fuera del búfer todavía depende de la conexión. [Referencia de preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio#preload).
+
+resources/js/audio-playback.js limita la recuperación automática a una recarga tras12 segundos sin avance durante reproducción. Conserva la posición y la intención de pausa/reproducción; cambiar de pista o pausar cancela el temporizador. Si no se recupera, se detiene y pide pulsar Reproducir, sin bucles de solicitudes. La ruta /play-audio mantiene la entrega parcial existente; no se cambia a /storage porque esa URL no está disponible en este hosting. [Referencia de rangos HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Range_requests).
 
 La hoja resources/css/public-library.css está limitada a html.audio-library, aplicado a las rutas públicas desde layouts/preview.blade.php. Se carga desde public/audios.blade.php después de los estilos compartidos. Los paneles internos mantienen su tema existente. Ajustar el degradado y las transparencias en esta hoja; conservar el texto limpio, sin el logotipo detrás.
 
@@ -32,8 +38,12 @@ Comprobar modo claro/oscuro, anchos de360,390,820y1280px, títulos largos, orden
 
 La prueba aislada se hace con SQLite en memoria o una copia de prueba; RefreshDatabase nunca debe apuntar al MySQL del usuario o producción.
 
+Para la lógica de carga, ejecutar node --test tests/js/audio-playback.test.mjs. Comprobar además con un MP3 real que currentTime sigue aumentando después de buscar fuera del búfer; comprobar solo el valor del deslizador no acredita reproducción recuperada. Probar pausa, cambio de pista durante carga, ambos reproductores móviles y escritorio.
+
 ## Integración WordPress
 
 El snippet canónico es iframe-embed.html. Además de la altura bajo la cabecera Divi y los ajustes del anfitrión, v0.2.0 estiliza la barra externa solo en la página205. La hoja Laravel no puede modificar esa barra porque el iframe es de otro origen.
 
 Actualizar el módulo Divi con respaldo fresco y el helper update-wordpress-audio-embed.php. Comprobar la página WordPress real, sus widgets, extremos del iframe y reproductor; una simulación local no acredita ese resultado. Las cabeceras permiten la incrustación solo en los dominios de la iglesia configurados por el proyecto.
+
+La apertura de búsqueda se etiqueta «Buscar». En móvil y escritorio el panel usa «Encuentra el mensaje que buscas» como título principal de22px, sin un encabezado «Filtros» separado. Conservar el estado compacto accesible al desplazarse.

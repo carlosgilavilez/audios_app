@@ -31,15 +31,14 @@
                      data-filters-panel>
                     <div class="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
                         <div class="space-y-1">
-                            <h2 id="mobileFiltersTitle" class="text-lg font-semibold text-foreground">Filtros</h2>
-                            <p class="text-xs text-muted-foreground">Encuentra el mensaje que buscas.</p>
+                            <h2 id="mobileFiltersTitle" class="audio-filter-title text-foreground">Encuentra el mensaje que buscas</h2>
                         </div>
                         <div class="flex items-center gap-2">
                             <x-theme-toggle />
                             <button type="button"
                                     class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                                     data-filters-close
-                                    aria-label="Cerrar filtros">
+                                    aria-label="Cerrar búsqueda">
                                 <i data-lucide="x" class="h-4 w-4"></i>
                             </button>
                         </div>
@@ -68,8 +67,7 @@
                     <div class="rounded-2xl border border-border bg-card/90 p-5 shadow-sm">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <h2 id="desktopFiltersTitle" class="text-base font-semibold text-foreground">Filtros</h2>
-                                <p class="text-xs text-muted-foreground">Encuentra el mensaje que buscas.</p>
+                                <h2 id="desktopFiltersTitle" class="audio-filter-title text-foreground">Encuentra el mensaje que buscas</h2>
                             </div>
                             <x-theme-toggle />
                         </div>
@@ -102,12 +100,12 @@
                             <button type="button"
                                     class="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
                                     data-filters-toggle
-                                    aria-label="Filtros"
+                                    aria-label="Buscar"
                                     aria-haspopup="dialog"
                                     aria-expanded="false"
                                     aria-controls="public-audio-filters">
                                 <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
-                                <span>Filtros</span>
+                                <span>Buscar</span>
                             </button>
                         </div>
                         <span class="hidden text-sm font-medium text-foreground lg:inline">{{ $resultLabel }}</span>

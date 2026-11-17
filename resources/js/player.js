@@ -1,4 +1,6 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+import { AudioPlayback } from './audio-playback';
+
+document.addEventListener('DOMContentLoaded', () => {
   const playerManager = {
     audio: document.getElementById('pl-audio'),
     stickyPlayer: document.getElementById('sticky-player'),
@@ -21,6 +23,7 @@
       duration: document.querySelectorAll('[id^="pl-duration"]'),
       seek: document.querySelectorAll('[id^="pl-seek"]'),
       miniSeek: document.getElementById('pl-seek-minimized'),
+      status: document.getElementById('pl-status'),
       progressLine: document.querySelectorAll('[id^="pl-progress-line"]'),
       volume: document.getElementById('pl-volume'),
       volumeToggle: document.getElementById('pl-volume-toggle'),
@@ -46,6 +49,16 @@
         return;
       }
       this.collectPlaylist();
+      this.playback = new AudioPlayback(this.audio, {
+        onIntent: (playing) => this.updatePlayState(playing),
+        onStatus: (message, loading) => {
+          this.audio.setAttribute('aria-busy', String(loading));
+          if (this.elements.status) {
+            this.elements.status.textContent = message;
+            this.elements.status.classList.toggle('hidden', !message);
+          }
+        },
+      });
       this.bindEventListeners();
       window.addEventListener('resize', () => this.adjustBodyOffset());
     },
@@ -80,31 +93,35 @@
       this.elements.play.forEach((button) => button.addEventListener('click', () => this.togglePlayPause()));
       this.elements.next.forEach((button) => button.addEventListener('click', () => this.playNext()));
       this.elements.prev.forEach((button) => button.addEventListener('click', () => this.playPrev()));
-      this.elements.back10.forEach((button) => button.addEventListener('click', () => { this.audio.currentTime -= 10; }));
-      this.elements.forward10.forEach((button) => button.addEventListener('click', () => { this.audio.currentTime += 10; }));
+      this.elements.back10.forEach((button) => button.addEventListener('click', () => this.playback.seek(this.audio.currentTime - 10)));
+      this.elements.forward10.forEach((button) => button.addEventListener('click', () => this.playback.seek(this.audio.currentTime + 10)));
 
       this.audio.addEventListener('timeupdate', () => this.updateProgress());
       this.audio.addEventListener('loadedmetadata', () => this.updateDuration());
       this.audio.addEventListener('ended', () => this.playNext());
       this.audio.addEventListener('play', () => this.updatePlayState(true));
-      this.audio.addEventListener('pause', () => this.updatePlayState(false));
+      this.audio.addEventListener('pause', () => this.updatePlayState(this.playback.wantsToPlay));
       this.audio.addEventListener('volumechange', () => this.updateVolumeState());
 
       this.elements.seek.forEach((bar) => {
-        if (bar === this.elements.miniSeek) {
-          bar.addEventListener('input', () => this.previewMiniSeek(bar));
-          bar.addEventListener('change', () => this.commitMiniSeek(bar));
-          bar.addEventListener('blur', () => this.commitMiniSeek(bar));
-          bar.addEventListener('pointercancel', () => {
-            if (this.state.scrubbing === bar) {
-              this.state.scrubbing = null;
-              this.updateProgress();
-            }
-          });
-        } else {
-          bar.addEventListener('input', (event) => this.seek(event.target.value));
-        }
+        bar.addEventListener('input', () => this.previewSeek(bar));
+        bar.addEventListener('change', () => this.commitSeek(bar));
+        bar.addEventListener('blur', () => this.commitSeek(bar));
+        bar.addEventListener('pointercancel', () => {
+          if (this.state.scrubbing !== bar) return;
+          this.state.scrubbing = null;
+          this.updateProgress();
+          if (this.playback.wantsToPlay) this.playback.arm();
+        });
       });
+      // Release outside the range must not leave timeupdate suppressed.
+      const finishScrub = () => {
+        const bar = this.state.scrubbing;
+        if (bar) setTimeout(() => this.commitSeek(bar), 0);
+      };
+      document.addEventListener('pointerup', finishScrub);
+      document.addEventListener('touchend', finishScrub, { passive: true });
+      window.addEventListener('blur', finishScrub);
       if (this.elements.volume) {
         this.elements.volume.addEventListener('input', (event) => this.setVolume(event.target.value));
       }
@@ -135,10 +152,11 @@
         this.elements.miniSeek.value = 0;
         this.elements.miniSeek.setAttribute('aria-valuetext', 'Cargando audio');
       }
-      this.audio.src = track.src;
       this.updateMetadata(track);
-
-      this.audio.play().catch((error) => console.error('Error playing audio:', error));
+      const connection = navigator.connection;
+      this.playback.load(track.src, {
+        saveData: Boolean(connection?.saveData) || ['slow-2g', '2g'].includes(connection?.effectiveType),
+      });
 
       if (this.stickyPlayer.classList.contains('hidden')) {
         this.stickyPlayer.classList.remove('hidden', 'opacity-0', 'translate-y-2');
@@ -201,13 +219,13 @@
     },
 
     togglePlayPause() {
-      if (this.state.isPlaying) {
-        this.audio.pause();
+      if (this.playback.wantsToPlay) {
+        this.playback.pause();
       } else {
         if (this.state.currentIndex === -1) {
           this.playTrack(0);
         } else {
-          this.audio.play().catch((error) => console.error('Error resuming audio:', error));
+          this.playback.play();
         }
       }
     },
@@ -239,7 +257,7 @@
       const position = Math.max(0, Math.min(duration, time));
       const progress = (position / duration) * 100;
       this.updateNodeList(this.elements.seek, (element) => {
-        element.value = progress;
+        if (element !== this.state.scrubbing) element.value = progress;
         element.style.setProperty('--range-progress', `${progress}%`);
         element.setAttribute('aria-valuetext', `${this.formatTime(position)} de ${this.formatTime(duration)}`);
       });
@@ -255,13 +273,14 @@
       this.updateProgress();
     },
 
-    previewMiniSeek(bar) {
+    previewSeek(bar) {
       if (!Number.isFinite(this.audio.duration) || this.audio.duration <= 0) return;
+      this.playback.clearTimer();
       this.state.scrubbing = bar;
       this.renderProgress((this.audio.duration / 100) * Number(bar.value));
     },
 
-    commitMiniSeek(bar) {
+    commitSeek(bar) {
       if (this.state.scrubbing !== bar) return;
       const value = bar.value;
       this.state.scrubbing = null;
@@ -271,7 +290,7 @@
     seek(value) {
       const percent = Number(value);
       if (!Number.isFinite(this.audio.duration) || this.audio.duration <= 0 || !Number.isFinite(percent)) return;
-      this.audio.currentTime = (this.audio.duration / 100) * Math.max(0, Math.min(100, percent));
+      this.playback.seek((this.audio.duration / 100) * Math.max(0, Math.min(100, percent)));
       this.updateProgress();
     },
 

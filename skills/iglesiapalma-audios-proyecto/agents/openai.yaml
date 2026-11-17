@@ -1,0 +1,4 @@
+interface:
+  display_name: "Iglesia Palma · Proyecto de audios"
+  short_description: "Retoma contexto, decisiones y avances del sistema"
+  default_prompt: "Usa $iglesiapalma-audios-proyecto para retomar el sistema de audios y continuar desde el estado documentado."

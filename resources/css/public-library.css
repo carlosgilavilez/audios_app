@@ -1,4 +1,4 @@
-/* v0.2.5 — public library only. Admin/editor retain the shared application theme. */
+/* v0.2.6 — public library only. Admin/editor retain the shared application theme. */
 html.audio-library {
   color-scheme: light;
   scrollbar-gutter: stable;
@@ -81,6 +81,8 @@ html.audio-library::-webkit-scrollbar-track { background: hsl(var(--background))
 .audio-library [data-filters-panel] { background: hsl(var(--card)); backdrop-filter: none; }
 .audio-library.dark [data-filters-panel] { background: linear-gradient(180deg, #526077 0%, #2c384d 48%, #253146 100%); }
 .audio-library [data-filters-scroll] { padding-bottom: 16px; }
+.audio-library [data-sidebar] .audio-filter-title,
+.audio-library .audio-filter-title { margin: 0; font-size: 1.375rem; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
 .audio-library .audio-filter-form { gap: 12px; }
 .audio-library .audio-filter-form label { display: block; line-height: 18px; letter-spacing: .02em; font-weight: 500; }
 .audio-library [data-dark-toggle] { width: 36px; height: 36px; border: 1px solid hsl(var(--border)); border-radius: 50%; background: hsl(var(--input)); color: hsl(var(--foreground)); }
